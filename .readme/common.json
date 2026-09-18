@@ -1,0 +1,23 @@
+{
+  "repo_url": "https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader",
+  "repo_slug": "SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader",
+  "icon_alt": "readium-epub-reader-ic-launcher",
+  "docs_autojs6_url": "https://docs.autojs6.com",
+  "format_reference_url": "https://www.w3.org/TR/epub-33/",
+  "readium_url": "https://github.com/readium/kotlin-toolkit",
+  "readium_version": "3.4.0",
+  "plugin_action": "org.autojs.plugin.EXPLORER_ACTION",
+  "plugin_execute_action": "org.autojs.plugin.EXPLORER_ACTION_EXECUTE",
+  "plugin_id": "readium-epub-reader",
+  "plugin_engine": "explorer-action",
+  "plugin_variant": "default",
+  "application_id": "io.github.supermonster003.autojs6.plugin.readium.epub.reader",
+  "required_host_build": "5269",
+  "protocol_version": "2",
+  "audited_host_build": "5282",
+  "audited_host_protocol": "22",
+  "protocol_compatibility_path": "docs/explorer-action-compatibility.md",
+  "supported_formats": "epub",
+  "android_min_sdk": "24",
+  "android_target_sdk": "37"
+}

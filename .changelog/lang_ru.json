@@ -1,0 +1,24 @@
+{
+  "changelog_label_hint": "Подсказка",
+  "changelog_label_feature": "Функция",
+  "changelog_label_fix": "Исправление",
+  "changelog_label_improvement": "Улучшение",
+  "changelog_label_dependency": "Зависимость",
+  "$data": {
+    "v1.0.0": {
+      "released_date": "2026/09/19",
+      "hint": [
+        "Сборка для разработки: этапы дорожной карты P0 (каркас, проверка Readium, тестовые образцы) в работе; первый публичный выпуск выходит на этапе P8 дорожной карты"
+      ],
+      "feature": [
+        "Основная кнопка `Читать EPUB` и действие в контекстном меню для файлов `.epub` в файловом менеджере AutoJs6 (ID плагина `readium-epub-reader`, Explorer Action v2)",
+        "База читалки: книги EPUB 2 и EPUB 3 отображаются навигатором Readium, с оглавлением и подтверждаемыми внешними ссылками",
+        "Книги читаются на месте через выданный файловый дескриптор с позиционными чтениями; ничего не копируется и не распаковывается в хранилище",
+        "Интерфейс, инструкции, README и changelog на 10 языках"
+      ],
+      "dependency": [
+        "Добавлен Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)"
+      ]
+    }
+  }
+}

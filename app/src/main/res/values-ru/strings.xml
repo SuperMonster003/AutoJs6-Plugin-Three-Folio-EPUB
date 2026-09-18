@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="action_readium_epub_reader">Читать EPUB</string>
+    <string name="dialog_button_cancel">Отмена</string>
+    <string name="dialog_button_confirm">Подтвердить</string>
+    <string name="plugin_description">Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</string>
+    <string name="release_history">История выпусков</string>
+    <string name="release_history_unavailable">История выпусков недоступна</string>
+    <string name="text_cannot_open_link">Не удалось открыть ссылку</string>
+    <string name="text_cannot_read_file">Не удалось прочитать файл EPUB</string>
+    <string name="text_invalid_request">Запрос не указывает на один файл EPUB</string>
+    <string name="text_no_table_of_contents">У этой книги нет оглавления</string>
+    <string name="text_open_failed">Не удалось открыть файл EPUB: %1$s</string>
+    <string name="text_opening_book" tools:ignore="TypographyEllipsis">Открытие книги...</string>
+    <string name="text_settings">Настройки</string>
+    <string name="text_table_of_contents">Оглавление</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="action_readium_epub_reader">EPUB を読む</string>
+    <string name="dialog_button_cancel">キャンセル</string>
+    <string name="dialog_button_confirm">確認</string>
+    <string name="plugin_description">EPUB 電子書籍を読み, 目次, 検索, 読み上げとスクリプト抽出を提供</string>
+    <string name="release_history">リリース履歴</string>
+    <string name="release_history_unavailable">リリース履歴を表示できません</string>
+    <string name="text_cannot_open_link">リンクを開けません</string>
+    <string name="text_cannot_read_file">EPUB ファイルを読み取れません</string>
+    <string name="text_invalid_request">リクエストが単一の EPUB ファイルを指していません</string>
+    <string name="text_no_table_of_contents">この本には目次がありません</string>
+    <string name="text_open_failed">EPUB ファイルを開けません: %1$s</string>
+    <string name="text_opening_book" tools:ignore="TypographyEllipsis">本を開いています...</string>
+    <string name="text_settings">設定</string>
+    <string name="text_table_of_contents">目次</string>
+</resources>

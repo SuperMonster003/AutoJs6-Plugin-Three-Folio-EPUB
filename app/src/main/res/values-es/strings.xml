@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="action_readium_epub_reader">Leer EPUB</string>
+    <string name="dialog_button_cancel">Cancelar</string>
+    <string name="dialog_button_confirm">Confirmar</string>
+    <string name="plugin_description">Lee libros EPUB con navegación, búsqueda, lectura en voz alta y acceso desde scripts</string>
+    <string name="release_history">Historial de versiones</string>
+    <string name="release_history_unavailable">El historial de versiones no está disponible</string>
+    <string name="text_cannot_open_link">No se puede abrir el enlace</string>
+    <string name="text_cannot_read_file">No se puede leer el archivo EPUB</string>
+    <string name="text_invalid_request">La solicitud no describe un único archivo EPUB</string>
+    <string name="text_no_table_of_contents">Este libro no tiene índice</string>
+    <string name="text_open_failed">No se puede abrir el archivo EPUB: %1$s</string>
+    <string name="text_opening_book" tools:ignore="TypographyEllipsis">Abriendo el libro...</string>
+    <string name="text_settings">Configuración</string>
+    <string name="text_table_of_contents">Índice</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="action_readium_epub_reader">قراءة EPUB</string>
+    <string name="dialog_button_cancel">إلغاء</string>
+    <string name="dialog_button_confirm">تأكيد</string>
+    <string name="plugin_description">قراءة كتب EPUB مع التنقل والبحث والقراءة الصوتية والوصول من السكربتات</string>
+    <string name="release_history">سجل الإصدارات</string>
+    <string name="release_history_unavailable">سجل الإصدارات غير متاح</string>
+    <string name="text_cannot_open_link">تعذر فتح الرابط</string>
+    <string name="text_cannot_read_file">تعذر قراءة ملف EPUB</string>
+    <string name="text_invalid_request">الطلب لا يشير إلى ملف EPUB واحد</string>
+    <string name="text_no_table_of_contents">لا يحتوي هذا الكتاب على جدول محتويات</string>
+    <string name="text_open_failed">تعذر فتح ملف EPUB: %1$s</string>
+    <string name="text_opening_book" tools:ignore="TypographyEllipsis">يتم فتح الكتاب...</string>
+    <string name="text_settings">الإعدادات</string>
+    <string name="text_table_of_contents">جدول المحتويات</string>
+</resources>

@@ -1,0 +1,13 @@
+Use Readium EPUB Reader from the AutoJs6 file manager:
+
+1. Install and enable the `Readium EPUB Reader` plugin.
+2. Tap an `.epub` file, or open its overflow menu and choose `Readium EPUB Reader`.
+3. The book opens in a reader powered by the Readium Kotlin Toolkit.
+
+The plugin receives temporary read access to the selected file and its parent directory through content URIs. It never receives a raw filesystem path, never copies the book to storage, and reads the EPUB container directly through the granted file descriptor.
+
+Current stage: the reader shows the book with Readium's default settings and a table of contents. Reading progress, bookmarks, preferences, search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are tracked in ROADMAP.md and arrive in later builds.
+
+Books may contain scripts and remote resources; the plugin keeps Readium's default behavior and does not block them, including plain `http://` resources. Only open books you trust.
+
+Explorer Action v2 supports both the primary button and the overflow menu for a single file. AutoJs6 build 5269 or later is required.

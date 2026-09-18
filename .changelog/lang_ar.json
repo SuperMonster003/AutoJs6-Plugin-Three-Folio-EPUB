@@ -1,0 +1,24 @@
+{
+  "changelog_label_hint": "تلميح",
+  "changelog_label_feature": "ميزة",
+  "changelog_label_fix": "إصلاح",
+  "changelog_label_improvement": "تحسين",
+  "changelog_label_dependency": "تبعية",
+  "$data": {
+    "v1.0.0": {
+      "released_date": "2026/09/19",
+      "hint": [
+        "بنية تطويرية: مراحل P0 في خارطة الطريق (الهيكل, التحقق من Readium, عينات الاختبار) قيد التنفيذ; يصدر أول إصدار عام مع مرحلة P8 في خارطة الطريق"
+      ],
+      "feature": [
+        "زر رئيسي `قراءة EPUB` وإجراء في القائمة لملفات `.epub` في مدير ملفات AutoJs6 (معرف الملحق `readium-epub-reader`, Explorer Action v2)",
+        "أساس القارئ: تعرض كتب EPUB 2 و EPUB 3 عبر متصفح Readium, مع جدول محتويات وروابط خارجية تتطلب التأكيد",
+        "تقرأ الكتب في مكانها عبر واصف الملف الممنوح بقراءات موضعية; لا ينسخ أو يستخرج أي شيء إلى التخزين",
+        "الواجهة والتعليمات و README وسجل التغييرات بعشر لغات"
+      ],
+      "dependency": [
+        "إضافة Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)"
+      ]
+    }
+  }
+}

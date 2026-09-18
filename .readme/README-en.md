@@ -1,0 +1,226 @@
+<!--suppress HtmlDeprecatedAttribute, HttpUrlsUsage -->
+
+<div align="center">
+  <p>
+    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="readium-epub-reader-ic-launcher" border="0" width="128" />
+  </p>
+
+  <p>Reads EPUB e-books with navigation, search, read-aloud and scripting access</p>
+
+  <p>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?label=Release"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=A24232&label=Issues"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=534BAE&label=License"/></a>
+  </p>
+</div>
+
+******
+
+### Languages
+
+******
+
+The current README.md supports the following languages:
+
+- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hans.md)
+- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-HK.md)
+- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-TW.md)
+- English [en] # current
+- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-fr.md)
+- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-es.md)
+- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ja.md)
+- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ko.md)
+- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ru.md)
+- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ar.md)
+
+******
+
+### Introduction
+
+******
+
+One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, either with the primary `Readium EPUB Reader` button or from the overflow menu. The reader is built on the [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit) 3.4.0, the same open-source engine used by many commercial readers.
+
+The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
+
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings and offers a table of contents. Reading position memory, bookmarks, preferences, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+
+******
+
+### Features
+
+******
+
+- Readium engine: EPUB 2 (NCX) and EPUB 3 (NAV) books render through the Readium navigator with Readium CSS, including internal links, footnotes and images.
+- No copies: the EPUB container is read in place through a read-only descriptor with positional reads, so even large books open without a cache file.
+- Table of contents: jump to any chapter from the toolbar; nested entries keep their depth.
+- External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
+- Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
+- Multilingual: interface, instructions, README, and changelog are available in 10 languages.
+
+******
+
+### How to Use
+
+******
+
+1. Download the latest plugin APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) page and install it on your device.
+2. Open the AutoJs6 plugin center and enable the `Readium EPUB Reader` plugin.
+3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Readium EPUB Reader`.
+4. Use the table of contents button in the toolbar to jump between chapters; press Back to close the reader.
+
+> If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
+
+******
+
+### Supported Formats
+
+******
+
+The plugin recognizes the following filename extension, plus extensionless files the host explicitly marks as `application/epub+zip`:
+
+```text
+epub
+```
+
+Only EPUB is supported: reflowable and fixed-layout books in EPUB 2 or EPUB 3. Comic archives (CBZ), audiobooks, PDF and LCP-protected books are out of scope; a book marked as LCP-encrypted is reported as unreadable instead of rendering garbage.
+
+******
+
+### FAQ
+
+******
+
+#### Why is my reading position not remembered yet?
+
+Reading position memory and bookmarks belong to the next milestone of ROADMAP.md. The current build always opens the book at its beginning.
+
+#### Can I change the font, text size or theme?
+
+Not yet. Reader preferences (font, size, line height, margins, themes, page or scroll mode) arrive with the preferences milestone; the current build uses Readium's defaults.
+
+#### Does this plugin upload my books anywhere?
+
+No. The plugin has no server of its own. Network access is only used when a book itself references remote resources, and for the manual update check planned for the standalone settings page.
+
+******
+
+### Permissions and Security
+
+******
+
+The plugin keeps Readium's default behavior for book content: scripts and remote resources inside a book are not removed or blocked, including plain `http://` resources. Only open books you trust.
+
+- Least privilege: the plugin only receives the temporary content URI read permission granted by the host, never sees filesystem paths, and never writes the book to storage.
+- Strict envelope: the Explorer Action request must carry exactly one EPUB target, its parent directory, a matching protocol version, a supported host build and both read grants; anything else is rejected before the file is opened.
+- Bounded parsing: a malformed container (not a ZIP, missing `container.xml`, missing package document, path traversal in the manifest) fails with an error message instead of a crash.
+- External links are shown in full and opened in the system browser only after confirmation; schemes other than `http` and `https` are refused.
+
+The manifest requests only the network permission and the AutoJs6 plugin permission. AndroidX also contributes a package-scoped signature permission that protects non-exported dynamic receivers; it grants no access to device data. No storage, media, camera, location, accessibility or overlay permission is requested.
+
+******
+
+### Plugin Interface
+
+******
+
+The following information is for developers; the host discovers and executes the plugin with these identities:
+
+```text
+application id: io.github.supermonster003.autojs6.plugin.readium.epub.reader
+service action: org.autojs.plugin.EXPLORER_ACTION
+execute action: org.autojs.plugin.EXPLORER_ACTION_EXECUTE
+plugin id: readium-epub-reader
+engine: explorer-action
+variant: default
+protocol version: 2
+minimum host build: 5269
+audited host build: 5282
+audited host protocol: 22
+```
+
+Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory. AutoJs6 build 5269 or later is required.
+
+- [View the Explorer Action compatibility matrix](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/explorer-action-compatibility.md)
+
+******
+
+### Roadmap
+
+******
+
+Planned capabilities and their completion status are tracked as a checkable list in ROADMAP.md, organized by milestones with acceptance criteria: reading position memory and bookmarks, preferences and font import, full-text search, read-aloud, fixed layout, the standalone app entry, the host contract and the `epub` scripting API. Unchecked items describe plans rather than shipped capabilities. Feedback via Issues is welcome.
+
+- [View ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
+
+******
+
+### Release History
+
+******
+
+#### v1.0.0
+
+_2026/09/19_
+
+- `Hint` Development build: the roadmap phases P0 (skeleton, Readium spike, fixtures) are in progress; the first public release ships with roadmap phase P8
+- `Feature` A `Readium EPUB Reader` primary button and overflow action for `.epub` files in the AutoJs6 file manager (plugin ID `readium-epub-reader`, Explorer Action v2)
+- `Feature` Reader baseline: EPUB 2 and EPUB 3 books render through the Readium navigator, with a table of contents and confirmed external links
+- `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
+- `Feature` Interface, instructions, README, and changelog in 10 languages
+- `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
+
+##### For more release history
+
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/assets/doc/CHANGELOG-en.md)
+
+******
+
+### Build
+
+******
+
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
+
+Release build:
+
+```powershell
+.\gradlew.bat :app:assembleRelease
+```
+
+Build parameters come from `version.properties`. The current minimum SDK is 24 and the target SDK is 37.
+
+******
+
+### Localization and Docs Generation
+
+******
+
+```text
+.readme/common.json
+.readme/lang_*.json
+.readme/template_readme.md
+.changelog/lang_*.json
+.changelog/template_changelog.md
+.python/generate_markdown.py
+app/src/main/assets/doc/CHANGELOG-*.md
+app/src/main/res/values-*/strings.xml
+app/src/main/res/raw-*/plugin_instruction.md
+```
+
+`strings.xml` localizes plugin metadata and the reader UI, while `plugin_instruction.md` provides host-visible usage instructions. For README and changelog, always edit the JSON sources under `.readme/` and `.changelog/`, then run `py .python/generate_markdown.py` to regenerate; generated files are never edited by hand. Run `py .python/generate_markdown.py --check` to verify that sources and artifacts are in sync.
+
+******
+
+### Links
+
+******
+
+- AutoJs6 documentation: https://docs.autojs6.com
+- EPUB 3.3 specification: https://www.w3.org/TR/epub-33/
+- Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)

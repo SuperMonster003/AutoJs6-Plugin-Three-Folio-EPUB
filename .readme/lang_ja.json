@@ -1,0 +1,73 @@
+{
+  "$name": "日本語",
+  "text_current_lowercase": "現在",
+  "text_plugin_synopsis": "EPUB 電子書籍を読み, 目次, 検索, 読み上げとスクリプト抽出を提供",
+  "h3_languages_with_ascii": "言語 (Languages)",
+  "p_languages_all_supported_for_readme": "現在の README.md は次の言語をサポートします",
+  "h3_introduction": "概要",
+  "p_introduction_what": "ワンタップで読書: AutoJs6 のファイルマネージャーから `.epub` ファイルを直接開けます. メインボタン `EPUB を読む` でもメニューからでも開けます. リーダーは多くの商用リーダーが採用するオープンソースエンジン [Readium Kotlin Toolkit]({{ readium_url }}) {{ readium_version }} を基盤としています.",
+  "p_introduction_how": "プラグインはホストが付与した一時的なファイル記述子から本を直接読み取ります. ファイルシステムのパスは受け取らず, 本をどこにもコピーせず, ストレージへ展開することもありません.",
+  "p_status": "現在の段階 (1.0.0 開発ビルド): リーダーは Readium の既定設定で本を開き, 目次を提供します. 読書位置の記憶, ブックマーク, 設定, 全文検索, 読み上げ, 固定レイアウト, フォントの取り込み, 独立したランチャー入口, `epub` スクリプト API は ROADMAP.md で計画されており, まだ利用できません.",
+  "h3_features": "主な機能",
+  "features": [
+    "Readium エンジン: EPUB 2 (NCX) と EPUB 3 (NAV) の本を Readium ナビゲーターと Readium CSS で表示し, 内部リンク, 脚注, 画像に対応します.",
+    "コピーなし: EPUB コンテナは読み取り専用の記述子から位置指定で読み取るため, 大きな本でもキャッシュファイルなしで開けます.",
+    "目次: ツールバーから任意の章へ移動でき, 入れ子の項目は階層を保ちます.",
+    "外部リンク: `http` または `https` のリンクをタップすると完全なアドレスを表示し, 確認後にのみシステムブラウザーを開きます.",
+    "ホスト連携: メニューとダイアログは AutoJs6 の言語とダークモードに従い, Explorer Action の封筒はコンテンツを開く前に厳密に検証されます.",
+    "多言語: インターフェース, 説明, README, changelog を 10 言語で提供します."
+  ],
+  "h3_usage": "使い方",
+  "usage_steps": [
+    "[Releases]({{ repo_url }}/releases) ページから最新のプラグイン APK をダウンロードして端末にインストールします.",
+    "AutoJs6 のプラグインセンターを開き, `Readium EPUB Reader` プラグインを有効化します.",
+    "AutoJs6 のファイルマネージャーで `.epub` ファイルをタップするか, メニュー (その他の操作) を開いて `EPUB を読む` を選びます.",
+    "ツールバーの目次ボタンで章を移動し, 戻るキーでリーダーを閉じます."
+  ],
+  "p_usage_note": "プラグインセンターにこのプラグインが表示されない場合は, まず AutoJs6 を新しいバージョン (内部ビルド {{ required_host_build }} 以降) に更新してください. Explorer Action v2 は単一ファイルのメインボタンとメニューに対応し, 文書と親ディレクトリへの一時的な読み取り権限を使用します.",
+  "h3_supported_formats": "対応形式",
+  "p_supported_formats": "プラグインは次の拡張子を認識し, ホストが `application/epub+zip` と明示した拡張子なしファイルも受け付けます",
+  "p_format_scope": "EPUB のみ対応: EPUB 2 または EPUB 3 のリフロー型と固定レイアウトの本. コミックアーカイブ (CBZ), オーディオブック, PDF, LCP 保護された本は対象外です. LCP 暗号化と示された本は文字化けを表示せず, 読み取れない旨を報告します.",
+  "h3_faq": "よくある質問",
+  "faq": [
+    {
+      "q": "読書位置がまだ記憶されないのはなぜですか?",
+      "a": "読書位置の記憶とブックマークは ROADMAP.md の次のマイルストーンです. 現在のビルドは常に本の先頭から開きます."
+    },
+    {
+      "q": "フォント, 文字サイズ, テーマは変更できますか?",
+      "a": "まだできません. 読書設定 (フォント, サイズ, 行間, 余白, テーマ, ページ / スクロールモード) は設定マイルストーンで提供されます. 現在のビルドは Readium の既定値を使用します."
+    },
+    {
+      "q": "このプラグインは本をどこかへアップロードしますか?",
+      "a": "いいえ. プラグインは独自のサーバーを持ちません. ネットワークは本自体がリモートリソースを参照する場合と, 独立した設定ページで計画中の手動アップデート確認にのみ使用されます."
+    }
+  ],
+  "h3_security": "権限とセキュリティ",
+  "p_security_intro": "プラグインは本の内容に対して Readium の既定動作を維持します. 本に含まれるスクリプトやリモートリソースは削除も遮断もされず, 平文の `http://` リソースも含まれます. 信頼できる本だけを開いてください.",
+  "security_points": [
+    "最小権限: プラグインはホストが付与した一時的な content URI の読み取り権限のみを受け取り, ファイルシステムのパスを見ることも, 本をストレージへ書き込むこともありません.",
+    "厳密な封筒: Explorer Action リクエストは EPUB の対象を 1 つだけ, その親ディレクトリ, 一致するプロトコルバージョン, 対応ホストビルド, 2 つの読み取り権限を伴う必要があります. それ以外はファイルを開く前に拒否されます.",
+    "境界のある解析: 不正なコンテナ (ZIP でない, `container.xml` がない, パッケージ文書がない, manifest のパストラバーサル) はクラッシュせずエラーメッセージで終了します.",
+    "外部リンクは完全なアドレスを表示し, 確認後にのみシステムブラウザーで開きます. `http` と `https` 以外のスキームは拒否されます."
+  ],
+  "p_security_permission": "マニフェストが要求するのはネットワーク権限と AutoJs6 プラグイン権限だけです. AndroidX はエクスポートされない動的レシーバーを保護するパッケージ限定の署名権限を追加しますが, 端末データへのアクセスは付与しません. ストレージ, メディア, カメラ, 位置情報, ユーザー補助, オーバーレイの権限は要求しません.",
+  "h3_plugin_interface": "プラグインインターフェース",
+  "p_plugin_interface": "以下は開発者向けの情報です. ホストは次の識別情報でプラグインを検出して実行します",
+  "p_plugin_scope": "Explorer Action v2 は単一ファイルのメインボタンとメニューに対応し, 文書と親ディレクトリへの一時的な読み取り権限を使用します. AutoJs6 ビルド {{ required_host_build }} 以降が必要です.",
+  "text_link_protocol_compatibility": "Explorer Action 互換性マトリックスを表示",
+  "h3_roadmap": "ロードマップ",
+  "p_roadmap": "計画中の機能と完了状況は ROADMAP.md にチェック可能なリストとして記録され, 受け入れ基準付きのマイルストーンで整理されています: 読書位置の記憶とブックマーク, 設定とフォントの取り込み, 全文検索, 読み上げ, 固定レイアウト, 独立アプリの入口, ホスト契約と `epub` スクリプト API. 未チェックの項目は出荷済みの機能ではなく計画を示します. Issues でのフィードバックを歓迎します.",
+  "text_link_roadmap": "ROADMAP.md を見る",
+  "h3_release_history": "リリース履歴",
+  "h5_for_more_release_history": "その他のリリース履歴",
+  "h3_build": "ビルド",
+  "text_release_build": "Release ビルド",
+  "p_build_params": "ビルド設定は `version.properties` から読み込みます. 現在の最小 SDK は {{ android_min_sdk }}, ターゲット SDK は {{ android_target_sdk }} です",
+  "h3_resource_layout": "ローカライズとドキュメント生成",
+  "p_resource_layout": "`strings.xml` はプラグイン情報とリーダー UI をローカライズし, `plugin_instruction.md` はホストに表示する使用説明を提供します. README と changelog は必ず `.readme/` と `.changelog/` の JSON ソースを編集し, `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません. `py .python/generate_markdown.py --check` でソースと生成物の同期を検証できます",
+  "h3_links": "リンク",
+  "text_link_autojs6_docs": "AutoJs6 ドキュメント",
+  "text_link_format_reference": "EPUB 3.3 仕様",
+  "text_link_readium": "Readium Kotlin Toolkit"
+}
