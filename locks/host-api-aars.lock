@@ -1,0 +1,8 @@
+# AutoJs6 host API AARs consumed by this plugin, staged in libs/ and verified at Gradle configuration time.
+# common-plugin-api.aar: release build of plugin-api/common-plugin-api, the same artifact the HTML Previewer and Markdown Previewer plugins vendor.
+# explorer-action-api.aar: the frozen Explorer Action v1 descriptor AAR audited for protocol v2 (see gradle/explorer-action-compatibility.properties).
+format=1
+common-plugin-api.file=common-plugin-api.aar
+common-plugin-api.sha256=f9ff9676543f45b2ff2b64bb832d377dbd5b7003acf3bb4239e98556c68b246f
+explorer-action-api.file=explorer-action-api.aar
+explorer-action-api.sha256=40836c05b1d5fb532b21b916e57211c472225cf17e4cee0e9f5fc7aa48e21b45
