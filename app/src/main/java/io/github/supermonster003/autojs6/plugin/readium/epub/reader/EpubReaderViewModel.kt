@@ -31,8 +31,10 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Progre
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressThrottle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.OrphanBook
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsController
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsPreferencesStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -252,7 +254,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         searchSession.attach(publication)
         navigatorFactory = EpubNavigatorFactory(publication)
         bookKey = initialKey
-        lastLocator = savedLocator ?: storedProgress?.let { Locator.fromJSON(it.locator) }
+        // Roadmap D26: a voice still reading this book in the background comes back to the reader, which opens where it speaks.
+        val speaking = tts.adoptSpeaking(initialKey)
+        lastLocator = speaking?.location?.value?.locator ?: savedLocator ?: storedProgress?.let { Locator.fromJSON(it.locator) }
 
         viewModelScope.launch {
             _positionCount.value = runCatching { publication.positions().size }.getOrDefault(0)
@@ -485,6 +489,40 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         ImageDecoding.decode(bytes, maxSide)
     }
 
+    /**
+     * Roadmap D26: the read-aloud notification reopened the reader. Takes the parked session and the
+     * book it reads from, shows that book at the spoken sentence and keeps the voice going. False when
+     * nothing is parked (the caller closes the reader).
+     */
+    fun resumeBackground(): Boolean {
+        if (_state.value !is OpenState.Idle) return _state.value is OpenState.Ready
+        val handle = tts.takeParked() ?: return false
+        val orphan = handle.takeOrphan()
+        if (orphan == null) {
+            handle.close()
+            return false
+        }
+        _state.value = OpenState.Opening
+        release()
+        resource = orphan.resource
+        publication = orphan.publication
+        searchSession.attach(orphan.publication)
+        navigatorFactory = EpubNavigatorFactory(orphan.publication)
+        bookKey = handle.session.bookKey
+        lastLocator = handle.session.location.value?.locator
+        viewModelScope.launch {
+            _positionCount.value = runCatching { orphan.publication.positions().size }.getOrDefault(0)
+        }
+        bookKey?.let { key ->
+            viewModelScope.launch {
+                _bookmarks.value = withContext(Dispatchers.IO) { storeMutex.withLock { store.readBookmarks(key) } }
+            }
+        }
+        tts.adopt(handle.session)
+        _state.value = OpenState.Ready
+        return true
+    }
+
     private fun release() {
         tts.stop()
         searchSession.detach()
@@ -499,9 +537,17 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     }
 
     override fun onCleared() {
-        tts.shutdown()
         flushProgress()
         flushPreferences()
+        if (ReaderSettings(getApplication()).readAloudInBackground && tts.status.value == TtsStatus.PLAYING) {
+            // Roadmap D26: the voice goes on without the reader and takes the book with it.
+            val orphan = publication?.let { OrphanBook(it, resource) }
+            publication = null
+            resource = null
+            tts.park(orphan)
+        } else {
+            tts.shutdown()
+        }
         release()
     }
 

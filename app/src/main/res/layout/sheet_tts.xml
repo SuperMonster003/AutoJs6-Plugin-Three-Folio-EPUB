@@ -95,6 +95,53 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Widget.Reader.PreferenceLabel"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/text_read_aloud_sleep_timer" />
+
+            <TextView
+                android:id="@+id/sleep_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textAppearance="?attr/textAppearanceSubtitle2" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/sleep_timer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/keep_screen_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp"
+            android:text="@string/text_read_aloud_keep_screen_on"
+            android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/text_read_aloud_background"
+            android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_read_aloud_background_hint"
+            android:textAppearance="?attr/textAppearanceCaption" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal">
 

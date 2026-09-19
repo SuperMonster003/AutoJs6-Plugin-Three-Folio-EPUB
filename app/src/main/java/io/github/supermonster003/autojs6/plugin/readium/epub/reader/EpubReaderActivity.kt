@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -60,6 +61,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.Searc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.TapZones
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.SleepTimer
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.SleepTimerPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsEvent
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsLocation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsSession
@@ -280,16 +283,26 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             }
         }
 
-        val request = EpubReaderIntentPolicy.resolve(intent)
-        if (request == null) {
+        val resuming = intent.action == ACTION_RESUME_READ_ALOUD
+        val request = if (resuming) null else EpubReaderIntentPolicy.resolve(intent)
+        if (resuming) {
+            // Roadmap D26: the read-aloud notification brings back the book the voice is reading.
+            if (!model.resumeBackground()) {
+                Toast.makeText(this, R.string.text_read_aloud_no_background_session, Toast.LENGTH_SHORT).show()
+                finish()
+                return
+            }
+            chrome.setBookTitle(model.publication?.metadata?.title ?: getString(R.string.text_read_aloud))
+        } else if (request == null) {
             showError(getString(R.string.text_invalid_request))
             return
+        } else {
+            chrome.setBookTitle(request.displayName)
         }
-        chrome.setBookTitle(request.displayName)
         chrome.setImmersive(savedInstanceState?.getBoolean(STATE_IMMERSIVE) ?: false)
 
         val savedLocator = savedInstanceState?.let { BundleCompat.getParcelable(it, STATE_LOCATOR, Locator::class.java) }
-        model.open(request, contentResolver, savedLocator)
+        if (request != null) model.open(request, contentResolver, savedLocator)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.state.collect { state ->
@@ -1130,6 +1143,39 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     internal fun stopReadAloud() = model.tts.stop()
 
+    // Sleep timer, keep-screen-on and background read-aloud (roadmap P3 / D26)
+
+    internal val ttsSleepTimer: StateFlow<SleepTimer> get() = model.tts.sleepTimer
+
+    /** Arms the sleep timer of the running voice; [durationMillis] lets tests shorten a fixed span. */
+    internal fun setSleepTimer(timer: SleepTimer, durationMillis: Long? = SleepTimerPolicy.durationMillis(timer)) =
+        model.tts.armSleepTimer(timer, durationMillis)
+
+    internal val readAloudKeepScreenOn: Boolean get() = settings.readAloudKeepScreenOn
+
+    internal fun setReadAloudKeepScreenOn(keep: Boolean) {
+        settings.readAloudKeepScreenOn = keep
+        applyKeepScreenOn(model.tts.status.value)
+    }
+
+    internal val readAloudInBackground: Boolean get() = settings.readAloudInBackground
+
+    internal fun setReadAloudInBackground(background: Boolean) {
+        settings.readAloudInBackground = background
+    }
+
+    /** Test hook: whether the window currently holds the screen on. */
+    internal val keepsScreenOn: Boolean
+        get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON != 0
+
+    private fun applyKeepScreenOn(status: TtsStatus) {
+        if (status != TtsStatus.IDLE && settings.readAloudKeepScreenOn) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
     internal fun updateTtsPreferences(transform: (AndroidTtsPreferences) -> AndroidTtsPreferences) =
         model.tts.updatePreferences(transform)
 
@@ -1145,6 +1191,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     private fun onTtsStatus(status: TtsStatus) {
         chrome.showReadAloud(status)
+        applyKeepScreenOn(status)
         if (status == TtsStatus.IDLE) {
             ttsFollowJob?.cancel()
             pendingTtsFollow = null
@@ -1201,6 +1248,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         lastTtsEvent = event
         when (event) {
             TtsEvent.Ended -> Toast.makeText(this, R.string.text_read_aloud_ended, Toast.LENGTH_SHORT).show()
+            TtsEvent.SleepTimerEnded -> Toast.makeText(this, R.string.text_read_aloud_sleep_ended, Toast.LENGTH_SHORT).show()
             TtsEvent.NoContent -> Toast.makeText(this, R.string.text_read_aloud_unavailable, Toast.LENGTH_LONG).show()
             TtsEvent.NoEngine ->
                 showTtsDialog(getString(R.string.text_read_aloud_no_engine), R.string.text_read_aloud_open_settings) { openTtsSettings() }
@@ -1247,6 +1295,9 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         internal const val NAVIGATOR_TAG = "readium-epub-navigator"
         internal const val SEARCH_DECORATIONS = "search"
         internal const val TTS_DECORATIONS = "tts"
+
+        /** Roadmap D26: the read-aloud notification reopens the reader on the book the parked voice reads. */
+        internal const val ACTION_RESUME_READ_ALOUD = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.RESUME_READ_ALOUD"
         private const val TTS_FOLLOW_INTERVAL_MILLIS = 1000L
         private const val ACTION_TTS_SETTINGS = "com.android.settings.TTS_SETTINGS"
         private const val STATE_LOCATOR = "locator"

@@ -17,7 +17,9 @@ import com.google.android.material.slider.Slider
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.SheetTtsBinding
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.readium.navigator.media.tts.android.AndroidTtsEngine
 import org.readium.navigator.media.tts.android.AndroidTtsPreferences
@@ -30,8 +32,11 @@ import kotlin.math.roundToInt
  * The read-aloud settings panel (roadmap P3): speed and pitch sliders (committed when the finger
  * lifts, like the reading preferences), the language the engine should speak (automatic = the
  * sentence's own language, which is the book's unless a passage says otherwise) and the voice for
- * that language, plus shortcuts to the system text-to-speech settings and the voice-data installer.
- * Every change applies to the running session at once and is remembered across books.
+ * that language, plus shortcuts to the system text-to-speech settings and the voice-data installer;
+ * the sleep timer (fixed spans or the end of the chapter, with the time left), keep-screen-on and
+ * "continue in the background" (roadmap D26) sit below. Every change applies to the running
+ * session at once; the preferences and the two switches are remembered across books, the timer is
+ * per session.
  */
 @OptIn(ExperimentalReadiumApi::class)
 internal class TtsSheet : BottomSheetDialogFragment() {
@@ -69,12 +74,23 @@ internal class TtsSheet : BottomSheetDialogFragment() {
         }
         binding.systemSettings.setOnClickListener { host.openTtsSettings() }
         binding.installVoice.setOnClickListener { host.installTtsVoice() }
+        fill(binding.sleepTimer, SleepTimer.entries.map(::sleepTimerLabel))
+        binding.sleepTimer.onItemSelectedListener = selection { position -> host.setSleepTimer(SleepTimer.entries[position]) }
+        binding.keepScreenOn.setOnCheckedChangeListener { _, checked -> if (!rendering) host.setReadAloudKeepScreenOn(checked) }
+        binding.background.setOnCheckedChangeListener { _, checked -> if (!rendering) host.setReadAloudInBackground(checked) }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(host.ttsPreferences, host.ttsStatus) { preferences, status -> preferences to status }
-                    .collect { (preferences, status) ->
-                        if (status == TtsStatus.IDLE) dismissAllowingStateLoss() else render(preferences)
-                    }
+                launch {
+                    combine(host.ttsPreferences, host.ttsStatus, host.ttsSleepTimer) { preferences, status, timer -> Triple(preferences, status, timer) }
+                        .collect { (preferences, status, timer) ->
+                            if (status == TtsStatus.IDLE) dismissAllowingStateLoss() else render(preferences, timer)
+                        }
+                }
+                // The time left on a fixed timer ticks down while the sheet is open.
+                while (isActive) {
+                    delay(REMAINING_TICK_MILLIS)
+                    if (_binding != null) renderRemaining()
+                }
             }
         }
     }
@@ -84,9 +100,13 @@ internal class TtsSheet : BottomSheetDialogFragment() {
         super.onDestroyView()
     }
 
-    private fun render(preferences: AndroidTtsPreferences) {
+    private fun render(preferences: AndroidTtsPreferences, timer: SleepTimer) {
         rendering = true
         try {
+            binding.sleepTimer.setSelection(SleepTimer.entries.indexOf(timer), false)
+            renderRemaining()
+            binding.keepScreenOn.isChecked = host.readAloudKeepScreenOn
+            binding.background.isChecked = host.readAloudInBackground
             val speed = preferences.speed ?: DEFAULT_RATE
             val pitch = preferences.pitch ?: DEFAULT_RATE
             binding.speedSlider.value = sliderValue(speed, binding.speedSlider)
@@ -110,6 +130,18 @@ internal class TtsSheet : BottomSheetDialogFragment() {
         } finally {
             rendering = false
         }
+    }
+
+    private fun renderRemaining() {
+        val remaining = host.ttsSession?.sleepTimerRemainingMillis()
+        binding.sleepRemaining.text =
+            remaining?.let { getString(R.string.text_read_aloud_sleep_remaining, SleepTimerPolicy.remainingMinutes(it)) } ?: ""
+    }
+
+    private fun sleepTimerLabel(timer: SleepTimer): String = when (timer) {
+        SleepTimer.OFF -> getString(R.string.text_read_aloud_sleep_off)
+        SleepTimer.END_OF_CHAPTER -> getString(R.string.text_read_aloud_sleep_chapter)
+        else -> getString(R.string.text_read_aloud_sleep_minutes, timer.minutes ?: 0)
     }
 
     /** The language the voice picker is about: the chosen one, else the one the navigator resolved for the book. */
@@ -163,6 +195,7 @@ internal class TtsSheet : BottomSheetDialogFragment() {
         private const val DEFAULT_RATE = 1.0
         private const val MIN_RATE = 0.1
         private const val MAX_RATE = 4.0
+        private const val REMAINING_TICK_MILLIS = 15_000L
 
         fun show(fragmentManager: FragmentManager) {
             if (fragmentManager.findFragmentByTag(TAG) != null) return

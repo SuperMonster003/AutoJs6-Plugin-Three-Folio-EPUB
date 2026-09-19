@@ -56,6 +56,11 @@ internal class TtsController(
     private val _events = MutableSharedFlow<TtsEvent>(extraBufferCapacity = 8)
     val events: SharedFlow<TtsEvent> get() = _events
 
+    private val _sleepTimer = MutableStateFlow(SleepTimer.OFF)
+
+    /** The running session's sleep timer, [SleepTimer.OFF] while idle. */
+    val sleepTimer: StateFlow<SleepTimer> get() = _sleepTimer
+
     private val _preferences = MutableStateFlow(store.read() ?: AndroidTtsPreferences())
 
     /** The global read-aloud preferences; applied to the running session as they change. */
@@ -68,6 +73,9 @@ internal class TtsController(
 
     private var startJob: Job? = null
     private val sessionJobs = ArrayList<Job>()
+
+    /** A book that came back with an adopted session and belongs to nobody else; closed with the session. */
+    private var orphanBook: OrphanBook? = null
 
     private var binder: TtsForegroundService.Binder? = null
     private var bound = false
@@ -106,21 +114,77 @@ internal class TtsController(
                 session.close()
                 return@launch
             }
-            session.stopHandler = { stop() }
-            _session.value = session
-            sessionJobs += scope.launch { session.status.collect { _status.value = it } }
-            sessionJobs += scope.launch { session.location.collect { _location.value = it } }
-            sessionJobs += scope.launch {
-                session.events.collect { event ->
-                    _events.emit(event)
-                    // The end of the book and every failure release the engine at once (roadmap P3).
-                    stop()
-                }
-            }
-            bind()
-            binder?.attach(session)
+            adopt(session)
             session.play()
         }
+    }
+
+    /** Takes [session] as the running one: mirrors its flows, stops on its events, attaches it to the service. */
+    fun adopt(session: TtsSession) {
+        session.stopHandler = { stop() }
+        _session.value = session
+        _status.value = session.status.value
+        sessionJobs += scope.launch { session.status.collect { _status.value = it } }
+        sessionJobs += scope.launch { session.location.collect { _location.value = it } }
+        sessionJobs += scope.launch { session.sleepTimer.collect { _sleepTimer.value = it } }
+        sessionJobs += scope.launch {
+            session.events.collect { event ->
+                _events.emit(event)
+                // The end of the book, the sleep timer and every failure release the engine at once (roadmap P3).
+                stop()
+            }
+        }
+        bind()
+        binder?.attach(session)
+    }
+
+    /**
+     * Roadmap D26: the reader is closing while the voice should go on. Hands the playing session and
+     * [orphan] (the book it reads from, which the reader gives up) to the service; the controller ends
+     * up idle. Anything not playing is stopped instead, and false comes back.
+     */
+    fun park(orphan: OrphanBook?): Boolean {
+        val session = _session.value
+        if (session == null || _status.value != TtsStatus.PLAYING) {
+            orphan?.close()
+            stop()
+            return false
+        }
+        startJob?.cancel()
+        startJob = null
+        sessionJobs.forEach { it.cancel() }
+        sessionJobs.clear()
+        _session.value = null
+        session.stopHandler = null
+        val handle = ReadAloudHandle(session, orphan ?: orphanBook)
+        orphanBook = null
+        val parked = TtsForegroundService.park(handle)
+        if (!parked) handle.close()
+        unbind()
+        _status.value = TtsStatus.IDLE
+        _location.value = null
+        _sleepTimer.value = SleepTimer.OFF
+        return parked
+    }
+
+    /**
+     * Roadmap D26: a voice parked in the background still reads the book with [bookKey]; takes it
+     * back as the running session (its book stays with the controller until the session ends).
+     */
+    fun adoptSpeaking(bookKey: String?): TtsSession? {
+        if (bookKey == null || _status.value != TtsStatus.IDLE) return null
+        val handle = TtsForegroundService.take(bookKey) ?: return null
+        orphanBook = handle.takeOrphan()
+        adopt(handle.session)
+        return handle.session
+    }
+
+    /** Roadmap D26: takes whatever is parked, for a reader reopened from the notification (which shows its book). */
+    fun takeParked(): ReadAloudHandle? = if (_status.value == TtsStatus.IDLE) TtsForegroundService.take(null) else null
+
+    /** Arms the sleep timer of the running session; [durationMillis] lets tests shorten a fixed span. */
+    fun armSleepTimer(timer: SleepTimer, durationMillis: Long? = SleepTimerPolicy.durationMillis(timer)) {
+        _session.value?.armSleepTimer(timer, durationMillis)
     }
 
     private suspend fun fail(event: TtsEvent) {
@@ -150,9 +214,12 @@ internal class TtsController(
             binder?.detach(session)
             session.close()
         }
+        orphanBook?.close()
+        orphanBook = null
         unbind()
         _status.value = TtsStatus.IDLE
         _location.value = null
+        _sleepTimer.value = SleepTimer.OFF
     }
 
     /** The owning view model is going away: the reader closes, so read-aloud stops (roadmap D15). */

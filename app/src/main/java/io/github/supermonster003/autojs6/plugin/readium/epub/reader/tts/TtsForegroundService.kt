@@ -1,5 +1,6 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts
 
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
@@ -16,7 +17,16 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * The read-aloud foreground service (roadmap P3 / D15): a media3 [MediaSessionService] that wraps
@@ -26,6 +36,12 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
  * with the screen off too. The service is not exported: only the reader binds it (through
  * [ACTION_BIND]) and media3 connects to it in-process. It exists only while a session is attached;
  * detaching stops the foreground state, removes the notification and stops the service.
+ *
+ * Roadmap D26: with "continue in the background" on, a closing reader parks its playing session
+ * here together with the book it reads from ([park]); the service then owns both until the book
+ * ends, the sleep timer fires, the notification stops it, or a reader takes the session back
+ * ([take]). Tapping the notification meanwhile reopens the reader on that book
+ * ([EpubReaderActivity.ACTION_RESUME_READ_ALOUD]); the reading position is saved when a parked voice stops.
  */
 @OptIn(UnstableApi::class)
 internal class TtsForegroundService : MediaSessionService() {
@@ -42,6 +58,11 @@ internal class TtsForegroundService : MediaSessionService() {
     private val binder = Binder()
     private var session: TtsSession? = null
     private var mediaSession: MediaSession? = null
+
+    /** The session no reader owns (roadmap D26), with its book. */
+    private var background: ReadAloudHandle? = null
+    private var backgroundJob: Job? = null
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val previousCommand = SessionCommand(ACTION_PREVIOUS, Bundle.EMPTY)
     private val nextCommand = SessionCommand(ACTION_NEXT, Bundle.EMPTY)
@@ -94,6 +115,7 @@ internal class TtsForegroundService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         running = true
         setMediaNotificationProvider(
             DefaultMediaNotificationProvider.Builder(this)
@@ -121,9 +143,59 @@ internal class TtsForegroundService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
 
     override fun onDestroy() {
+        stopBackground()
         session?.let { detach(it) }
+        serviceScope.cancel()
         running = false
+        instance = null
         super.onDestroy()
+    }
+
+    private fun parkSession(handle: ReadAloudHandle): Boolean {
+        if (handle.session.closed) return false
+        attach(handle.session)
+        background = handle
+        handle.session.stopHandler = { stopBackground() }
+        backgroundJob = serviceScope.launch { handle.session.events.collect { stopBackground() } }
+        mediaSession?.setSessionActivity(resumeIntent())
+        return true
+    }
+
+    private fun takeParked(bookKey: String?): ReadAloudHandle? {
+        val handle = background ?: return null
+        if (bookKey != null && handle.session.bookKey != bookKey) return null
+        background = null
+        backgroundJob?.cancel()
+        backgroundJob = null
+        handle.session.stopHandler = null
+        mediaSession?.setSessionActivity(null)
+        return handle
+    }
+
+    /** Ends a parked voice: remembers where it got to, releases the session, the book and the service. */
+    private fun stopBackground() {
+        val handle = background ?: return
+        background = null
+        backgroundJob?.cancel()
+        backgroundJob = null
+        saveProgress(handle.session)
+        detach(handle.session)
+        handle.close()
+    }
+
+    private fun saveProgress(session: TtsSession) {
+        val key = session.bookKey ?: return
+        val locator = session.location.value?.locator ?: return
+        val record = ProgressRecord(locator.toJSON(), System.currentTimeMillis(), locator.locations.totalProgression)
+        val store = BookDataStore.forFilesDirectory(filesDir)
+        CoroutineScope(Dispatchers.IO).launch { runCatching { store.writeProgress(key, record) } }
+    }
+
+    private fun resumeIntent(): PendingIntent {
+        val intent = Intent(this, EpubReaderActivity::class.java)
+            .setAction(EpubReaderActivity.ACTION_RESUME_READ_ALOUD)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun attach(session: TtsSession) {
@@ -181,5 +253,22 @@ internal class TtsForegroundService : MediaSessionService() {
         @Volatile
         var running: Boolean = false
             private set
+
+        @Volatile
+        private var instance: TtsForegroundService? = null
+
+        /** Roadmap D26: parks [handle] with the running service; false (and nothing owned) when no service runs. */
+        fun park(handle: ReadAloudHandle): Boolean = instance?.parkSession(handle) ?: false
+
+        /** Roadmap D26: takes the parked session back when it reads the book with [bookKey] (null = whichever is parked). */
+        fun take(bookKey: String?): ReadAloudHandle? = instance?.takeParked(bookKey)
+
+        /** Test hook: the session parked in the background, if any. */
+        val parked: TtsSession? get() = instance?.background?.session
+
+        /** Test hook: ends a parked voice as the notification's stop would. */
+        fun stopParked() {
+            instance?.stopBackground()
+        }
     }
 }

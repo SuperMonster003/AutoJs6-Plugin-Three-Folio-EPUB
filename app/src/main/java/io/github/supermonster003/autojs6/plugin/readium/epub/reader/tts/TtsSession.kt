@@ -1,14 +1,18 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts
 
+import android.os.SystemClock
 import androidx.media3.common.Player
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.readium.navigator.media.common.MediaNavigator
 import org.readium.navigator.media.tts.AndroidTtsNavigator
@@ -39,6 +43,9 @@ internal sealed class TtsEvent {
 
     /** The last sentence of the book was spoken. */
     object Ended : TtsEvent()
+
+    /** The sleep timer ran out (or the chapter it was set for ended), so read-aloud stops. */
+    object SleepTimerEnded : TtsEvent()
 
     /** The engine knows [language] but its voice data is not installed. */
     data class MissingVoiceData(val language: String) : TtsEvent()
@@ -87,6 +94,47 @@ internal class TtsSession private constructor(
 
     /** The voices of the engine (roadmap P3 language and voice picker). */
     val voices: List<VoiceOption> get() = navigator.voices.map { it.toOption() }
+
+    private val _sleepTimer = MutableStateFlow(SleepTimer.OFF)
+
+    /** The armed sleep timer (roadmap P3); back to [SleepTimer.OFF] once it fired. */
+    val sleepTimer: StateFlow<SleepTimer> get() = _sleepTimer
+
+    private var sleepTimerArmedAt = 0L
+    private var sleepTimerDurationMillis: Long? = null
+    private var sleepTimerJob: Job? = null
+
+    /** Milliseconds left on a fixed-span timer, null when none is armed. */
+    fun sleepTimerRemainingMillis(): Long? {
+        val duration = sleepTimerDurationMillis ?: return null
+        if (_sleepTimer.value == SleepTimer.OFF) return null
+        return SleepTimerPolicy.remainingMillis(sleepTimerArmedAt, duration, SystemClock.uptimeMillis())
+    }
+
+    /**
+     * Arms [timer] (replacing any earlier one): a fixed span counts down from now ([durationMillis]
+     * lets tests shorten it), the end of the chapter waits for the voice to enter another resource.
+     * Firing emits [TtsEvent.SleepTimerEnded]; the owner stops the session on that event.
+     */
+    fun armSleepTimer(timer: SleepTimer, durationMillis: Long? = SleepTimerPolicy.durationMillis(timer)) {
+        sleepTimerJob?.cancel()
+        sleepTimerJob = null
+        _sleepTimer.value = timer
+        sleepTimerArmedAt = SystemClock.uptimeMillis()
+        sleepTimerDurationMillis = durationMillis
+        if (closed || timer == SleepTimer.OFF) return
+        sleepTimerJob = scope.launch {
+            if (timer == SleepTimer.END_OF_CHAPTER) {
+                val armedHref = _location.value?.href
+                _location.first { SleepTimerPolicy.chapterEnded(timer, armedHref, it?.href) }
+            } else {
+                delay(durationMillis ?: return@launch)
+            }
+            sleepTimerJob = null
+            _sleepTimer.value = SleepTimer.OFF
+            _events.tryEmit(TtsEvent.SleepTimerEnded)
+        }
+    }
 
     /** The settings the navigator resolved from the preferences and the book. */
     val settings: StateFlow<AndroidTtsSettings> get() = navigator.settings
