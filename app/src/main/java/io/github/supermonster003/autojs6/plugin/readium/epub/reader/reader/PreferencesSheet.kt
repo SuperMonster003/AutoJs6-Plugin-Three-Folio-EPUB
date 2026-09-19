@@ -32,6 +32,7 @@ import org.readium.r2.navigator.epub.EpubPreferences
 import org.readium.r2.navigator.epub.EpubSettings
 import org.readium.r2.navigator.preferences.ColumnCount
 import org.readium.r2.navigator.preferences.FontFamily
+import org.readium.r2.navigator.preferences.Spread
 import org.readium.r2.navigator.preferences.TextAlign
 import org.readium.r2.shared.ExperimentalReadiumApi
 import kotlin.math.roundToInt
@@ -51,6 +52,9 @@ import kotlin.math.roundToInt
  * Text direction (P2.3) is a three-way choice: automatic (Readium turns CJK books with a
  * right-to-left page progression vertical), horizontal or vertical. Readium cannot paginate
  * vertical text, so the page layout group is disabled and a hint explains it while it is vertical.
+ *
+ * Fixed layouts (P2.4) hide the page layout and every text preference; they get the spread choice
+ * instead (automatic = two pages in landscape, resolved by the Activity, or single / two pages).
  */
 @OptIn(ExperimentalReadiumApi::class)
 internal class PreferencesSheet : BottomSheetDialogFragment() {
@@ -100,6 +104,15 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
         }
         overflowGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked && !rendering) host.editPreferences { it.copy(scroll = checkedId == R.id.overflow_scrolled) }
+        }
+        spreadGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || rendering) return@addOnButtonCheckedListener
+            val spread = when (checkedId) {
+                R.id.spread_never -> Spread.NEVER
+                R.id.spread_always -> Spread.ALWAYS
+                else -> null
+            }
+            host.editPreferences { it.copy(spread = spread) }
         }
         textDirectionGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked || rendering) return@addOnButtonCheckedListener
@@ -212,10 +225,19 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
             val vertical = settings?.verticalText ?: state.epub.verticalText ?: false
             val scroll = settings?.scroll ?: state.epub.scroll ?: vertical
             overflowGroup.check(if (scroll) R.id.overflow_scrolled else R.id.overflow_paged)
-            setGroupEnabled(overflowGroup, !fixed && !vertical)
+            setGroupEnabled(overflowGroup, !vertical)
+            overflowLabel.isVisible = !fixed
+            overflowGroup.isVisible = !fixed
 
             reflowableGroup.isVisible = !fixed
-            fixedLayoutHint.isVisible = fixed
+            fixedLayoutGroup.isVisible = fixed
+            spreadGroup.check(
+                when (state.epub.spread) {
+                    Spread.NEVER -> R.id.spread_never
+                    Spread.ALWAYS -> R.id.spread_always
+                    else -> R.id.spread_auto
+                },
+            )
             textDirectionGroup.check(
                 when (state.epub.verticalText) {
                     null -> R.id.text_direction_auto

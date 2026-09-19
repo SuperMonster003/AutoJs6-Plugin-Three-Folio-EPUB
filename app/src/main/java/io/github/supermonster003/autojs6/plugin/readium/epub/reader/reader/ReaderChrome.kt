@@ -97,7 +97,9 @@ internal class ReaderChrome(
         binding.progressBar.max = PROGRESS_SCALE
         binding.progressBar.progress = snapshot.percent * PROGRESS_SCALE / 100
         val resources = activity.resources
-        binding.progressText.text = if (snapshot.hasPosition) {
+        binding.progressText.text = if (snapshot.hasPosition && snapshot.pages) {
+            resources.getString(R.string.text_progress_page_of, snapshot.position, snapshot.positionCount)
+        } else if (snapshot.hasPosition) {
             resources.getString(
                 R.string.text_progress_position_and_percent,
                 snapshot.position,

@@ -2,6 +2,7 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -52,6 +53,7 @@ import org.readium.r2.navigator.input.InputListener
 import org.readium.r2.navigator.input.TapEvent
 import org.readium.r2.navigator.preferences.FontFamily
 import org.readium.r2.navigator.preferences.ReadingProgression
+import org.readium.r2.navigator.preferences.Spread
 import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Layout
 import org.readium.r2.shared.publication.Link
@@ -197,7 +199,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     private fun fragmentFactory(factory: EpubNavigatorFactory) = factory.createFragmentFactory(
         initialLocator = model.lastLocator,
-        initialPreferences = model.preferences.value.effective(hostDarkMode),
+        initialPreferences = effectivePreferences(model.preferences.value),
         listener = this,
         paginationListener = paginationListener,
         configuration = navigatorConfiguration(model.fonts.value),
@@ -232,7 +234,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             fragment.addInputListener(inputListener)
             // A retained navigator keeps the preferences it last received; the host's night mode
             // may have changed since, so hand it the current effective set once.
-            fragment.submitPreferences(model.preferences.value.effective(hostDarkMode))
+            fragment.submitPreferences(effectivePreferences(model.preferences.value))
             locatorJob?.cancel()
             locatorJob = lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -249,15 +251,32 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         val publication = model.publication ?: return
         chrome.setChapterTitle(locator.title ?: TocSheet.chapterTitle(publication, locator.href.toString()))
         chrome.showProgress(
-            ReaderProgress.snapshot(locator.locations.position, positionCount, locator.locations.totalProgression),
+            ReaderProgress.snapshot(locator.locations.position, positionCount, locator.locations.totalProgression, fixedLayout),
         )
     }
 
     /** Every preference change: recolour the chrome, hand the navigator the effective set, refresh the menu. */
     private fun applyPreferences(state: ReaderPreferencesState) {
         chrome.applyTheme(state.resolvedTheme(hostDarkMode))
-        navigator?.takeIf { it.isAdded }?.submitPreferences(state.effective(hostDarkMode))
+        navigator?.takeIf { it.isAdded }?.submitPreferences(effectivePreferences(state))
         invalidateOptionsMenu()
+    }
+
+    /**
+     * The preferences the navigator gets: the theme resolved against the host, and for fixed
+     * layouts an automatic spread resolved against the orientation (two pages in landscape), as
+     * Readium 3.4.0 has no automatic spread of its own. Reflowable books keep the spread unset.
+     */
+    private fun effectivePreferences(state: ReaderPreferencesState): EpubPreferences =
+        state.effective(hostDarkMode, autoSpread = if (fixedLayout) (if (landscape) Spread.ALWAYS else Spread.NEVER) else null)
+
+    private val landscape: Boolean
+        get() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    /** The manifest keeps the Activity across rotations, so the automatic spread is re-resolved here. */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (fixedLayout) applyPreferences(model.preferences.value)
     }
 
     private fun perform(action: PageTurnAction) {
@@ -338,7 +357,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
         menu.findItem(R.id.action_preferences)?.isVisible = ready
         menu.findItem(R.id.action_scroll_mode)?.apply {
-            isVisible = ready
+            isVisible = ready && !fixedLayout
             isChecked = scrollMode
         }
         menu.findItem(R.id.action_volume_keys_turn_pages)?.apply {

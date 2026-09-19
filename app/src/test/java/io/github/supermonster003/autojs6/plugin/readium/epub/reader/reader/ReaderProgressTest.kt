@@ -39,6 +39,13 @@ class ReaderProgressTest {
     }
 
     @Test
+    fun fixedLayoutsFlagTheirPositionsAsPages() {
+        assertEquals(ProgressSnapshot(2, 6, 20, pages = true), ReaderProgress.snapshot(2, 6, 0.2, fixedLayout = true))
+        assertFalse(ReaderProgress.snapshot(2, 6, 0.2).pages)
+        assertFalse(ReaderProgress.snapshot(null, 0, 0.2, fixedLayout = true).hasPosition)
+    }
+
+    @Test
     fun valuesAreClampedIntoRange() {
         assertEquals(100, ReaderProgress.snapshot(null, 0, 1.7).percent)
         assertEquals(0, ReaderProgress.snapshot(null, 0, -0.2).percent)
