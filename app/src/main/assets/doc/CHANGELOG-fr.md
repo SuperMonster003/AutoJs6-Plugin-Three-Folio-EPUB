@@ -22,4 +22,5 @@
 * `Fonctionnalité` Interface, instructions, README et changelog en 10 langues
 * `Correctif` Avertissements de lecture SDK XML v4 avec AGP 9.1 et contrôles d'alignement natif des APK déclenchés par erreur lors de l'assemblage des tests unitaires JVM, avec les plugins de compilation partagés 1.8.3
 * `Correctif` Un échec d'écriture de la progression (dossier du livre supprimé, stockage non inscriptible) ne fait plus planter le lecteur ; cet enregistrement est perdu et la lecture continue
+* `Correctif` Le lecteur ne meurt plus avec l'hôte lorsque AutoJs6 est arrêté ou mis à jour pendant la lecture de son fournisseur de réglages ; cette lecture échoue simplement et la langue / le mode nuit de l'hôte ne sont pas appliqués
 * `Dépendance` Ajout de Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)

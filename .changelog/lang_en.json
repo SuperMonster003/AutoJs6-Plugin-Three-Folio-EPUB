@@ -28,7 +28,8 @@
       ],
       "fix": [
         "SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3",
-        "A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues"
+        "A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues",
+        "The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied"
       ]
     }
   }

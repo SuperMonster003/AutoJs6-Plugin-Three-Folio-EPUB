@@ -22,12 +22,15 @@ internal data class HostAppearance(val languageTag: String, val darkMode: Boolea
     }
 
     companion object {
-        // AutoJs6HostSettingsContract v1; independent of the Explorer Action protocol.
+        // AutoJs6HostSettingsContract v1; independent of the Explorer Action protocol. The client
+        // is unstable on purpose: a stable provider connection makes Android kill the reader
+        // together with the host when the host is stopped or updated during the call (seen on API
+        // 28 while another session reinstalled the host); an unstable one only fails the call.
         fun read(context: Context): HostAppearance? = runCatching {
-            val result = context.contentResolver.call(
+            val client = context.contentResolver.acquireUnstableContentProviderClient(
                 "content://org.autojs.autojs6.plugin.settings".toUri(),
-                "getSettings", null, null,
             ) ?: return null
+            val result = client.use { it.call("getSettings", null, null) } ?: return null
             fromBundle(result)
         }.getOrNull()
 

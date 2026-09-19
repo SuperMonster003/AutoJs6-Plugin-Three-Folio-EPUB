@@ -185,6 +185,7 @@ _2026/09/19_
 - `新增` 界面, 说明, README 与更新日志提供 10 种语言
 - `修复` AGP 9.1 构建时的 SDK XML v4 解析警告及 JVM 单元测试组装任务误触发 APK 原生库对齐检查的问题 (共享构建插件 1.8.3)
 - `修复` 阅读进度写入失败 (书籍目录被移除, 存储不可写) 不再让阅读器崩溃, 仅丢失该条记录并继续阅读
+- `修复` 宿主 AutoJs6 在阅读器读取其设置提供器时被停止或更新, 不再连带杀死阅读器; 该次读取只是失败, 不套用宿主的语言 / 夜间模式
 - `依赖` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 
 ##### 更多发行历史可参阅
