@@ -2,16 +2,24 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
 import android.app.Application
 import android.content.ContentResolver
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpenError
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpener
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressThrottle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
@@ -62,7 +70,9 @@ internal sealed class OpenState {
  *
  * It also owns the global reading preferences (roadmap P2.1 / D14): loaded from
  * `reader-preferences.json` before the book opens, edited in place by the panel and the menu, and
- * written back atomically after a short debounce (or from [flushPreferences] on pause).
+ * written back atomically after a short debounce (or from [flushPreferences] on pause), and the
+ * imported fonts (roadmap P2.2): the catalog is read once, served to the book through
+ * [FontsContainer], and updated by [importFont] / [deleteFont].
  *
  * The publication lives only in memory: after process death the Activity reopens the book from its
  * Intent and the saved locator instead of restoring fragments.
@@ -103,6 +113,13 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     private var preferencesDirty = false
     private var delayedPreferencesFlush: Job? = null
+
+    private val fontStore = FontStore.forFilesDirectory(application.filesDir)
+    private val fontsMutex = Mutex()
+    private val _fonts = MutableStateFlow(fontStore.read())
+
+    /** The imported fonts (roadmap P2.2); the Activity rebuilds the navigator when this changes. */
+    val fonts: StateFlow<FontCatalog> get() = _fonts
 
     init {
         // The first run after the pre-P2.1 builds adopts the old scroll toggle so an update keeps
@@ -175,7 +192,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         }
 
         val resource = PfdResource(descriptor, request.displayName)
-        val opened = withTimeoutOrNull(OPEN_TIMEOUT_MILLIS) { BookOpener(getApplication()).open(resource) }
+        val opened = withTimeoutOrNull(OPEN_TIMEOUT_MILLIS) {
+            BookOpener(getApplication()).open(resource, FontsContainer(fontStore))
+        }
         if (opened == null) {
             resource.close()
             return OpenState.Failed(OpenFailure.TimedOut)
@@ -299,6 +318,45 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         }
     }
 
+    // ---- Imported fonts (roadmap P2.2) ----
+
+    /**
+     * Copies the document behind [uri] into the font store and refreshes [fonts]. The document's
+     * display name only serves as an extension pre-check and as the fallback display name; the
+     * store decides on the file's own signature.
+     */
+    suspend fun importFont(contentResolver: ContentResolver, uri: Uri): FontImportResult = withContext(Dispatchers.IO) {
+        fontsMutex.withLock {
+            val hint = runCatching { displayName(contentResolver, uri) }.getOrNull()
+            val extension = hint?.substringAfterLast('.', "")?.lowercase()
+            val result = if (!extension.isNullOrEmpty() && extension !in FONT_EXTENSIONS) {
+                FontImportResult.Rejected(FontInspection.Rejected.NotAFont)
+            } else {
+                runCatching {
+                    contentResolver.openInputStream(uri)?.use { fontStore.import(it, hint) } ?: FontImportResult.Failed
+                }.getOrDefault(FontImportResult.Failed)
+            }
+            _fonts.value = fontStore.read()
+            result
+        }
+    }
+
+    /** Deletes [entry]; a preference pointing at it goes back to the publisher's font. */
+    suspend fun deleteFont(entry: FontEntry): Boolean {
+        val deleted = withContext(Dispatchers.IO) {
+            fontsMutex.withLock { fontStore.delete(entry.sha256).also { _fonts.value = fontStore.read() } }
+        }
+        if (deleted && _preferences.value.epub.fontFamily?.name == entry.family) {
+            editPreferences { it.copy(fontFamily = null) }
+        }
+        return deleted
+    }
+
+    private fun displayName(contentResolver: ContentResolver, uri: Uri): String? =
+        contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) cursor.getString(0) else null
+        }
+
     private fun release() {
         navigatorFactory = null
         publication?.close()
@@ -327,5 +385,8 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     companion object {
         const val OPEN_TIMEOUT_MILLIS = 60_000L
         const val PREFERENCES_FLUSH_DELAY_MILLIS = 400L
+
+        /** A picked document with another extension is refused before it is read. */
+        private val FONT_EXTENSIONS = setOf("ttf", "otf")
     }
 }

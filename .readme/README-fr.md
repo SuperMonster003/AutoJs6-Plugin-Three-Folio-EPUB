@@ -43,7 +43,7 @@ Lecture en un geste : ouvrez un fichier `.epub` directement depuis le gestionnai
 
 Le plugin lit le livre directement à travers le descripteur de fichier temporaire accordé par l'hôte. Il ne reçoit jamais de chemin du système de fichiers, ne copie jamais le livre et ne l'extrait jamais vers le stockage.
 
-> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium, propose une table des matières, mémorise la position de lecture de chaque livre, offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif, et dispose d'un panneau de préférences pour la taille du texte, la police, les espacements, l'alignement, les colonnes et les thèmes, qui peut suivre le mode nuit de l'hôte. Les signets, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'import de polices, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
+> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium, propose une table des matières, mémorise la position de lecture de chaque livre, offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif, et dispose d'un panneau de préférences pour la taille du texte, la police, les espacements, l'alignement, les colonnes et les thèmes, qui peut suivre le mode nuit de l'hôte, et importe vos propres polices TTF ou OTF. Les signets, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
 
 ******
 
@@ -57,6 +57,7 @@ Le plugin lit le livre directement à travers le descripteur de fichier temporai
 - Mémoire de la position de lecture : la dernière position de chaque livre est stockée dans l'espace privé du plugin sous une empreinte de son contenu, si bien que le même livre reprend même après un déplacement ou un renommage ; `Reprendre au début` l'efface.
 - Interface de la liseuse : titre et chapitre dans la barre d'outils, barre de progression avec position et pourcentage, mode immersif par un appui au centre, zones d'appui et touches de volume pour tourner les pages, mode défilement ou paginé.
 - Préférences de lecture : un panneau inférieur règle la taille du texte, la police, l'interligne, les marges, l'espacement des paragraphes, l'alignement, la césure, les styles de l'éditeur, le nombre de colonnes et la mise en page paginée ou défilante ; les changements s'appliquent immédiatement et sont mémorisés pour chaque livre. Thèmes clair, sépia et sombre, ou suivi du mode nuit de l'hôte ; la barre d'outils et les barres système prennent les couleurs du thème.
+- Import de polices : choisissez des fichiers TTF ou OTF avec le sélecteur de documents du système ; ils sont validés, stockés en privé dans le plugin (jusqu'à 10 polices de 20 Mo chacune), listés dans le panneau de préférences à côté des polices intégrées, fournis à chaque livre et supprimables depuis le même panneau.
 - Liens externes : toucher un lien `http` ou `https` affiche l'adresse complète et n'ouvre le navigateur système qu'après confirmation.
 - Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.
 - Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.
@@ -100,7 +101,7 @@ La dernière position de chaque livre est enregistrée dans l'espace privé du p
 
 #### Puis-je changer la police, la taille du texte ou le thème ?
 
-Oui. Ouvrez le panneau de préférences depuis la barre d'outils pour régler la taille du texte, la police (valeur de l'éditeur, avec ou sans empattement, chasse fixe ou les polices d'accessibilité fournies avec Readium), l'interligne, les marges, les espacements, l'alignement, les colonnes et le thème (clair, sépia, sombre ou suivre l'hôte). L'import de vos propres fichiers de polices arrivera avec un jalon ultérieur.
+Oui. Ouvrez le panneau de préférences depuis la barre d'outils pour régler la taille du texte, la police (valeur de l'éditeur, avec ou sans empattement, chasse fixe ou les polices d'accessibilité fournies avec Readium), l'interligne, les marges, les espacements, l'alignement, les colonnes et le thème (clair, sépia, sombre ou suivre l'hôte). Touchez `Importer une police` dans le panneau pour ajouter vos propres fichiers TTF ou OTF ; ils sont stockés en privé dans le plugin et se suppriment via `Gérer les polices`.
 
 #### Ce plugin envoie-t-il mes livres quelque part ?
 

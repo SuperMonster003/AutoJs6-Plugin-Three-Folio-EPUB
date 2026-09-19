@@ -2,11 +2,13 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
@@ -16,7 +18,12 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivityEpubReaderBinding
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontLimits
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
@@ -26,9 +33,16 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Prefe
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderChrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderProgress
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.epub.EpubNavigatorFragment
@@ -36,6 +50,7 @@ import org.readium.r2.navigator.epub.EpubPreferences
 import org.readium.r2.navigator.epub.EpubSettings
 import org.readium.r2.navigator.input.InputListener
 import org.readium.r2.navigator.input.TapEvent
+import org.readium.r2.navigator.preferences.FontFamily
 import org.readium.r2.navigator.preferences.ReadingProgression
 import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Layout
@@ -47,8 +62,8 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * Explorer Action execution entry (roadmap P1.2): validates the v2 envelope, lets the view model
  * open the book through the granted descriptor, and hosts Readium's [EpubNavigatorFragment] with
  * the reader chrome (title and chapter, progress bar, immersive mode), the table of contents,
- * scroll or paginated overflow, tap zones and volume keys, progress memory (P1.3) and the reading
- * preferences panel with its themes (P2.1).
+ * scroll or paginated overflow, tap zones and volume keys, progress memory (P1.3), the reading
+ * preferences panel with its themes (P2.1) and imported fonts (P2.2).
  */
 @OptIn(ExperimentalReadiumApi::class)
 class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
@@ -74,6 +89,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         private set
 
     private var pendingJump: Link? = null
+
+    /** The navigator whose settings the panel follows; null between a removal and its replacement. */
+    private val activeNavigator = MutableStateFlow<EpubNavigatorFragment?>(null)
+    private var locatorJob: Job? = null
+
+    private val fontPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) importFont(uri)
+    }
 
     private val paginationListener = object : EpubNavigatorFragment.PaginationListener {
         // Only reached once the navigator is in its ready state (reflowable layouts).
@@ -177,7 +200,17 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         initialPreferences = model.preferences.value.effective(hostDarkMode),
         listener = this,
         paginationListener = paginationListener,
+        configuration = navigatorConfiguration(model.fonts.value),
     )
+
+    /** Every imported font becomes a `@font-face` served from the book's package host (see [FontsContainer]). */
+    private fun navigatorConfiguration(catalog: FontCatalog) = EpubNavigatorFragment.Configuration().apply {
+        for (entry in catalog.fonts) {
+            addFontFamilyDeclaration(FontFamily(entry.family)) {
+                addFontFace { addSource(FontsContainer.urlFor(entry)) }
+            }
+        }
+    }
 
     private fun showReader() {
         val publication = model.publication ?: return
@@ -194,12 +227,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         val fragment = navigator ?: return
         if (observedNavigator !== fragment) {
             observedNavigator = fragment
+            activeNavigator.value = fragment
             navigatorReady = false
             fragment.addInputListener(inputListener)
             // A retained navigator keeps the preferences it last received; the host's night mode
             // may have changed since, so hand it the current effective set once.
             fragment.submitPreferences(model.preferences.value.effective(hostDarkMode))
-            lifecycleScope.launch {
+            locatorJob?.cancel()
+            locatorJob = lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     combine(fragment.currentLocator, model.positionCount) { locator, count -> locator to count }
                         .collect { (locator, count) -> onLocator(locator, count) }
@@ -342,7 +377,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     /** The overflow the navigator currently uses, or the stored preference before it exists. */
     private val scrollMode: Boolean
-        get() = navigatorSettings?.value?.scroll ?: (model.preferences.value.epub.scroll ?: false)
+        get() = currentSettings?.scroll ?: (model.preferences.value.epub.scroll ?: false)
 
     internal fun setScrollMode(enabled: Boolean) {
         model.editPreferences { it.copy(scroll = enabled) }
@@ -357,8 +392,13 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     internal val preferencesState: StateFlow<ReaderPreferencesState> get() = model.preferences
 
-    internal val navigatorSettings: StateFlow<EpubSettings>?
-        get() = navigator?.takeIf { it.isAdded }?.settings
+    /** The settings of whichever navigator is current, null while none is attached (survives a rebuild). */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    internal val navigatorSettings: Flow<EpubSettings?> =
+        activeNavigator.flatMapLatest { fragment -> fragment?.settings ?: flowOf<EpubSettings?>(null) }
+
+    internal val currentSettings: EpubSettings?
+        get() = navigator?.takeIf { it.isAdded }?.settings?.value
 
     internal val fixedLayout: Boolean get() = model.publication?.metadata?.layout == Layout.FIXED
 
@@ -367,6 +407,74 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     internal fun setThemeMode(mode: ThemeMode) = model.setThemeMode(mode)
 
     internal fun resetPreferences() = model.resetPreferences()
+
+    // Imported fonts (roadmap P2.2)
+
+    internal val fontCatalog: StateFlow<FontCatalog> get() = model.fonts
+
+    /** Opens the system document picker; the picked document lands in [importFont]. */
+    internal fun pickFont() {
+        try {
+            fontPicker.launch(FONT_MIME_TYPES)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.text_no_file_picker, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Stores the font behind [uri], selects it, and rebuilds the navigator so its declaration is injected. */
+    internal fun importFont(uri: Uri) {
+        lifecycleScope.launch {
+            val result = model.importFont(contentResolver, uri)
+            when (result) {
+                is FontImportResult.Imported -> {
+                    model.editPreferences { it.copy(fontFamily = FontFamily(result.entry.family)) }
+                    recreateNavigator()
+                }
+                is FontImportResult.AlreadyImported ->
+                    model.editPreferences { it.copy(fontFamily = FontFamily(result.entry.family)) }
+                else -> Unit
+            }
+            Toast.makeText(this@EpubReaderActivity, describe(result), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    internal fun deleteFont(entry: FontEntry) {
+        lifecycleScope.launch {
+            if (!model.deleteFont(entry)) return@launch
+            recreateNavigator()
+            Toast.makeText(this@EpubReaderActivity, R.string.text_font_deleted, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun describe(result: FontImportResult): String = when (result) {
+        is FontImportResult.Imported -> getString(R.string.text_font_imported, result.entry.displayName)
+        is FontImportResult.AlreadyImported -> getString(R.string.text_font_already_imported, result.entry.displayName)
+        is FontImportResult.Rejected -> when (result.reason) {
+            FontInspection.Rejected.NotAFont -> getString(R.string.text_font_import_failed_not_a_font)
+            FontInspection.Rejected.Collection -> getString(R.string.text_font_import_failed_collection)
+            FontInspection.Rejected.Truncated -> getString(R.string.text_font_import_failed_truncated)
+        }
+        is FontImportResult.TooLarge -> getString(R.string.text_font_import_failed_too_large, FontLimits.MAX_BYTES_MEGABYTES)
+        is FontImportResult.TooMany -> getString(R.string.text_font_import_failed_too_many, result.maxFonts)
+        FontImportResult.Failed -> getString(R.string.text_font_import_failed_read)
+    }
+
+    /**
+     * Font declarations are fixed when a navigator is created (Readium injects them into every
+     * page), so a changed catalog needs a new fragment; it starts where the old one last reported.
+     */
+    private fun recreateNavigator() {
+        val fragment = navigator ?: return
+        model.flushProgress()
+        activeNavigator.value = null
+        locatorJob?.cancel()
+        locatorJob = null
+        observedNavigator = null
+        navigatorReady = false
+        pendingJump = null
+        supportFragmentManager.commitNow { remove(fragment) }
+        if (model.state.value is OpenState.Ready) showReader()
+    }
 
     private fun showTableOfContents() {
         val publication = model.publication ?: return
@@ -432,5 +540,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         internal const val NAVIGATOR_TAG = "readium-epub-navigator"
         private const val STATE_LOCATOR = "locator"
         private const val STATE_IMMERSIVE = "immersive"
+
+        // Font MIME types differ between providers; the wildcard keeps unlabeled files pickable, the signature decides.
+        private val FONT_MIME_TYPES = arrayOf(
+            "font/ttf", "font/otf", "application/x-font-ttf", "application/x-font-opentype", "application/font-sfnt", "*/*",
+        )
     }
 }

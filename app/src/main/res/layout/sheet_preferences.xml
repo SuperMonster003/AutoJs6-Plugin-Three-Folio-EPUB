@@ -157,6 +157,30 @@
                 android:layout_height="48dp"
                 android:minHeight="48dp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/import_font_button"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/text_preferences_import_font" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/manage_fonts_button"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_preferences_manage_fonts" />
+            </LinearLayout>
+
             <TextView
                 style="@style/Widget.Reader.PreferenceLabel"
                 android:text="@string/text_preferences_page_margins" />

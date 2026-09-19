@@ -43,7 +43,7 @@ Lectura con un toque: abra un archivo `.epub` directamente desde el administrado
 
 El complemento lee el libro directamente a través del descriptor de archivo temporal concedido por el anfitrión. Nunca recibe una ruta del sistema de archivos, nunca copia el libro y nunca lo extrae al almacenamiento.
 
-> Etapa actual (compilación de desarrollo 1.0.0): el lector abre el libro con la configuración predeterminada de Readium, ofrece un índice, recuerda la posición de lectura de cada libro, proporciona modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo, y cuenta con un panel de preferencias para el tamaño del texto, la fuente, los espaciados, la alineación, las columnas y los temas, que puede seguir el modo nocturno del host. Los marcadores, la búsqueda de texto completo, la lectura en voz alta, el diseño fijo, la importación de fuentes, la entrada independiente y la API de scripts `epub` están planificados en ROADMAP.md y aún no están disponibles.
+> Etapa actual (compilación de desarrollo 1.0.0): el lector abre el libro con la configuración predeterminada de Readium, ofrece un índice, recuerda la posición de lectura de cada libro, proporciona modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo, y cuenta con un panel de preferencias para el tamaño del texto, la fuente, los espaciados, la alineación, las columnas y los temas, que puede seguir el modo nocturno del host, e importa sus propias fuentes TTF u OTF. Los marcadores, la búsqueda de texto completo, la lectura en voz alta, el diseño fijo, la entrada independiente y la API de scripts `epub` están planificados en ROADMAP.md y aún no están disponibles.
 
 ******
 
@@ -57,6 +57,7 @@ El complemento lee el libro directamente a través del descriptor de archivo tem
 - Memoria de la posición de lectura: la última posición de cada libro se guarda en el almacenamiento privado del complemento bajo una huella de su contenido, por lo que el mismo libro se reanuda incluso después de moverlo o renombrarlo; `Empezar desde el principio` la borra.
 - Interfaz del lector: título y capítulo en la barra de herramientas, barra de progreso con posición y porcentaje, modo inmersivo con un toque en el centro, zonas de toque y teclas de volumen para pasar páginas, y modo de desplazamiento o paginado.
 - Preferencias de lectura: un panel inferior ajusta el tamaño del texto, la fuente, el interlineado, los márgenes, el espaciado de párrafos, la alineación, los guiones, los estilos del editor, el número de columnas y el diseño paginado o de desplazamiento; los cambios se aplican de inmediato y se recuerdan para cada libro. Temas claro, sepia y oscuro, o seguir el modo nocturno del host; la barra de herramientas y las barras del sistema adoptan los colores del tema.
+- Importación de fuentes: elija archivos TTF u OTF con el selector de documentos del sistema; se validan, se guardan de forma privada en el complemento (hasta 10 fuentes de 20 MB cada una), se listan en el panel de preferencias junto a las fuentes integradas, se sirven a todos los libros y se eliminan desde el mismo panel.
 - Enlaces externos: al tocar un enlace `http` o `https` se muestra la dirección completa y el navegador del sistema solo se abre tras confirmar.
 - Integración con el anfitrión: los menús y diálogos siguen el idioma y el modo oscuro de AutoJs6; el sobre de Explorer Action se valida estrictamente antes de abrir cualquier contenido.
 - Multilingüe: interfaz, instrucciones, README y changelog disponibles en 10 idiomas.
@@ -100,7 +101,7 @@ La última posición de cada libro se guarda en el almacenamiento privado del co
 
 #### ¿Puedo cambiar la fuente, el tamaño del texto o el tema?
 
-Sí. Abra el panel de preferencias desde la barra de herramientas para ajustar el tamaño del texto, la fuente (predeterminada del editor, con serifa, sin serifa, monoespaciada o las fuentes de accesibilidad incluidas con Readium), el interlineado, los márgenes, los espaciados, la alineación, las columnas y el tema (claro, sepia, oscuro o seguir al host). La importación de sus propios archivos de fuentes llegará con un hito posterior.
+Sí. Abra el panel de preferencias desde la barra de herramientas para ajustar el tamaño del texto, la fuente (predeterminada del editor, con serifa, sin serifa, monoespaciada o las fuentes de accesibilidad incluidas con Readium), el interlineado, los márgenes, los espaciados, la alineación, las columnas y el tema (claro, sepia, oscuro o seguir al host). Toque `Importar fuente` en el panel para añadir sus propios archivos TTF u OTF; se guardan de forma privada en el complemento y se eliminan desde `Administrar fuentes`.
 
 #### ¿Este complemento sube mis libros a algún sitio?
 

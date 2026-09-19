@@ -9,6 +9,8 @@ import org.readium.r2.shared.util.Error
 import org.readium.r2.shared.util.FileExtension
 import org.readium.r2.shared.util.Try
 import org.readium.r2.shared.util.asset.AssetRetriever
+import org.readium.r2.shared.util.data.CompositeContainer
+import org.readium.r2.shared.util.data.Container
 import org.readium.r2.shared.util.format.FormatHints
 import org.readium.r2.shared.util.format.Specification
 import org.readium.r2.shared.util.getOrElse
@@ -57,7 +59,11 @@ class BookOpener(context: Context) {
         fileExtension = FileExtension("epub"),
     )
 
-    suspend fun open(resource: Resource): Try<Publication, BookOpenError> {
+    /**
+     * [extraResources] (the imported fonts, roadmap P2.2) are composed after the book's own
+     * container, so the navigator can fetch them from the publication host without any copy.
+     */
+    suspend fun open(resource: Resource, extraResources: Container<Resource>? = null): Try<Publication, BookOpenError> {
         val asset = assetRetriever.retrieve(resource, epubHints)
             .getOrElse { return Try.failure(BookOpenError.Retrieve(it)) }
         if (!asset.format.conformsTo(Specification.Epub)) {
@@ -65,8 +71,13 @@ class BookOpener(context: Context) {
             asset.close()
             return Try.failure(BookOpenError.NotAnEpub(mediaType))
         }
-        val publication = publicationOpener.open(asset, allowUserInteraction = false)
-            .getOrElse { return Try.failure(BookOpenError.Open(it)) }
+        val publication = publicationOpener.open(
+            asset,
+            allowUserInteraction = false,
+            onCreatePublication = {
+                if (extraResources != null) container = CompositeContainer(container, extraResources)
+            },
+        ).getOrElse { return Try.failure(BookOpenError.Open(it)) }
         if (publication.isRestricted) {
             val error = publication.protectionError
             publication.close()

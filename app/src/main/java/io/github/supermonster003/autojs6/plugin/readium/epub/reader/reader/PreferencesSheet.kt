@@ -1,12 +1,14 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader
 
 import android.os.Bundle
+import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -20,10 +22,11 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderAc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReaderPreferencesState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.SheetPreferencesBinding
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.PreferenceRanges
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.readium.r2.navigator.epub.EpubPreferences
 import org.readium.r2.navigator.epub.EpubSettings
@@ -41,6 +44,9 @@ import kotlin.math.roundToInt
  * Readium CSS ignores line height, paragraph spacing, alignment and hyphenation while publisher
  * styles are on, so touching one of them turns publisher styles off instead of silently doing
  * nothing; the hint under the switch explains that rule.
+ *
+ * The font list ends with the imported fonts (P2.2); the buttons under it open the document
+ * picker and the management list, where tapping a font deletes it after confirmation.
  */
 @OptIn(ExperimentalReadiumApi::class)
 internal class PreferencesSheet : BottomSheetDialogFragment() {
@@ -52,20 +58,20 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
     /** True while the controls are being set from state, so their listeners stay quiet. */
     private var rendering = false
 
+    /** The catalog the spinner was built from, and the families its rows stand for (built-ins first). */
+    private var catalog: FontCatalog? = null
+    private var families: List<FontFamily?> = FONT_FAMILIES
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         SheetPreferencesBinding.inflate(inflater, container, false).also { _binding = it }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUpControls()
-        val settings = host.navigatorSettings
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val flow = if (settings != null) {
-                    combine(host.preferencesState, settings) { state, resolved -> state to resolved }
-                } else {
-                    host.preferencesState.map { it to null }
-                }
-                flow.collect { (state, resolved) -> render(state, resolved) }
+                combine(host.preferencesState, host.navigatorSettings, host.fontCatalog) { state, resolved, fonts ->
+                    Triple(state, resolved, fonts)
+                }.collect { (state, resolved, fonts) -> render(state, resolved, fonts) }
             }
         }
     }
@@ -80,6 +86,7 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
 
     override fun onDestroyView() {
         _binding = null
+        catalog = null
         super.onDestroyView()
     }
 
@@ -95,20 +102,17 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
         fontSizeIncrease.setOnClickListener { stepFontSize(+1) }
         bindSlider(fontSizeSlider, fontSizeValue) { value -> host.editPreferences { it.copy(fontSize = value) } }
 
-        fontFamily.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            FONT_FAMILY_LABELS.map { getString(it) },
-        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         fontFamily.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (rendering) return
-                val family = FONT_FAMILIES[position]
+                val family = families.getOrNull(position)
                 if (family != currentFontFamily()) host.editPreferences { it.copy(fontFamily = family) }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
+        importFontButton.setOnClickListener { host.pickFont() }
+        manageFontsButton.setOnClickListener { showManageFonts() }
 
         bindSlider(lineHeightSlider, lineHeightValue) { value -> editAdvanced { it.copy(lineHeight = value) } }
         bindSlider(pageMarginsSlider, pageMarginsValue) { value -> host.editPreferences { it.copy(pageMargins = value) } }
@@ -157,15 +161,35 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
     }
 
     private fun stepFontSize(delta: Int) {
-        val current = host.navigatorSettings?.value?.fontSize ?: host.preferencesState.value.epub.fontSize ?: 1.0
+        val current = host.currentSettings?.fontSize ?: host.preferencesState.value.epub.fontSize ?: 1.0
         val next = PreferenceRanges.step(PreferenceRanges.FONT_SIZE, PreferenceRanges.FONT_SIZE_STEP, current, delta)
         host.editPreferences { it.copy(fontSize = next) }
     }
 
     private fun currentFontFamily(): FontFamily? =
-        host.navigatorSettings?.value?.fontFamily ?: host.preferencesState.value.epub.fontFamily
+        host.currentSettings?.fontFamily ?: host.preferencesState.value.epub.fontFamily
 
-    private fun render(state: ReaderPreferencesState, settings: EpubSettings?) = with(binding) {
+    private fun showManageFonts() {
+        val fonts = catalog?.fonts?.takeIf { it.isNotEmpty() } ?: return
+        val context = requireContext()
+        val rows = fonts.map { "${it.displayName} (${Formatter.formatShortFileSize(context, it.bytes)})" }
+        AlertDialog.Builder(context)
+            .setTitle(R.string.text_preferences_manage_fonts)
+            .setItems(rows.toTypedArray()) { _, index -> confirmDelete(fonts[index]) }
+            .setNegativeButton(R.string.dialog_button_cancel, null)
+            .show()
+    }
+
+    private fun confirmDelete(entry: FontEntry) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.text_delete_font)
+            .setMessage(getString(R.string.text_delete_font_message, entry.displayName))
+            .setPositiveButton(R.string.dialog_button_confirm) { _, _ -> host.deleteFont(entry) }
+            .setNegativeButton(R.string.dialog_button_cancel, null)
+            .show()
+    }
+
+    private fun render(state: ReaderPreferencesState, settings: EpubSettings?, fonts: FontCatalog) = with(binding) {
         rendering = true
         try {
             val fixed = host.fixedLayout
@@ -179,8 +203,10 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
             fixedLayoutHint.isVisible = fixed
 
             setSlider(fontSizeSlider, fontSizeValue, settings?.fontSize ?: state.epub.fontSize ?: 1.0)
+            if (fonts != catalog) setFontFamilies(fonts)
             val family = settings?.fontFamily ?: state.epub.fontFamily
-            fontFamily.setSelection(FONT_FAMILIES.indexOf(family).coerceAtLeast(0), false)
+            fontFamily.setSelection(families.indexOf(family).coerceAtLeast(0), false)
+            manageFontsButton.isEnabled = !fonts.isEmpty
 
             setSlider(lineHeightSlider, lineHeightValue, settings?.lineHeight ?: state.epub.lineHeight ?: DEFAULT_LINE_HEIGHT)
             setSlider(pageMarginsSlider, pageMarginsValue, settings?.pageMargins ?: state.epub.pageMargins ?: DEFAULT_PAGE_MARGINS)
@@ -217,6 +243,15 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
         } finally {
             rendering = false
         }
+    }
+
+    /** Built-in families first, then the imported fonts under their display names. */
+    private fun setFontFamilies(fonts: FontCatalog) {
+        catalog = fonts
+        families = FONT_FAMILIES + fonts.fonts.map { FontFamily(it.family) }
+        val labels = FONT_FAMILY_LABELS.map { getString(it) } + fonts.fonts.map { it.displayName }
+        binding.fontFamily.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, labels)
+            .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
     }
 
     private fun setSlider(slider: Slider, label: TextView, value: Double) {

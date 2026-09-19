@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode. Bookmarks, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts. Bookmarks, full-text search, read-aloud, fixed layout, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -57,6 +57,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Reading position memory: the last position of every book is stored under a fingerprint of its content in the plugin's private storage, so the same book resumes even after it is moved or renamed; `Start from the beginning` clears it.
 - Reader chrome: title and chapter in the toolbar, a progress bar with position and percentage, immersive mode on a center tap, tap zones and volume keys for page turns, and scroll or paginated mode.
 - Reading preferences: a bottom panel sets text size, font family, line height, page margins, paragraph spacing, alignment, hyphenation, publisher styles, column count and paged or scrolled layout; changes apply immediately and are remembered for every book. Light, sepia and dark themes, or follow the host's night mode; the toolbar and system bars take the theme's colours.
+- Font import: pick TTF or OTF files with the system document picker; they are validated, stored privately in the plugin (up to 10 fonts, 20 MB each), listed in the preferences panel next to the built-in fonts, served to every book and removable from the same panel.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -100,7 +101,7 @@ The last position of each book is saved in the plugin's private storage under a 
 
 #### Can I change the font, text size or theme?
 
-Yes. Open the preferences panel from the toolbar to set the text size, the font family (publisher default, serif, sans-serif, monospace or the accessibility fonts bundled with Readium), line height, margins, spacing, alignment, columns and the theme (light, sepia, dark or follow the host). Importing your own font files arrives with a later milestone.
+Yes. Open the preferences panel from the toolbar to set the text size, the font family (publisher default, serif, sans-serif, monospace or the accessibility fonts bundled with Readium), line height, margins, spacing, alignment, columns and the theme (light, sepia, dark or follow the host). Tap `Import font` in the panel to add your own TTF or OTF files; they are stored privately in the plugin and can be removed with `Manage fonts`.
 
 #### Does this plugin upload my books anywhere?
 
