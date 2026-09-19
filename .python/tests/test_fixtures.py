@@ -62,6 +62,19 @@ class FixtureGeneratorTest(unittest.TestCase):
                 css = archive.read("OEBPS/style.css").decode("utf-8")
                 self.assertEqual(name == "vertical-ja.epub", "writing-mode: vertical-rl" in css)
 
+    def test_the_fixed_layout_sample_declares_its_layout_viewport_and_spreads(self):
+        with zipfile.ZipFile(io.BytesIO(self.generated["fixed-layout.epub"])) as archive:
+            opf = archive.read("OEBPS/content.opf").decode("utf-8")
+            self.assertIn('<meta property="rendition:layout">pre-paginated</meta>', opf)
+            self.assertIn('<meta property="rendition:spread">auto</meta>', opf)
+            self.assertEqual(1, opf.count('properties="rendition:page-spread-center"'))
+            self.assertEqual(3, opf.count('properties="page-spread-left"'))
+            self.assertEqual(2, opf.count('properties="page-spread-right"'))
+            for number in range(1, 7):
+                page = archive.read(f"OEBPS/page{number}.xhtml").decode("utf-8")
+                self.assertIn('<meta name="viewport" content="width=600, height=800"/>', page)
+                self.assertIn(f'<p class="number">{number}</p>', page)
+
     def test_epub_containers_start_with_the_stored_mimetype_entry(self):
         for name in ("minimal-epub2.epub", "minimal-epub3.epub"):
             data = self.generated[name]

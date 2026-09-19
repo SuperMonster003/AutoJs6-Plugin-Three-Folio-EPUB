@@ -19,6 +19,7 @@ Fixtures:
   vertical-ja.epub                   EPUB 3, Japanese, page-progression-direction rtl, publisher vertical-rl CSS
   vertical-zh.epub                   EPUB 3, traditional Chinese, page-progression-direction rtl, no writing mode
   rtl-ar.epub                        EPUB 3, Arabic, dir="rtl", page-progression-direction rtl
+  fixed-layout.epub                  EPUB 3 pre-paginated, 6 plates of 600x800 CSS px, spread properties
 
 Usage: py .python/generate_fixtures.py
 """
@@ -273,6 +274,103 @@ def beacon_png() -> bytes:
     )
 
 
+# A six-plate picture book (roadmap P2.4): every page declares the same viewport, the spine carries
+# the page-spread properties (cover centered, then left / right pairs) and the package asks for
+# automatic spreads. Colours differ per plate so a screenshot shows which pages are on screen.
+FXL_WIDTH, FXL_HEIGHT = 600, 800
+FXL_PLATES = [
+    ("Cover", "#00695c"),
+    ("The reef", "#1565c0"),
+    ("The lamp room", "#6a1b9a"),
+    ("The stair", "#ad1457"),
+    ("The relief boat", "#ef6c00"),
+    ("Being seen", "#2e7d32"),
+]
+FXL_SPREADS = ["center", "left", "right", "left", "right", "left"]
+FXL_TOC = [(1, "Cover"), (2, "The reef"), (4, "The stair"), (6, "Being seen")]
+FXL_CSS = (
+    f"html, body {{ margin: 0; padding: 0; width: {FXL_WIDTH}px; height: {FXL_HEIGHT}px; overflow: hidden; }}\n"
+    "body { font-family: sans-serif; color: #ffffff; }\n"
+    ".frame { position: absolute; left: 40px; top: 40px; width: 520px; height: 720px; box-sizing: border-box; border: 6px solid #ffffff; }\n"
+    ".number { position: absolute; left: 0; right: 0; top: 140px; margin: 0; font-size: 240px; line-height: 1; font-weight: bold; text-align: center; }\n"
+    ".caption { position: absolute; left: 0; right: 0; top: 440px; margin: 0; font-size: 36px; text-align: center; }\n"
+    ".side { position: absolute; left: 0; right: 0; top: 520px; margin: 0; font-size: 22px; text-align: center; opacity: 0.8; }\n"
+    ".beacon { position: absolute; left: 232px; top: 600px; width: 48px; height: 48px; }\n"
+    + "".join(f"body.plate-{n} {{ background: {color}; }}\n" for n, (_, color) in enumerate(FXL_PLATES, 1))
+)
+
+
+def fxl_page(number: int) -> str:
+    title = FXL_PLATES[number - 1][0]
+    side = FXL_SPREADS[number - 1]
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en">\n'
+        f'<head><title>Plate {number}</title><meta name="viewport" content="width={FXL_WIDTH}, height={FXL_HEIGHT}"/>'
+        '<link rel="stylesheet" type="text/css" href="fxl.css"/></head>\n'
+        f'<body class="plate-{number}"><div class="frame"><p class="number">{number}</p><p class="caption">{title}</p>'
+        f'<p class="side">{side} page, {number} of {len(FXL_PLATES)}</p>'
+        '<img class="beacon" src="images/beacon.png" alt=""/></div></body>\n</html>\n'
+    )
+
+
+def fxl_nav() -> str:
+    items = "\n".join(f'  <li><a href="page{n}.xhtml">{title}</a></li>' for n, title in FXL_TOC)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en">\n'
+        '<head><title>Contents</title></head>\n<body>\n'
+        f'<nav epub:type="toc" id="toc"><h1>Contents</h1><ol>\n{items}\n</ol></nav>\n'
+        '<nav epub:type="landmarks" hidden="hidden"><ol>'
+        '<li><a epub:type="cover" href="page1.xhtml">Cover</a></li>'
+        '<li><a epub:type="bodymatter" href="page2.xhtml">Start</a></li></ol></nav>\n'
+        "</body>\n</html>\n"
+    )
+
+
+def fxl_opf(title: str) -> str:
+    items = "\n".join(
+        f'    <item id="page{n}" href="page{n}.xhtml" media-type="application/xhtml+xml"/>'
+        for n in range(1, len(FXL_PLATES) + 1)
+    )
+    spine = "\n".join(
+        f'    <itemref idref="page{n}" properties="{"rendition:page-spread-center" if side == "center" else f"page-spread-{side}"}"/>'
+        for n, side in enumerate(FXL_SPREADS, 1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" prefix="rendition: http://www.idpf.org/vocab/rendition/#">\n'
+        '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
+        '    <dc:identifier id="uid">urn:uuid:autojs6-readium-fixture-fixed-layout</dc:identifier>\n'
+        f"    <dc:title>{title}</dc:title>\n"
+        "    <dc:language>en</dc:language>\n"
+        "    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>\n"
+        '    <meta property="dcterms:modified">2026-09-19T00:00:00Z</meta>\n'
+        '    <meta property="rendition:layout">pre-paginated</meta>\n'
+        '    <meta property="rendition:orientation">auto</meta>\n'
+        '    <meta property="rendition:spread">auto</meta>\n'
+        "  </metadata>\n"
+        f"  <manifest>\n{items}\n"
+        '    <item id="css" href="fxl.css" media-type="text/css"/>\n'
+        '    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n'
+        '    <item id="beacon" href="images/beacon.png" media-type="image/png"/>\n'
+        "  </manifest>\n"
+        f"  <spine>\n{spine}\n  </spine>\n"
+        "</package>\n"
+    )
+
+
+def fxl_entries(title: str) -> list[tuple[str, bytes]]:
+    entries = [("META-INF/container.xml", CONTAINER_XML.format(opf="OEBPS/content.opf").encode())]
+    entries.append(("OEBPS/content.opf", fxl_opf(title).encode()))
+    for n in range(1, len(FXL_PLATES) + 1):
+        entries.append((f"OEBPS/page{n}.xhtml", fxl_page(n).encode()))
+    entries.append(("OEBPS/fxl.css", FXL_CSS.encode()))
+    entries.append(("OEBPS/nav.xhtml", fxl_nav().encode()))
+    entries.append(("OEBPS/images/beacon.png", beacon_png()))
+    return entries
+
+
 def build_zip(entries: list[tuple[str, bytes]], mimetype_first: bool = True) -> bytes:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:
@@ -314,6 +412,7 @@ def fixtures() -> dict[str, bytes]:
         epub_entries(True, "守塔人 (直排)", locale=CHINESE_TRADITIONAL, identifier="vertical-zh")
     )
     result["rtl-ar.epub"] = build_zip(epub_entries(True, "حارس المنارة", locale=ARABIC, identifier="rtl-ar"))
+    result["fixed-layout.epub"] = build_zip(fxl_entries("The Lighthouse Plates"))
     result["malformed-not-a-zip.epub"] = b"This file pretends to be an EPUB but is plain text.\n"
     result["malformed-missing-container.epub"] = build_zip(
         [entry for entry in epub_entries(True, "Missing container") if entry[0] != "META-INF/container.xml"]
