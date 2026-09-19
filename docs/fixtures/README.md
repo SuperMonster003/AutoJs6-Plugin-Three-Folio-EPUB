@@ -21,6 +21,9 @@ instrumentation tests read these files by name.
 | `malformed-many-entries.epub` | 2000 extra manifest and spine entries | Opens slowly but within limits; used for the P7 limit tests |
 | `malformed-high-ratio.epub` | One 64 MiB zero-filled resource (deflates to a few KiB) | Opens; reading the blob must stay bounded (P7 resource limits) |
 | `malformed-encrypted-lcp.epub` | `META-INF/encryption.xml` and `license.lcpl` declaring an LCP-protected chapter | Fails with a clear "protected" error (fallback content protection), never renders garbage |
+| `vertical-ja.epub` | EPUB 3, `dc:language` `ja`, spine `page-progression-direction="rtl"`, publisher CSS `writing-mode: vertical-rl`, Japanese text | Opens; reads right to left (`ReadingProgression.RTL`, tap zones mirrored); vertical text through Readium's `cjk-vertical` layout, which forces scrolling; forcing horizontal text leaves it vertical, because Readium's `cjk-horizontal` layout never overrides a publisher's writing mode |
+| `vertical-zh.epub` | EPUB 3, `dc:language` `zh-Hant`, spine `page-progression-direction="rtl"`, no writing mode in the CSS, traditional Chinese text | Opens; vertical from the metadata alone (`zh-Hant` counts as right-to-left for Readium and CJK + RTL turns `verticalText` on); forcing horizontal text yields `horizontal-tb` |
+| `rtl-ar.epub` | EPUB 3, `dc:language` `ar`, `dir="rtl"` on every document, spine `page-progression-direction="rtl"`, Arabic text | Opens; reads right to left with horizontal text and a computed `direction: rtl`; the reader's chrome keeps the interface direction of the AutoJs6 language |
 
 Large performance samples (20 MB / 200 MB) are synthesized on demand by the P7 tools and are not
 committed. Externally sourced samples (IDPF `epub3-samples`, W3C `epub-tests`) are not part of the

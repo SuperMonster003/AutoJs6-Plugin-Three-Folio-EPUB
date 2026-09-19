@@ -16,6 +16,9 @@ Fixtures:
   malformed-many-entries.epub        2000 tiny entries in the manifest and spine
   malformed-high-ratio.epub          one 64 MiB zero-filled resource (deflates to a few KiB)
   malformed-encrypted-lcp.epub       META-INF/encryption.xml declaring an LCP-protected resource
+  vertical-ja.epub                   EPUB 3, Japanese, page-progression-direction rtl, publisher vertical-rl CSS
+  vertical-zh.epub                   EPUB 3, traditional Chinese, page-progression-direction rtl, no writing mode
+  rtl-ar.epub                        EPUB 3, Arabic, dir="rtl", page-progression-direction rtl
 
 Usage: py .python/generate_fixtures.py
 """
@@ -28,6 +31,7 @@ import struct
 import zipfile
 import zlib
 from pathlib import Path
+from typing import NamedTuple
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "fixtures"
@@ -59,40 +63,125 @@ CHAPTER_TEXTS = {
     ],
 }
 
+STYLE_CSS = "body { font-family: serif; line-height: 1.5; margin: 1em; }\nh1 { font-size: 1.4em; }\n"
 
-def xhtml(title: str, body: str, epub3: bool) -> str:
+# Japanese vertical books usually carry the writing mode in their own CSS (EPUB prefix and the
+# standard property); the Chinese sample deliberately has none, so only the reader's metadata path
+# (CJK language plus a right-to-left page progression) turns it vertical.
+VERTICAL_CSS = (
+    "html { -epub-writing-mode: vertical-rl; writing-mode: vertical-rl; }\n"
+    "body { font-family: serif; line-height: 1.8; margin: 1em; }\nh1 { font-size: 1.4em; }\n"
+)
+
+# The same lighthouse story, retold for this repository in Japanese, traditional Chinese and Arabic.
+JAPANESE_TEXTS = {
+    1: [
+        "灯台守は、ほかの人が羊を数えるように船を数えた。",
+        "岩礁をすり抜けていく船体のひとつひとつが、霧に対する小さな勝利だった。",
+        "今夜の霧には牙があり、灯室は熱い真鍮と潮の匂いがした。",
+    ],
+    2: [
+        "朝には風向きが変わり、雲を濡れた羊毛のように内陸へ引きずっていった。",
+        "彼女は螺旋階段を二度のぼった。一度は日誌のため、もう一度は眺めのために。",
+        "水平線には何もない。それは灯台守が書き留められる、いちばん良い知らせだった。",
+    ],
+    3: [
+        "交代の船は三日目に来た。遅れて、喫水も深く。",
+        "彼らはパンと物語を交換し、潮が気を変える前に去っていった。",
+        "扉が閉まると、灯台はただひとつの仕事に戻った。「見られること」だ。",
+    ],
+}
+
+CHINESE_TEXTS = {
+    1: [
+        "守塔人數著船，就像別人數著羊。",
+        "每一艘掠過礁石的船身，都是對霧氣的一次小小勝利。",
+        "今夜的霧長了牙，燈室裡滿是熱黃銅和鹽的氣味。",
+    ],
+    2: [
+        "到了早晨風向轉了，把雲像濕羊毛一樣拖向內陸。",
+        "她爬了兩次螺旋梯，一次為了日誌，一次為了風景。",
+        "地平線上什麼都沒有，這是守塔人能寫下的最好消息。",
+    ],
+    3: [
+        "接替的船第三天才來，來得晚，吃水也深。",
+        "他們用麵包換故事，趕在潮水改變主意之前離開了。",
+        "門一關上，燈塔就回到它唯一的工作：被看見。",
+    ],
+}
+
+ARABIC_TEXTS = {
+    1: [
+        "كان حارس المنارة يعد السفن كما يعد الآخرون الخراف.",
+        "كل هيكل ينزلق عبر الشعاب كان انتصارا صغيرا على الضباب.",
+        "الليلة كان للضباب أنياب، وغرفة المصباح تفوح برائحة النحاس الساخن والملح.",
+    ],
+    2: [
+        "مع الصباح تحولت الريح، تجر الغيوم إلى الداخل كصوف مبلل.",
+        "صعدت الدرج الحلزوني مرتين، مرة للسجل ومرة للمنظر.",
+        "لا شيء في الأفق، وهذا أفضل خبر يمكن لحارس أن يدونه.",
+    ],
+    3: [
+        "جاء قارب الإغاثة في اليوم الثالث، متأخرا وثقيلا في الماء.",
+        "تبادلوا الخبز بالحكايات ورحلوا قبل أن يغير المد رأيه.",
+        "حين أغلق الباب، عادت المنارة إلى عملها الوحيد: أن ترى.",
+    ],
+}
+
+
+class Locale(NamedTuple):
+    """Language-dependent parts of a sample; the default is the English lighthouse story."""
+
+    lang: str = "en"
+    chapter: str = "Chapter {n}"
+    contents: str = "Contents"
+    start: str = "Start"
+    texts: dict = CHAPTER_TEXTS
+    css: str = STYLE_CSS
+    dir: str | None = None          # html dir attribute
+    progression: str | None = None  # spine page-progression-direction (EPUB 3)
+
+
+ENGLISH = Locale()
+JAPANESE = Locale("ja", "第{n}章", "目次", "本文", JAPANESE_TEXTS, VERTICAL_CSS, None, "rtl")
+CHINESE_TRADITIONAL = Locale("zh-Hant", "第{n}章", "目錄", "正文", CHINESE_TEXTS, STYLE_CSS, None, "rtl")
+ARABIC = Locale("ar", "الفصل {n}", "المحتويات", "البداية", ARABIC_TEXTS, STYLE_CSS, "rtl", "rtl")
+
+
+def xhtml(title: str, body: str, epub3: bool, locale: Locale = ENGLISH) -> str:
     epub_ns = ' xmlns:epub="http://www.idpf.org/2007/ops"' if epub3 else ""
+    direction = f' dir="{locale.dir}"' if locale.dir else ""
     doctype = "<!DOCTYPE html>" if epub3 else (
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
     )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f"{doctype}\n"
-        f'<html xmlns="http://www.w3.org/1999/xhtml"{epub_ns} xml:lang="en">\n'
+        f'<html xmlns="http://www.w3.org/1999/xhtml"{epub_ns} xml:lang="{locale.lang}"{direction}>\n'
         f"<head><title>{title}</title><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/></head>\n"
         f"<body>\n{body}</body>\n</html>\n"
     )
 
 
-def chapter_body(number: int, epub3: bool) -> str:
-    paragraphs = "\n".join(f"<p>{text}</p>" for text in CHAPTER_TEXTS[number])
+def chapter_body(number: int, epub3: bool, locale: Locale = ENGLISH) -> str:
+    paragraphs = "\n".join(f"<p>{text}</p>" for text in locale.texts[number])
     extra = ""
-    if epub3 and number == 1:
+    english = epub3 and locale.lang == "en"
+    if english and number == 1:
         extra = (
             '<p>A note about the reef<a href="#note-1" epub:type="noteref" id="ref-1">1</a> '
             'and a link to <a href="chapter3.xhtml#landing">the last chapter</a>.</p>\n'
             '<p><img src="images/beacon.png" alt="A small beacon glyph"/></p>\n'
             '<aside epub:type="footnote" id="note-1"><p>The reef is named after nobody in particular.</p></aside>\n'
         )
-    if epub3 and number == 3:
+    if english and number == 3:
         extra = '<p id="landing">You have arrived at the landing anchor.</p>\n'
-    return f'<h1 id="chapter-{number}">Chapter {number}</h1>\n{paragraphs}\n{extra}'
+    return f'<h1 id="chapter-{number}">{locale.chapter.format(n=number)}</h1>\n{paragraphs}\n{extra}'
 
 
-STYLE_CSS = "body { font-family: serif; line-height: 1.5; margin: 1em; }\nh1 { font-size: 1.4em; }\n"
 
-
-def opf(title: str, epub3: bool, manifest_extra: list[tuple[str, str, str, str]] = (), spine_extra: list[str] = ()) -> str:
+def opf(title: str, epub3: bool, manifest_extra: list[tuple[str, str, str, str]] = (), spine_extra: list[str] = (),
+        locale: Locale = ENGLISH, identifier: str | None = None) -> str:
     version = "3.0" if epub3 else "2.0"
     items = [
         ("chapter1", "chapter1.xhtml", "application/xhtml+xml", ""),
@@ -112,15 +201,17 @@ def opf(title: str, epub3: bool, manifest_extra: list[tuple[str, str, str, str]]
     )
     spine_ids = ["chapter1", "chapter2", "chapter3", *spine_extra]
     spine_attr = "" if epub3 else ' toc="ncx"'
+    if locale.progression:
+        spine_attr += f' page-progression-direction="{locale.progression}"'
     spine = "\n".join(f'    <itemref idref="{item_id}"/>' for item_id in spine_ids)
     modified = '\n    <meta property="dcterms:modified">2026-09-19T00:00:00Z</meta>' if epub3 else ""
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<package xmlns="http://www.idpf.org/2007/opf" version="{version}" unique-identifier="uid">\n'
         '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
-        f"    <dc:identifier id=\"uid\">urn:uuid:autojs6-readium-fixture-{'epub3' if epub3 else 'epub2'}</dc:identifier>\n"
+        f"    <dc:identifier id=\"uid\">urn:uuid:autojs6-readium-fixture-{identifier or ('epub3' if epub3 else 'epub2')}</dc:identifier>\n"
         f"    <dc:title>{title}</dc:title>\n"
-        "    <dc:language>en</dc:language>\n"
+        f"    <dc:language>{locale.lang}</dc:language>\n"
         "    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>"
         f"{modified}\n"
         "  </metadata>\n"
@@ -146,16 +237,17 @@ def ncx(title: str, well_formed: bool = True) -> str:
     )
 
 
-def nav_xhtml() -> str:
-    body = (
-        '<nav epub:type="toc" id="toc"><h1>Contents</h1><ol>\n'
-        '  <li><a href="chapter1.xhtml">Chapter 1</a><ol><li><a href="chapter1.xhtml#ref-1">The reef note</a></li></ol></li>\n'
-        '  <li><a href="chapter2.xhtml">Chapter 2</a></li>\n'
-        '  <li><a href="chapter3.xhtml">Chapter 3</a></li>\n'
-        "</ol></nav>\n"
-        '<nav epub:type="landmarks" hidden="hidden"><ol><li><a epub:type="bodymatter" href="chapter1.xhtml">Start</a></li></ol></nav>\n'
+def nav_xhtml(locale: Locale = ENGLISH) -> str:
+    note = '<ol><li><a href="chapter1.xhtml#ref-1">The reef note</a></li></ol>' if locale.lang == "en" else ""
+    items = "\n".join(
+        f'  <li><a href="chapter{n}.xhtml">{locale.chapter.format(n=n)}</a>{note if n == 1 else ""}</li>'
+        for n in (1, 2, 3)
     )
-    return xhtml("Contents", body, epub3=True)
+    body = (
+        f'<nav epub:type="toc" id="toc"><h1>{locale.contents}</h1><ol>\n{items}\n</ol></nav>\n'
+        f'<nav epub:type="landmarks" hidden="hidden"><ol><li><a epub:type="bodymatter" href="chapter1.xhtml">{locale.start}</a></li></ol></nav>\n'
+    )
+    return xhtml(locale.contents, body, epub3=True, locale=locale)
 
 
 def beacon_png() -> bytes:
@@ -196,14 +288,16 @@ def build_zip(entries: list[tuple[str, bytes]], mimetype_first: bool = True) -> 
 
 
 def epub_entries(epub3: bool, title: str, *, ncx_well_formed: bool = True, opf_name: str = "OEBPS/content.opf",
-                 manifest_extra=(), spine_extra=(), extra_files: list[tuple[str, bytes]] = ()) -> list[tuple[str, bytes]]:
+                 manifest_extra=(), spine_extra=(), extra_files: list[tuple[str, bytes]] = (),
+                 locale: Locale = ENGLISH, identifier: str | None = None) -> list[tuple[str, bytes]]:
     entries = [("META-INF/container.xml", CONTAINER_XML.format(opf=opf_name).encode())]
-    entries.append((opf_name, opf(title, epub3, list(manifest_extra), list(spine_extra)).encode()))
+    entries.append((opf_name, opf(title, epub3, list(manifest_extra), list(spine_extra), locale, identifier).encode()))
     for n in (1, 2, 3):
-        entries.append((f"OEBPS/chapter{n}.xhtml", xhtml(f"Chapter {n}", chapter_body(n, epub3), epub3).encode()))
-    entries.append(("OEBPS/style.css", STYLE_CSS.encode()))
+        chapter = xhtml(locale.chapter.format(n=n), chapter_body(n, epub3, locale), epub3, locale)
+        entries.append((f"OEBPS/chapter{n}.xhtml", chapter.encode()))
+    entries.append(("OEBPS/style.css", locale.css.encode()))
     if epub3:
-        entries.append(("OEBPS/nav.xhtml", nav_xhtml().encode()))
+        entries.append(("OEBPS/nav.xhtml", nav_xhtml(locale).encode()))
         entries.append(("OEBPS/images/beacon.png", beacon_png()))
     else:
         entries.append(("OEBPS/toc.ncx", ncx(title, ncx_well_formed).encode()))
@@ -215,6 +309,11 @@ def fixtures() -> dict[str, bytes]:
     result: dict[str, bytes] = {}
     result["minimal-epub2.epub"] = build_zip(epub_entries(False, "Minimal EPUB 2"))
     result["minimal-epub3.epub"] = build_zip(epub_entries(True, "Minimal EPUB 3"))
+    result["vertical-ja.epub"] = build_zip(epub_entries(True, "灯台守 (縦書き)", locale=JAPANESE, identifier="vertical-ja"))
+    result["vertical-zh.epub"] = build_zip(
+        epub_entries(True, "守塔人 (直排)", locale=CHINESE_TRADITIONAL, identifier="vertical-zh")
+    )
+    result["rtl-ar.epub"] = build_zip(epub_entries(True, "حارس المنارة", locale=ARABIC, identifier="rtl-ar"))
     result["malformed-not-a-zip.epub"] = b"This file pretends to be an EPUB but is plain text.\n"
     result["malformed-missing-container.epub"] = build_zip(
         [entry for entry in epub_entries(True, "Missing container") if entry[0] != "META-INF/container.xml"]

@@ -2,9 +2,11 @@
 
 from pathlib import Path
 import hashlib
+import io
 import importlib.util
 import re
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "docs/fixtures"
@@ -46,6 +48,19 @@ class FixtureGeneratorTest(unittest.TestCase):
         documented = set(re.findall(r"^\| `([^`]+\.epub)` \|", readme, flags=re.MULTILINE))
         self.assertEqual(set(self.generated), documented)
         self.assertLess(sum(len(data) for data in self.generated.values()), MAX_TOTAL_BYTES)
+
+    def test_direction_samples_declare_their_language_and_page_progression(self):
+        expected = {"vertical-ja.epub": "ja", "vertical-zh.epub": "zh-Hant", "rtl-ar.epub": "ar"}
+        for name, lang in expected.items():
+            with self.subTest(fixture=name), zipfile.ZipFile(io.BytesIO(self.generated[name])) as archive:
+                opf = archive.read("OEBPS/content.opf").decode("utf-8")
+                self.assertIn(f"<dc:language>{lang}</dc:language>", opf)
+                self.assertIn('<spine page-progression-direction="rtl">', opf)
+                chapter = archive.read("OEBPS/chapter1.xhtml").decode("utf-8")
+                self.assertIn(f'xml:lang="{lang}"', chapter)
+                self.assertEqual(name == "rtl-ar.epub", 'dir="rtl"' in chapter)
+                css = archive.read("OEBPS/style.css").decode("utf-8")
+                self.assertEqual(name == "vertical-ja.epub", "writing-mode: vertical-rl" in css)
 
     def test_epub_containers_start_with_the_stored_mimetype_entry(self):
         for name in ("minimal-epub2.epub", "minimal-epub3.epub"):
