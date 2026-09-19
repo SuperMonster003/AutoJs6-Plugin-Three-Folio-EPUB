@@ -287,6 +287,7 @@ dependencies {
     implementation(libs.webkit)
 
     testImplementation(libs.junit)
+    testImplementation(libs.org.json)
 
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.test.ext.junit)
