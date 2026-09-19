@@ -274,6 +274,9 @@ dependencies {
     implementation(libs.readium.streamer)
     implementation(libs.readium.navigator)
     implementation(libs.readium.navigator.media.tts)
+    // A runtime dependency of readium-navigator-media-tts; the read-aloud foreground service subclasses
+    // media3's MediaSessionService, so the plugin declares it directly (roadmap P3).
+    implementation(libs.media3.session)
 
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)

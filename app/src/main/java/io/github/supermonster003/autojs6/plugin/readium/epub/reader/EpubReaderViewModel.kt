@@ -31,6 +31,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Progre
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressThrottle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsController
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsPreferencesStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -150,6 +152,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     /** Where in-book links were followed from, for the back key (roadmap P2.7). */
     val linkHistory = LinkHistory<Locator>()
+
+    /** Read-aloud (roadmap P3): stops with the book and with this view model (roadmap D15). */
+    val tts = TtsController(application, viewModelScope, TtsPreferencesStore.forFilesDirectory(application.filesDir))
 
     /** The bookmarks of the open book in creation order (roadmap P2.6). */
     val bookmarks: StateFlow<List<Bookmark>> get() = _bookmarks
@@ -481,6 +486,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun release() {
+        tts.stop()
         searchSession.detach()
         _bookmarks.value = emptyList()
         linkHistory.clear()
@@ -493,6 +499,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     }
 
     override fun onCleared() {
+        tts.shutdown()
         flushProgress()
         flushPreferences()
         release()

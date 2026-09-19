@@ -95,6 +95,69 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/tts_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/tts_previous"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_read_aloud_previous"
+            android:src="@drawable/ic_skip_previous_24" />
+
+        <ImageButton
+            android:id="@+id/tts_play_pause"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_read_aloud_pause"
+            android:src="@drawable/ic_pause_24" />
+
+        <ImageButton
+            android:id="@+id/tts_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_read_aloud_next"
+            android:src="@drawable/ic_skip_next_24" />
+
+        <TextView
+            android:id="@+id/tts_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBody2" />
+
+        <ImageButton
+            android:id="@+id/tts_settings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_read_aloud_settings"
+            android:src="@drawable/ic_tune_24" />
+
+        <ImageButton
+            android:id="@+id/tts_stop"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_read_aloud_stop"
+            android:src="@drawable/ic_stop_24" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/progress_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

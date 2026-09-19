@@ -6,9 +6,11 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
+import android.content.pm.ServiceInfo
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsForegroundService
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCatalogKeys
@@ -17,6 +19,7 @@ import org.autojs.plugin.explorer.api.ExplorerActionPluginIds
 import org.autojs.plugin.explorer.api.ExplorerActionPluginPermissions
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -158,10 +161,23 @@ class PluginContractInstrumentationTest {
             0,
         )
         assertTrue(wake.any { it.activityInfo.name == WakeActivity::class.java.name })
+
+        // The read-aloud service (roadmap P3 / D15) is the only other service: not exported, media playback type.
+        val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)
+        assertFalse(ttsService.exported)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            assertEquals(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK, ttsService.foregroundServiceType)
+        }
+        val mediaSessionServices = packageManager.queryIntentServices(
+            Intent("androidx.media3.session.MediaSessionService").setPackage(context.packageName),
+            0,
+        )
+        assertEquals(listOf(TtsForegroundService::class.java.name), mediaSessionServices.map { it.serviceInfo.name })
     }
 
+    /** Roadmap D15 / D19: the network permission, the plugin permission and the three read-aloud permissions, nothing else. */
     @Test
-    fun manifestRequestsOnlyTheInternetAndPluginPermissions() {
+    fun manifestRequestsOnlyTheInternetPluginAndReadAloudPermissions() {
         val packageInfo = context.packageManager.getPackageInfo(
             context.packageName,
             PackageManager.GET_PERMISSIONS,
@@ -183,6 +199,9 @@ class PluginContractInstrumentationTest {
                 android.Manifest.permission.INTERNET,
                 ExplorerActionPluginPermissions.PLUGIN,
                 receiverProtectionPermission,
+                "android.permission.FOREGROUND_SERVICE",
+                "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+                "android.permission.POST_NOTIFICATIONS",
             ) + splitFromInternet,
             packageInfo.requestedPermissions.orEmpty().toSet(),
         )

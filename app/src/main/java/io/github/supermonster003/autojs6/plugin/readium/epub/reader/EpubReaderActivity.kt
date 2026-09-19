@@ -1,13 +1,16 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -57,9 +60,16 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.Searc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.TapZones
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsEvent
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsLocation
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsSession
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsStatus
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,6 +79,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.readium.navigator.media.tts.android.AndroidTtsEngine
+import org.readium.navigator.media.tts.android.AndroidTtsPreferences
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.HyperlinkNavigator
@@ -93,8 +105,9 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * open the book through the granted descriptor, and hosts Readium's [EpubNavigatorFragment] with
  * the reader chrome (title and chapter, progress bar, immersive mode), the table of contents,
  * scroll or paginated overflow, tap zones and volume keys, progress memory (P1.3), the reading
- * preferences panel with its themes (P2.1) and imported fonts (P2.2), and the full-text search
- * with its results panel, hit decorations and previous / next bar (P2.5).
+ * preferences panel with its themes (P2.1) and imported fonts (P2.2), the full-text search
+ * with its results panel, hit decorations and previous / next bar (P2.5), and read-aloud with its
+ * bar, sentence highlight and page follow (P3).
  */
 @OptIn(ExperimentalReadiumApi::class)
 class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
@@ -166,6 +179,20 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             returnFromLink()
         }
     }
+
+    /** Read-aloud (roadmap P3): the dialog offering the engine settings or the voice installer. */
+    internal var ttsDialog: AlertDialog? = null
+        private set
+
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) Toast.makeText(this, R.string.text_read_aloud_no_notification, Toast.LENGTH_LONG).show()
+        launchReadAloud()
+    }
+
+    private var pendingTtsFollow: Locator? = null
+    private var ttsFollowJob: Job? = null
+    private var lastTtsFollowAt = 0L
+    private var ttsHighlight: Locator? = null
 
     internal val isImmersive: Boolean get() = chrome.immersive
 
@@ -239,6 +266,13 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             onNext = { stepSearchResult(+1) },
             onClose = { closeSearch() },
         )
+        chrome.setReadAloudListeners(
+            onPrevious = { model.tts.previous() },
+            onPlayPause = { model.tts.togglePlayPause() },
+            onNext = { model.tts.next() },
+            onSettings = { showTtsSettings() },
+            onStop = { model.tts.stop() },
+        )
 
         if (restoredFactory == null && savedInstanceState != null) {
             supportFragmentManager.findFragmentByTag(NAVIGATOR_TAG)?.let { stale ->
@@ -280,6 +314,21 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.bookmarks.collect { refreshCurrentBookmark() }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.tts.status.collect { onTtsStatus(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.tts.location.collect { onTtsLocation(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.tts.events.collect { onTtsEvent(it) }
             }
         }
     }
@@ -339,8 +388,9 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
                         .collect { (locator, count) -> onLocator(locator, count) }
                 }
             }
-            // A rebuilt navigator starts without decorations: hand it the current search hits.
+            // A rebuilt navigator starts without decorations: hand it the current search hits and the spoken sentence.
             applySearchDecorations(model.search.value)
+            applyTtsDecoration(model.tts.location.value?.locator)
         }
         invalidateOptionsMenu()
     }
@@ -389,8 +439,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     private fun perform(action: PageTurnAction) {
         val fragment = navigator ?: return
         when (action) {
-            PageTurnAction.PREVIOUS -> if (navigatorReady) fragment.goBackward(animated = true)
-            PageTurnAction.NEXT -> if (navigatorReady) fragment.goForward(animated = true)
+            PageTurnAction.PREVIOUS -> if (navigatorReady) {
+                stopReadAloudForNavigation()
+                fragment.goBackward(animated = true)
+            }
+            PageTurnAction.NEXT -> if (navigatorReady) {
+                stopReadAloudForNavigation()
+                fragment.goForward(animated = true)
+            }
             PageTurnAction.TOGGLE_CHROME -> chrome.toggleImmersive()
         }
     }
@@ -412,6 +468,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     /** Jumps to [locator] (a search hit scrolls to its text) now, or once the navigator is ready. */
     internal fun jumpTo(locator: Locator) {
+        stopReadAloudForNavigation()
         if (navigatorReady) navigator?.go(locator, animated = true) else pendingJump = locator
     }
 
@@ -499,6 +556,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             setTitle(if (bookmarked) R.string.text_bookmark_remove else R.string.text_bookmark_add)
         }
         menu.findItem(R.id.action_bookmarks)?.isVisible = ready
+        menu.findItem(R.id.action_read_aloud)?.isVisible = ready && !model.tts.isActive
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
         menu.findItem(R.id.action_preferences)?.isVisible = ready
         menu.findItem(R.id.action_scroll_mode)?.apply {
@@ -570,6 +628,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         }
         R.id.action_external_links_direct -> {
             setExternalLinksDirect(!settings.externalLinksDirect)
+            true
+        }
+        R.id.action_read_aloud -> {
+            startReadAloud()
             true
         }
         R.id.action_restart_book -> {
@@ -916,6 +978,8 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         tableOfContentsDialog?.dismiss()
         tableOfContentsDialog = null
         dismissLinkDialogs()
+        ttsDialog?.dismiss()
+        ttsDialog = null
         super.onDestroy()
     }
 
@@ -1009,9 +1073,182 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         }
     }
 
+    // Read-aloud (roadmap P3)
+
+    internal val ttsStatus: StateFlow<TtsStatus> get() = model.tts.status
+
+    internal val ttsLocation: StateFlow<TtsLocation?> get() = model.tts.location
+
+    internal val ttsPreferences: StateFlow<AndroidTtsPreferences> get() = model.tts.preferences
+
+    internal val ttsSession: TtsSession? get() = model.tts.session.value
+
+    /** The locator of the sentence currently highlighted, null when none is. */
+    internal val ttsHighlighted: Locator? get() = ttsHighlight
+
+    /** Test hook: whether the chrome shows the read-aloud bar (when not immersive). */
+    internal val chromeShowsReadAloud: Boolean get() = chrome.readAloudVisible
+
+    /** The last one-off read-aloud outcome, for the device tests. */
+    internal var lastTtsEvent: TtsEvent? = null
+        private set
+
+    /**
+     * Starts reading from the first visible element. Android 13+ asks for the notification
+     * permission once beforehand (the media notification needs it); refusing keeps read-aloud
+     * working without the notification controls (roadmap D15).
+     */
+    internal fun startReadAloud() {
+        if (model.publication == null || model.tts.isActive) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED &&
+            !settings.readAloudNotificationAsked
+        ) {
+            settings.readAloudNotificationAsked = true
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            return
+        }
+        launchReadAloud()
+    }
+
+    private fun launchReadAloud() {
+        val publication = model.publication ?: return
+        lifecycleScope.launch {
+            val fragment = navigator?.takeIf { it.isAdded && navigatorReady }
+            val locator = fragment?.let { runCatching { it.firstVisibleElementLocator() }.getOrNull() }
+                ?: fragment?.currentLocator?.value
+                ?: model.lastLocator
+            model.tts.start(publication, model.bookKey, publication.metadata.title, locator)
+        }
+    }
+
+    internal fun readAloudTogglePlayPause() = model.tts.togglePlayPause()
+
+    internal fun readAloudPrevious() = model.tts.previous()
+
+    internal fun readAloudNext() = model.tts.next()
+
+    internal fun stopReadAloud() = model.tts.stop()
+
+    internal fun updateTtsPreferences(transform: (AndroidTtsPreferences) -> AndroidTtsPreferences) =
+        model.tts.updatePreferences(transform)
+
+    private fun showTtsSettings() {
+        if (!model.tts.isActive) return
+        TtsSheet.show(supportFragmentManager)
+    }
+
+    /** A manual page turn or jump ends read-aloud: the voice would otherwise drag the page back. */
+    private fun stopReadAloudForNavigation() {
+        if (model.tts.isActive) model.tts.stop()
+    }
+
+    private fun onTtsStatus(status: TtsStatus) {
+        chrome.showReadAloud(status)
+        if (status == TtsStatus.IDLE) {
+            ttsFollowJob?.cancel()
+            pendingTtsFollow = null
+            applyTtsDecoration(null)
+        }
+        invalidateOptionsMenu()
+    }
+
+    private fun onTtsLocation(location: TtsLocation?) {
+        applyTtsDecoration(location?.locator)
+        if (location != null) followTts(location.locator)
+    }
+
+    /**
+     * Turns the page to the sentence being spoken, at most once a second so a fast voice does not
+     * make the navigator thrash; only while playing, so a paused voice leaves browsing alone.
+     */
+    private fun followTts(locator: Locator) {
+        pendingTtsFollow = locator
+        if (ttsFollowJob?.isActive == true) return
+        val wait = (lastTtsFollowAt + TTS_FOLLOW_INTERVAL_MILLIS - SystemClock.uptimeMillis()).coerceAtLeast(0L)
+        ttsFollowJob = lifecycleScope.launch {
+            delay(wait)
+            val target = pendingTtsFollow ?: return@launch
+            pendingTtsFollow = null
+            if (navigatorReady && model.tts.status.value == TtsStatus.PLAYING) {
+                lastTtsFollowAt = SystemClock.uptimeMillis()
+                navigator?.go(target, animated = false)
+            }
+        }
+    }
+
+    /** One highlight decoration for the spoken sentence (group `tts`); fixed layouts render none. */
+    private fun applyTtsDecoration(locator: Locator?) {
+        ttsHighlight = locator
+        val fragment = navigator?.takeIf { it.isAdded && it.view != null } ?: return
+        val decorations = locator?.let {
+            listOf(
+                Decoration(
+                    id = TTS_DECORATIONS,
+                    locator = it,
+                    style = Decoration.Style.Highlight(tint = ContextCompat.getColor(this, R.color.color_primary)),
+                ),
+            )
+        }.orEmpty()
+        lifecycleScope.launch {
+            decorationMutex.withLock {
+                if (fragment.isAdded && fragment.view != null) fragment.applyDecorations(decorations, TTS_DECORATIONS)
+            }
+        }
+    }
+
+    private fun onTtsEvent(event: TtsEvent) {
+        lastTtsEvent = event
+        when (event) {
+            TtsEvent.Ended -> Toast.makeText(this, R.string.text_read_aloud_ended, Toast.LENGTH_SHORT).show()
+            TtsEvent.NoContent -> Toast.makeText(this, R.string.text_read_aloud_unavailable, Toast.LENGTH_LONG).show()
+            TtsEvent.NoEngine ->
+                showTtsDialog(getString(R.string.text_read_aloud_no_engine), R.string.text_read_aloud_open_settings) { openTtsSettings() }
+            is TtsEvent.MissingVoiceData -> showTtsDialog(
+                getString(R.string.text_read_aloud_missing_voice, displayLanguage(event.language)),
+                R.string.text_read_aloud_install_voice,
+            ) { installTtsVoice() }
+            is TtsEvent.Failed -> Toast.makeText(
+                this,
+                when (event.kind) {
+                    TtsEvent.Failed.Kind.NETWORK -> R.string.text_read_aloud_failed_network
+                    TtsEvent.Failed.Kind.ENGINE -> R.string.text_read_aloud_failed_engine
+                    TtsEvent.Failed.Kind.CONTENT -> R.string.text_read_aloud_failed_content
+                },
+                Toast.LENGTH_LONG,
+            ).show()
+        }
+    }
+
+    private fun displayLanguage(tag: String): String =
+        Locale.forLanguageTag(tag).displayName.takeIf { it.isNotBlank() } ?: tag
+
+    private fun showTtsDialog(message: String, actionTitle: Int, action: () -> Unit) {
+        ttsDialog?.dismiss()
+        ttsDialog = AlertDialog.Builder(this)
+            .setTitle(R.string.text_read_aloud)
+            .setMessage(message)
+            .setPositiveButton(actionTitle) { _, _ -> action() }
+            .setNegativeButton(R.string.dialog_button_cancel, null)
+            .setOnDismissListener { if (ttsDialog === it) ttsDialog = null }
+            .show()
+    }
+
+    /** The system's text-to-speech settings page (a toast when the ROM has none). */
+    internal fun openTtsSettings() = launchOrToast(Intent(ACTION_TTS_SETTINGS))
+
+    /** The engine's voice-data installer (Readium starts it when an installer activity exists). */
+    internal fun installTtsVoice() {
+        runCatching { AndroidTtsEngine.requestInstallVoice(this) }
+            .onFailure { Toast.makeText(this, R.string.text_no_app_for_action, Toast.LENGTH_SHORT).show() }
+    }
+
     companion object {
         internal const val NAVIGATOR_TAG = "readium-epub-navigator"
         internal const val SEARCH_DECORATIONS = "search"
+        internal const val TTS_DECORATIONS = "tts"
+        private const val TTS_FOLLOW_INTERVAL_MILLIS = 1000L
+        private const val ACTION_TTS_SETTINGS = "com.android.settings.TTS_SETTINGS"
         private const val STATE_LOCATOR = "locator"
         private const val STATE_IMMERSIVE = "immersive"
 

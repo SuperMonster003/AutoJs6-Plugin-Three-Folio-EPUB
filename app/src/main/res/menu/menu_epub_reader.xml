@@ -27,6 +27,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_read_aloud"
+        android:icon="@drawable/ic_volume_up_24"
+        android:title="@string/text_read_aloud"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_bookmarks"
         android:title="@string/text_bookmarks"
         app:showAsAction="never" />

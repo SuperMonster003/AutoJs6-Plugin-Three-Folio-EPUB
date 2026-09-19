@@ -24,11 +24,13 @@
         "阅读控制: 点按翻页可关闭或设为左右 / 上下, 硬件键盘的方向键, 翻页键与空格可翻页, 选中文本后提供复制, 分享, 网页搜索与系统的文本处理应用",
         "链接: 书内链接在阅读器内跳转, 返回键先回到跳转前的位置, 脚注与尾注在对话框中显示, 外部链接确认后打开或按设置直接交给浏览器; 其它 scheme 的链接拒绝打开",
         "图片: 点按图片以全屏查看并显示说明文字",
+        "朗读: 溢出菜单用系统文字转语音引擎从当前页开始朗读, 高亮正在朗读的句子并自动翻页跟随; 页面下方的工具条与媒体通知提供播放 / 暂停, 上一句 / 下一句与停止, 支持耳机按键, 可调节语速, 音调, 语言与语音, 熄屏后继续朗读, 关闭阅读器即停止",
         "书籍通过宿主授予的文件描述符按位置就地读取, 不复制也不解压到存储",
         "界面, 说明, README 与更新日志提供 10 种语言"
       ],
       "dependency": [
-        "附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)"
+        "附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)",
+        "附加 `androidx.media3:media3-session` 1.11.0 (`readium-navigator-media-tts` 已间接引入; 为朗读前台服务直接声明)"
       ],
       "fix": [
         "AGP 9.1 构建时的 SDK XML v4 解析警告及 JVM 单元测试组装任务误触发 APK 原生库对齐检查的问题 (共享构建插件 1.8.3)",

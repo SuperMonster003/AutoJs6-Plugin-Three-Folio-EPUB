@@ -21,6 +21,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderThemeColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsStatus
 
 /**
  * Toolbar, progress bar, immersive mode and colours of the reader (roadmap P1.2 / P2.1).
@@ -31,7 +32,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.Reader
  * changes. Immersive mode hides the chrome and the system bars, exactly like the sibling
  * previewers' fullscreen mode; the reader itself never moves, so toggling keeps the locator.
  * The search bar (P2.5) sits above the progress panel while a search hit is open and follows the
- * same colours and immersive rule.
+ * same colours and immersive rule; the read-aloud bar (P3) does the same while a voice reads.
  */
 internal class ReaderChrome(
     private val activity: Activity,
@@ -50,6 +51,10 @@ internal class ReaderChrome(
 
     /** True while a search hit is open; the bar shows only together with the rest of the chrome. */
     var searchBarVisible: Boolean = false
+        private set
+
+    /** True while read-aloud runs; its bar shows only together with the rest of the chrome. */
+    var readAloudVisible: Boolean = false
         private set
 
     var theme: ReaderTheme = ReaderTheme.LIGHT
@@ -116,6 +121,42 @@ internal class ReaderChrome(
         applyVisibility()
     }
 
+    fun setReadAloudListeners(
+        onPrevious: () -> Unit,
+        onPlayPause: () -> Unit,
+        onNext: () -> Unit,
+        onSettings: () -> Unit,
+        onStop: () -> Unit,
+    ) {
+        binding.ttsPrevious.setOnClickListener { onPrevious() }
+        binding.ttsPlayPause.setOnClickListener { onPlayPause() }
+        binding.ttsNext.setOnClickListener { onNext() }
+        binding.ttsSettings.setOnClickListener { onSettings() }
+        binding.ttsStop.setOnClickListener { onStop() }
+    }
+
+    /** Shows the read-aloud bar for every status but idle; the controls wait while the engine starts. */
+    fun showReadAloud(status: TtsStatus) {
+        readAloudVisible = status != TtsStatus.IDLE
+        val playing = status == TtsStatus.PLAYING
+        binding.ttsPlayPause.setImageResource(if (playing) R.drawable.ic_pause_24 else R.drawable.ic_play_arrow_24)
+        binding.ttsPlayPause.contentDescription =
+            activity.getString(if (playing) R.string.text_read_aloud_pause else R.string.text_read_aloud_play)
+        binding.ttsStatus.setText(
+            when (status) {
+                TtsStatus.STARTING -> R.string.text_read_aloud_starting
+                TtsStatus.PLAYING -> R.string.text_read_aloud_playing
+                else -> R.string.text_read_aloud_paused
+            },
+        )
+        val controls = status != TtsStatus.STARTING
+        setEnabled(binding.ttsPrevious, controls)
+        setEnabled(binding.ttsPlayPause, controls)
+        setEnabled(binding.ttsNext, controls)
+        setEnabled(binding.ttsSettings, controls)
+        applyVisibility()
+    }
+
     private fun setEnabled(button: android.view.View, enabled: Boolean) {
         button.isEnabled = enabled
         button.alpha = if (enabled) 1f else DISABLED_ALPHA
@@ -162,6 +203,13 @@ internal class ReaderChrome(
         binding.searchPrevious.imageTintList = iconTint
         binding.searchNext.imageTintList = iconTint
         binding.searchClose.imageTintList = iconTint
+        binding.ttsBar.setBackgroundColor(colors.background)
+        binding.ttsStatus.setTextColor(colors.foreground)
+        binding.ttsPrevious.imageTintList = iconTint
+        binding.ttsPlayPause.imageTintList = iconTint
+        binding.ttsNext.imageTintList = iconTint
+        binding.ttsSettings.imageTintList = iconTint
+        binding.ttsStop.imageTintList = iconTint
         tintToolbarIcons(binding.toolbar.menu)
         applySystemBars()
     }
@@ -181,6 +229,7 @@ internal class ReaderChrome(
     private fun applyVisibility() {
         binding.toolbar.isVisible = !immersive
         binding.searchBar.isVisible = readerVisible && searchBarVisible && !immersive
+        binding.ttsBar.isVisible = readerVisible && readAloudVisible && !immersive
         binding.progressPanel.isVisible = readerVisible && !immersive
     }
 

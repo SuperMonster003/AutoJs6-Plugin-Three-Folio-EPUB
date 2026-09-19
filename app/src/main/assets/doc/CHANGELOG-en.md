@@ -22,9 +22,11 @@
 * `Feature` Reading controls: tap zones can be switched off or set to left / right or top / bottom, hardware keyboards turn pages with the arrow, page and space keys, and selected text offers copy, share, web search and the system's text-processing apps
 * `Feature` Links: in-book links open in the reader and the back key returns to where you were, footnotes and endnotes open in a dialog, and external links open after confirmation or, if you choose so, directly in the browser; links with other schemes are refused
 * `Feature` Images: tapping an image opens it full screen with its caption
+* `Feature` Read aloud: the overflow menu speaks the book from the current page with the system text-to-speech engine, highlights the sentence being spoken and turns pages along; a bar under the page and a media notification offer play / pause, previous / next sentence and stop, headset buttons work, speed, pitch, language and voice are adjustable, and reading continues with the screen off and stops when the reader closes
 * `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 * `Feature` Interface, instructions, README, and changelog in 10 languages
 * `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 * `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 * `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied
 * `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
+* `Dependency` Add `androidx.media3:media3-session` 1.11.0 (already pulled in by `readium-navigator-media-tts`; declared directly for the read-aloud foreground service)

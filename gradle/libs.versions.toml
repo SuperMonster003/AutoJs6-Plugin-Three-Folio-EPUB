@@ -16,6 +16,10 @@ webkit = "1.17.0"
 # Coroutines version used by Readium 3.4.0.
 coroutines = "1.11.0"
 
+# AndroidX Media3 version pulled in by readium-navigator-media-tts 3.4.0; media3-session is declared
+# directly because the read-aloud foreground service subclasses MediaSessionService (roadmap P3).
+media3 = "1.11.0"
+
 # Compatibility of java.time.* for Android API Level < 26 (Android 8.0) [O]; kotlinx-datetime needs it.
 desugar = "2.1.5"
 
@@ -49,6 +53,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
 org-json = { module = "org.json:json", version.ref = "org-json" }
 readium-navigator = { module = "org.readium.kotlin-toolkit:readium-navigator", version.ref = "readium" }
 readium-navigator-media-tts = { module = "org.readium.kotlin-toolkit:readium-navigator-media-tts", version.ref = "readium" }

@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys. Read-aloud, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -63,6 +63,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Full-text search: a `Search` entry in the toolbar finds every occurrence in the book, 50 at a time (up to 500), grouped by chapter with the surrounding text; tapping a result jumps to it, highlights it on the page and offers previous / next above the progress bar.
 - Bookmarks: the toolbar icon marks the current page (it fills when the page is bookmarked) and the `Bookmarks` entry lists every bookmark with its chapter, an excerpt and the time, newest first, to jump, delete or clear them all; they are stored per book (up to 500) next to the reading position.
 - Gestures, keys and links: tap zones (off, left / right or top / bottom), volume keys, hardware keyboard keys and a text-selection menu with copy, share, web search and text-processing apps; in-book links keep a back stack, notes open in a dialog, external links open after confirmation or directly, and a tapped image opens full screen.
+- Read aloud: `Read aloud` in the overflow menu speaks the book from the current page with the system text-to-speech engine, highlights the sentence being spoken and turns the pages along; a bar under the page and a media notification offer play / pause, previous / next sentence and stop, headset buttons work, speed, pitch, language and voice are adjustable, reading continues with the screen off and stops when the reader closes.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -125,8 +126,9 @@ The plugin keeps Readium's default behavior for book content: scripts and remote
 - Bounded parsing: a malformed container (not a ZIP, missing `container.xml`, missing package document, path traversal in the manifest) fails with an error message instead of a crash.
 - External links are shown in full and opened in the system browser only after confirmation; schemes other than `http` and `https` are refused.
 - Reading data stays local: positions are keyed by a content fingerprint and no file path or name is written to storage.
+- Read-aloud runs in a non-exported media playback service that lives only while a voice reads and stops when you stop it, the book ends or the reader closes; the text goes to the text-to-speech engine chosen in the system settings, and the plugin holds no wake lock.
 
-The manifest requests only the network permission and the AutoJs6 plugin permission. AndroidX also contributes a package-scoped signature permission that protects non-exported dynamic receivers; it grants no access to device data. No storage, media, camera, location, accessibility or overlay permission is requested.
+The manifest requests the network permission, the AutoJs6 plugin permission and, for read-aloud, the foreground service permissions (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) plus `POST_NOTIFICATIONS` on Android 13+, which is asked for once when read-aloud starts and can be refused (reading then continues without the notification controls). AndroidX also contributes a package-scoped signature permission that protects non-exported dynamic receivers; it grants no access to device data. No storage, media, camera, location, accessibility or overlay permission is requested.
 
 ******
 
@@ -187,12 +189,14 @@ _2026/09/19_
 - `Feature` Reading controls: tap zones can be switched off or set to left / right or top / bottom, hardware keyboards turn pages with the arrow, page and space keys, and selected text offers copy, share, web search and the system's text-processing apps
 - `Feature` Links: in-book links open in the reader and the back key returns to where you were, footnotes and endnotes open in a dialog, and external links open after confirmation or, if you choose so, directly in the browser; links with other schemes are refused
 - `Feature` Images: tapping an image opens it full screen with its caption
+- `Feature` Read aloud: the overflow menu speaks the book from the current page with the system text-to-speech engine, highlights the sentence being spoken and turns pages along; a bar under the page and a media notification offer play / pause, previous / next sentence and stop, headset buttons work, speed, pitch, language and voice are adjustable, and reading continues with the screen off and stops when the reader closes
 - `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 - `Feature` Interface, instructions, README, and changelog in 10 languages
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 - `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 - `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied
 - `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
+- `Dependency` Add `androidx.media3:media3-session` 1.11.0 (already pulled in by `readium-navigator-media-tts`; declared directly for the read-aloud foreground service)
 
 ##### For more release history
 

@@ -5,10 +5,17 @@
     <!-- INTERNET: remote resources referenced by a book (roadmap D6) and the manual update check (D28). -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="org.autojs.permission.PLUGIN" />
+    <!-- Read-aloud (roadmap P3 / D15): speech runs inside a mediaPlayback foreground service so it
+         survives the screen turning off; these three permissions exist for that alone (exemption recorded
+         in AGENTS.md section 6). POST_NOTIFICATIONS is requested at runtime, once, when read-aloud
+         starts on Android 13+; refusing it keeps read-aloud working without the notification controls. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- media3-exoplayer (a transitive dependency of readium-navigator-media-tts) declares these two
          permissions in its own manifest. The plugin never plays media through ExoPlayer (R8 strips the
-         library entirely), so they are removed to keep the permission set at INTERNET + PLUGIN (roadmap D19).
-         Roadmap P3 (read-aloud foreground service) must re-add WAKE_LOCK explicitly if it needs it. -->
+         library entirely), so they are removed (roadmap D19). The read-aloud service (P3) needs neither:
+         the system text-to-speech engine produces the audio in its own process. -->
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:node="remove" />
@@ -18,6 +25,14 @@
 
     <queries>
         <package android:name="org.autojs.autojs6" />
+        <!-- Read-aloud (roadmap P3): TextToSpeech discovers engines through this action on Android 11+,
+             and the voice-data installer is resolved before it is started. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.tts.engine.INSTALL_TTS_DATA" />
+        </intent>
     </queries>
 
     <!-- usesCleartextTraffic is true on purpose (roadmap D31): books may reference http:// resources
@@ -87,6 +102,17 @@
             <intent-filter>
                 <action android:name="org.autojs.plugin.EXPLORER_ACTION" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- Read-aloud (roadmap P3 / D15): not exported, only the reader binds it; the media3 action lets the
+             library connect its own notification controller in-process. Exists only while a voice reads. -->
+        <service
+            android:name=".tts.TtsForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
 
