@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_bookmark"
+        android:icon="@drawable/ic_bookmark_border_24"
+        android:title="@string/text_bookmark_add"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_table_of_contents"
         android:icon="@drawable/ic_toc_24"
         android:title="@string/text_table_of_contents"
@@ -19,6 +25,11 @@
         android:icon="@drawable/ic_tune_24"
         android:title="@string/text_preferences"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_bookmarks"
+        android:title="@string/text_bookmarks"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_scroll_mode"

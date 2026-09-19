@@ -25,6 +25,9 @@ class BookDataStoreTest {
         totalProgression = 0.5,
     )
 
+    private fun bookmark(id: Long, href: String, createdAt: Long) =
+        Bookmark(id, JSONObject().put("href", href).put("type", "application/xhtml+xml"), createdAt, "Chapter", null)
+
     @Test
     fun progressIsWrittenAtomicallyUnderTheFingerprintDirectory() {
         val store = BookDataStore(root)
@@ -179,6 +182,69 @@ class BookDataStoreTest {
         assertEquals(listOf(key(82)), store.bookKeys())
         assertEquals(key(81), store.resolveKey(key(81)))
         assertFalse(File(root, BookDataStore.ALIASES_DIRECTORY).resolve(key(81)).exists())
+    }
+
+    @Test
+    fun bookmarksAreWrittenWholeAndAnEmptyListRemovesTheFile() {
+        val store = BookDataStore(root)
+        val bookmarks = listOf(bookmark(0, "c1.xhtml", 10L), bookmark(1, "c2.xhtml", 20L))
+
+        store.writeBookmarks(key(40), bookmarks)
+
+        val file = File(root, key(40)).resolve(BookDataStore.BOOKMARKS_FILE)
+        assertTrue(file.isFile)
+        assertFalse(File(root, key(40)).resolve("bookmarks.json.tmp").exists())
+        assertEquals(listOf(0L, 1L), store.readBookmarks(key(40)).map { it.id })
+        assertEquals(emptyList<Bookmark>(), store.readBookmarks(key(41)))
+
+        store.writeBookmarks(key(40), emptyList())
+        assertFalse(file.exists())
+        assertEquals(emptyList<Bookmark>(), store.readBookmarks(key(40)))
+        store.writeBookmarks(key(40), emptyList()) // idempotent
+    }
+
+    @Test
+    fun corruptBookmarksReadAsEmpty() {
+        val store = BookDataStore(root)
+        File(root, key(42)).apply { mkdirs() }.resolve(BookDataStore.BOOKMARKS_FILE).writeText("{ not json")
+
+        assertEquals(emptyList<Bookmark>(), store.readBookmarks(key(42)))
+
+        store.writeBookmarks(key(42), listOf(bookmark(0, "c1.xhtml", 1L)))
+        assertEquals(1, store.readBookmarks(key(42)).size)
+    }
+
+    @Test
+    fun migrationUnitesTheBookmarksOfBothKeys() {
+        val store = BookDataStore(root)
+        store.writeProgress(key(43), record("quick.xhtml", 200L))
+        store.writeProgress(key(44), record("full.xhtml", 100L))
+        store.writeBookmarks(key(43), listOf(bookmark(0, "shared.xhtml", 10L), bookmark(1, "quick-only.xhtml", 20L)))
+        store.writeBookmarks(key(44), listOf(bookmark(0, "shared.xhtml", 10L), bookmark(1, "full-only.xhtml", 30L)))
+
+        assertTrue(store.migrate(key(43), key(44)))
+
+        assertFalse(File(root, key(43)).exists())
+        val united = store.readBookmarks(key(44))
+        assertEquals(listOf("shared.xhtml", "full-only.xhtml", "quick-only.xhtml"), united.map { it.href })
+        assertEquals(listOf(0L, 1L, 2L), united.map { it.id })
+    }
+
+    @Test
+    fun migrationIntoAKeyWithoutBookmarksMovesThemAndACorruptSourceLeavesTheTargetAlone() {
+        val store = BookDataStore(root)
+        store.writeProgress(key(45), record("quick.xhtml", 200L))
+        store.writeProgress(key(46), record("full.xhtml", 100L))
+        store.writeBookmarks(key(45), listOf(bookmark(3, "moved.xhtml", 10L)))
+
+        assertTrue(store.migrate(key(45), key(46)))
+        assertEquals(listOf(3L), store.readBookmarks(key(46)).map { it.id })
+
+        store.writeProgress(key(47), record("quick.xhtml", 300L))
+        File(root, key(47)).resolve(BookDataStore.BOOKMARKS_FILE).writeText("garbage")
+        assertTrue(store.migrate(key(47), key(46)))
+        assertEquals(listOf(3L), store.readBookmarks(key(46)).map { it.id })
+        assertFalse(File(root, key(47)).exists())
     }
 
     @Test

@@ -3,15 +3,15 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader.store
 import java.io.File
 
 /**
- * Per-book data under `files/books/<fingerprint>/` (roadmap D4 / D13 / D23): `progress.json` today,
- * `bookmarks.json` from roadmap P2.6. Keys are content fingerprints, never paths or names.
+ * Per-book data under `files/books/<fingerprint>/` (roadmap D4 / D13 / D23): `progress.json` and,
+ * from roadmap P2.6, `bookmarks.json`. Keys are content fingerprints, never paths or names.
  *
  * - Writes are atomic ([AtomicFiles]) and the store keeps at most [bookLimit] books, evicting the
  *   least recently updated ones.
  * - [migrate] moves a book from its temporary quick key to the full-file fingerprint once the
- *   background hash completes; when both exist, the newer progress wins. The quick key then
- *   stays known as an alias (`aliases/<quick key>` naming the full key) so the next open finds
- *   the book before the full hash is recomputed.
+ *   background hash completes; when both exist, the newer progress wins and the bookmarks are
+ *   united. The quick key then stays known as an alias (`aliases/<quick key>` naming the full
+ *   key) so the next open finds the book before the full hash is recomputed.
  *
  * Pure JVM and single-threaded by contract: callers serialize access (the view model uses one
  * mutex and one IO dispatcher).
@@ -36,6 +36,22 @@ internal class BookDataStore(
         File(directory, PROGRESS_FILE).delete()
         File(directory, "$PROGRESS_FILE.tmp").delete()
         if (directory.list().isNullOrEmpty()) directory.delete()
+    }
+
+    /** The bookmarks of one book in creation order; a missing or unreadable file is an empty list. */
+    fun readBookmarks(key: String): List<Bookmark> =
+        AtomicFiles.read(bookmarksFile(key))?.let { BookmarkCodec.decode(String(it, Charsets.UTF_8)) } ?: emptyList()
+
+    /** Replaces the book's bookmarks; an empty list removes the file (the directory stays for the progress). */
+    fun writeBookmarks(key: String, bookmarks: List<Bookmark>) {
+        val file = bookmarksFile(key)
+        if (bookmarks.isEmpty()) {
+            file.delete()
+            File(file.parentFile, "$BOOKMARKS_FILE.tmp").delete()
+            return
+        }
+        AtomicFiles.write(file, BookmarkCodec.encode(bookmarks).toByteArray(Charsets.UTF_8))
+        evictBeyondLimit()
     }
 
     /** Deletes everything stored for every book (settings page "clear all reading data", roadmap P4). */
@@ -64,8 +80,15 @@ internal class BookDataStore(
         if (winner != null && !winner.sameAs(targetProgress)) {
             AtomicFiles.write(progressFile(toKey), ProgressCodec.encode(winner).toByteArray(Charsets.UTF_8))
         }
+        // Bookmarks are united (the target's keep their ids); a source file that does not decode
+        // has nothing to contribute and leaves the target alone.
+        val sourceBookmarks = readBookmarks(fromKey)
+        if (sourceBookmarks.isNotEmpty()) {
+            val merged = BookmarkCodec.merge(readBookmarks(toKey), sourceBookmarks)
+            AtomicFiles.write(bookmarksFile(toKey), BookmarkCodec.encode(merged).toByteArray(Charsets.UTF_8))
+        }
         source.listFiles().orEmpty()
-            .filter { it.isFile && it.name != PROGRESS_FILE && !it.name.endsWith(".tmp") }
+            .filter { it.isFile && it.name != PROGRESS_FILE && it.name != BOOKMARKS_FILE && !it.name.endsWith(".tmp") }
             .forEach { file ->
                 val destination = File(target, file.name)
                 if (!destination.exists()) file.renameTo(destination)
@@ -132,6 +155,8 @@ internal class BookDataStore(
 
     private fun progressFile(key: String): File = File(bookDirectory(key), PROGRESS_FILE)
 
+    private fun bookmarksFile(key: String): File = File(bookDirectory(key), BOOKMARKS_FILE)
+
     private fun aliasFile(key: String): File {
         require(KEY_PATTERN.matches(key)) { "Not a book fingerprint" }
         return File(File(root, ALIASES_DIRECTORY), key)
@@ -145,6 +170,7 @@ internal class BookDataStore(
     companion object {
         const val MAX_BOOKS = 500
         const val PROGRESS_FILE = "progress.json"
+        const val BOOKMARKS_FILE = "bookmarks.json"
         const val DIRECTORY_NAME = "books"
         const val ALIASES_DIRECTORY = "aliases"
 

@@ -6,6 +6,17 @@
     <string name="plugin_description">Reads EPUB e-books with navigation, search, read-aloud and scripting access</string>
     <string name="release_history">Release history</string>
     <string name="release_history_unavailable">Release history is unavailable</string>
+    <string name="text_bookmark_add">Add bookmark</string>
+    <string name="text_bookmark_added">Bookmark added</string>
+    <string name="text_bookmark_clear_all">Clear all</string>
+    <string name="text_bookmark_clear_all_message">Remove all %1$d bookmarks of this book?</string>
+    <string name="text_bookmark_delete">Delete bookmark</string>
+    <string name="text_bookmark_empty">No bookmarks yet</string>
+    <string name="text_bookmark_full">Bookmark limit reached (%1$d)</string>
+    <string name="text_bookmark_here">Bookmark this page</string>
+    <string name="text_bookmark_remove">Remove bookmark</string>
+    <string name="text_bookmark_removed">Bookmark removed</string>
+    <string name="text_bookmarks">Bookmarks</string>
     <string name="text_cannot_open_link">Cannot open the link</string>
     <string name="text_cannot_read_file">Cannot read the EPUB file</string>
     <string name="text_column_count_auto">Auto</string>

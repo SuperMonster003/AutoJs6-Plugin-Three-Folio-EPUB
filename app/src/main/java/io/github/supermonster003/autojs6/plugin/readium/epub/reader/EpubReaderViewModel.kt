@@ -20,6 +20,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeM
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchSession
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookmarkCodec
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
@@ -39,6 +41,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.json.JSONObject
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.epub.EpubPreferences
 import org.readium.r2.shared.ExperimentalReadiumApi
@@ -54,6 +57,12 @@ internal sealed class OpenFailure {
     object Protected : OpenFailure()
     object TimedOut : OpenFailure()
     data class Other(val detail: String) : OpenFailure()
+}
+
+/** Outcome of [EpubReaderViewModel.addBookmark]. */
+internal sealed class BookmarkAddResult {
+    data class Added(val bookmark: Bookmark) : BookmarkAddResult()
+    data class Full(val limit: Int) : BookmarkAddResult()
 }
 
 internal sealed class OpenState {
@@ -76,7 +85,9 @@ internal sealed class OpenState {
  * imported fonts (roadmap P2.2): the catalog is read once, served to the book through
  * [FontsContainer], and updated by [importFont] / [deleteFont], and the full-text search
  * (roadmap P2.5): one [SearchSession] per book, whose results and active hit survive rotation and
- * the panel being closed, and which is dropped with the book.
+ * the panel being closed, and which is dropped with the book, and the bookmarks (roadmap P2.6):
+ * read with the progress under the book's key, edited in memory and written whole after each
+ * change, and united with whatever the full fingerprint already held once the migration runs.
  *
  * The publication lives only in memory: after process death the Activity reopens the book from its
  * Intent and the saved locator instead of restoring fragments.
@@ -129,6 +140,11 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     /** The full-text search over the open book (roadmap P2.5). */
     val search: StateFlow<SearchState> get() = searchSession.state
+
+    private val _bookmarks = MutableStateFlow<List<Bookmark>>(emptyList())
+
+    /** The bookmarks of the open book in creation order (roadmap P2.6). */
+    val bookmarks: StateFlow<List<Bookmark>> get() = _bookmarks
 
     init {
         // The first run after the pre-P2.1 builds adopts the old scroll toggle so an update keeps
@@ -199,6 +215,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         val storedProgress = initialKey?.let { key ->
             withContext(Dispatchers.IO) { storeMutex.withLock { store.readProgress(key) } }
         }
+        val storedBookmarks = initialKey?.let { key ->
+            withContext(Dispatchers.IO) { storeMutex.withLock { store.readBookmarks(key) } }
+        }.orEmpty()
 
         val resource = PfdResource(descriptor, request.displayName)
         val opened = withTimeoutOrNull(OPEN_TIMEOUT_MILLIS) {
@@ -216,6 +235,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         release()
         this.resource = resource
         this.publication = publication
+        _bookmarks.value = storedBookmarks
         searchSession.attach(publication)
         navigatorFactory = EpubNavigatorFactory(publication)
         bookKey = initialKey
@@ -251,6 +271,14 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
                 if (current == fullKey || store.migrate(current, fullKey)) {
                     store.writeAlias(quickKey, fullKey)
                     bookKey = fullKey
+                    // The full fingerprint may already hold bookmarks this open did not see (its
+                    // alias was missing): unite them with the ones in memory, memory first.
+                    val onDisk = store.readBookmarks(fullKey)
+                    if (onDisk.isNotEmpty()) {
+                        val united = BookmarkCodec.merge(_bookmarks.value, onDisk)
+                        _bookmarks.value = united
+                        store.writeBookmarks(fullKey, united)
+                    }
                 }
             }
         }
@@ -371,6 +399,51 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         return deleted
     }
 
+    // ---- Bookmarks (roadmap P2.6) ----
+
+    /**
+     * Adds a bookmark for [locator] unless the book already has [BookmarkCodec.MAX_BOOKMARKS];
+     * ids grow monotonically so a deleted bookmark's id is never reused.
+     */
+    fun addBookmark(locator: JSONObject, chapter: String?, snippet: String?): BookmarkAddResult {
+        val current = _bookmarks.value
+        if (current.size >= BookmarkCodec.MAX_BOOKMARKS) return BookmarkAddResult.Full(BookmarkCodec.MAX_BOOKMARKS)
+        val bookmark = Bookmark(
+            id = (current.maxOfOrNull { it.id } ?: -1L) + 1,
+            locator = locator,
+            createdAtMillis = System.currentTimeMillis(),
+            chapter = chapter,
+            snippet = snippet,
+        )
+        _bookmarks.value = current + bookmark
+        persistBookmarks()
+        return BookmarkAddResult.Added(bookmark)
+    }
+
+    /** Removes the bookmark with [id]; returns false when there is none. */
+    fun removeBookmark(id: Long): Boolean {
+        val current = _bookmarks.value
+        val remaining = current.filterNot { it.id == id }
+        if (remaining.size == current.size) return false
+        _bookmarks.value = remaining
+        persistBookmarks()
+        return true
+    }
+
+    fun clearBookmarks() {
+        if (_bookmarks.value.isEmpty()) return
+        _bookmarks.value = emptyList()
+        persistBookmarks()
+    }
+
+    /** Whole-file write of the current list; like [persist], a failure loses this write, not the reader. */
+    private fun persistBookmarks() {
+        val snapshot = _bookmarks.value
+        persistScope.launch {
+            storeMutex.withLock { bookKey?.let { key -> runCatching { store.writeBookmarks(key, snapshot) } } }
+        }
+    }
+
     // ---- Full-text search (roadmap P2.5) ----
 
     fun search(query: String) = searchSession.search(query)
@@ -390,6 +463,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     private fun release() {
         searchSession.detach()
+        _bookmarks.value = emptyList()
         navigatorFactory = null
         publication?.close()
         publication = null

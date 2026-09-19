@@ -6,6 +6,17 @@
     <string name="plugin_description">Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</string>
     <string name="release_history">История выпусков</string>
     <string name="release_history_unavailable">История выпусков недоступна</string>
+    <string name="text_bookmark_add">Добавить закладку</string>
+    <string name="text_bookmark_added">Закладка добавлена</string>
+    <string name="text_bookmark_clear_all">Очистить все</string>
+    <string name="text_bookmark_clear_all_message">Удалить все закладки этой книги (%1$d)?</string>
+    <string name="text_bookmark_delete">Удалить закладку</string>
+    <string name="text_bookmark_empty">Закладок пока нет</string>
+    <string name="text_bookmark_full">Достигнут предел закладок (%1$d)</string>
+    <string name="text_bookmark_here">Заложить эту страницу</string>
+    <string name="text_bookmark_remove">Убрать закладку</string>
+    <string name="text_bookmark_removed">Закладка убрана</string>
+    <string name="text_bookmarks">Закладки</string>
     <string name="text_cannot_open_link">Не удалось открыть ссылку</string>
     <string name="text_cannot_read_file">Не удалось прочитать файл EPUB</string>
     <string name="text_column_count_auto">Авто</string>

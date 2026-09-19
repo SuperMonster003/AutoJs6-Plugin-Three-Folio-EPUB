@@ -6,6 +6,17 @@
     <string name="plugin_description">EPUB 전자책을 읽고 목차, 검색, 읽어주기와 스크립트 추출을 제공</string>
     <string name="release_history">릴리스 기록</string>
     <string name="release_history_unavailable">릴리스 기록을 사용할 수 없습니다</string>
+    <string name="text_bookmark_add">북마크 추가</string>
+    <string name="text_bookmark_added">북마크를 추가했습니다</string>
+    <string name="text_bookmark_clear_all">모두 지우기</string>
+    <string name="text_bookmark_clear_all_message">이 책의 북마크 %1$d개를 모두 삭제할까요?</string>
+    <string name="text_bookmark_delete">북마크 삭제</string>
+    <string name="text_bookmark_empty">아직 북마크가 없습니다</string>
+    <string name="text_bookmark_full">북마크 한도 (%1$d개)에 도달했습니다</string>
+    <string name="text_bookmark_here">이 페이지를 북마크</string>
+    <string name="text_bookmark_remove">북마크 제거</string>
+    <string name="text_bookmark_removed">북마크를 제거했습니다</string>
+    <string name="text_bookmarks">북마크</string>
     <string name="text_cannot_open_link">링크를 열 수 없습니다</string>
     <string name="text_cannot_read_file">EPUB 파일을 읽을 수 없습니다</string>
     <string name="text_column_count_auto">자동</string>

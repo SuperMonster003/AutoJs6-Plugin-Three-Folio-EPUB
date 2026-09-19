@@ -6,6 +6,17 @@
     <string name="plugin_description">Lee libros EPUB con navegación, búsqueda, lectura en voz alta y acceso desde scripts</string>
     <string name="release_history">Historial de versiones</string>
     <string name="release_history_unavailable">El historial de versiones no está disponible</string>
+    <string name="text_bookmark_add">Añadir marcador</string>
+    <string name="text_bookmark_added">Marcador añadido</string>
+    <string name="text_bookmark_clear_all">Borrar todo</string>
+    <string name="text_bookmark_clear_all_message">¿Quitar los %1$d marcadores de este libro?</string>
+    <string name="text_bookmark_delete">Eliminar marcador</string>
+    <string name="text_bookmark_empty">Aún no hay marcadores</string>
+    <string name="text_bookmark_full">Límite de marcadores alcanzado (%1$d)</string>
+    <string name="text_bookmark_here">Marcar esta página</string>
+    <string name="text_bookmark_remove">Quitar marcador</string>
+    <string name="text_bookmark_removed">Marcador quitado</string>
+    <string name="text_bookmarks">Marcadores</string>
     <string name="text_cannot_open_link">No se puede abrir el enlace</string>
     <string name="text_cannot_read_file">No se puede leer el archivo EPUB</string>
     <string name="text_column_count_auto">Automático</string>

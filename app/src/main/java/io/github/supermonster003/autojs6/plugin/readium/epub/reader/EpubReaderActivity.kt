@@ -29,6 +29,9 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontLi
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageLocation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnAction
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PreferencesSheet
@@ -38,6 +41,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Searc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -64,6 +68,7 @@ import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Layout
 import org.readium.r2.shared.publication.Link
 import org.readium.r2.shared.publication.Locator
+import org.readium.r2.shared.publication.html.cssSelector
 import org.readium.r2.shared.util.AbsoluteUrl
 
 /**
@@ -109,7 +114,19 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     private val paginationListener = object : EpubNavigatorFragment.PaginationListener {
         // Only reached once the navigator is in its ready state (reflowable layouts).
-        override fun onPageChanged(pageIndex: Int, totalPages: Int, locator: Locator) = markNavigatorReady()
+        override fun onPageChanged(pageIndex: Int, totalPages: Int, locator: Locator) {
+            markNavigatorReady()
+            updateCurrentPage(
+                PageLocation(
+                    href = locator.href.toString(),
+                    progression = locator.locations.progression,
+                    position = locator.locations.position,
+                    pageIndex = pageIndex,
+                    totalPages = totalPages,
+                    scroll = currentSettings?.scroll ?: false,
+                ),
+            )
+        }
 
         // Fixed layouts never report page changes; their first loaded page is the best signal available.
         override fun onPageLoaded() {
@@ -138,6 +155,17 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     internal val searchSheet: SearchSheet?
         get() = supportFragmentManager.findFragmentByTag(SearchSheet.TAG) as? SearchSheet
+
+    internal val bookmarkSheet: BookmarkSheet?
+        get() = supportFragmentManager.findFragmentByTag(BookmarkSheet.TAG) as? BookmarkSheet
+
+    /** The page on screen as the bookmark rules see it; null until the navigator reports one. */
+    private var currentPage: PageLocation? = null
+
+    private val _currentBookmark = MutableStateFlow<Bookmark?>(null)
+
+    /** The bookmark of the page on screen, or null: drives the toolbar icon and the panel's add button. */
+    internal val currentBookmark: StateFlow<Bookmark?> get() = _currentBookmark
 
     /** Search decorations are applied one batch at a time: Readium diffs against the last batch it got. */
     private val decorationMutex = Mutex()
@@ -210,6 +238,11 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
                 model.search.collect { onSearchState(it) }
             }
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.bookmarks.collect { refreshCurrentBookmark() }
+            }
+        }
     }
 
     private fun describe(failure: OpenFailure): String = when (failure) {
@@ -254,6 +287,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             observedNavigator = fragment
             activeNavigator.value = fragment
             navigatorReady = false
+            updateCurrentPage(null)
             fragment.addInputListener(inputListener)
             // A retained navigator keeps the preferences it last received; the host's night mode
             // may have changed since, so hand it the current effective set once.
@@ -273,6 +307,12 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     private fun onLocator(locator: Locator, positionCount: Int) {
         model.onLocatorChanged(locator)
+        // Fixed layouts report no page changes; there one resource is one page.
+        if (fixedLayout) {
+            updateCurrentPage(
+                PageLocation(locator.href.toString(), locator.locations.progression, locator.locations.position, null, null, false),
+            )
+        }
         val publication = model.publication ?: return
         chrome.setChapterTitle(locator.title ?: TocSheet.chapterTitle(publication, locator.href.toString()))
         chrome.showProgress(
@@ -388,6 +428,13 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val ready = model.publication != null
         menu.findItem(R.id.action_search)?.isVisible = ready
+        menu.findItem(R.id.action_bookmark)?.apply {
+            isVisible = ready
+            val bookmarked = _currentBookmark.value != null
+            setIcon(if (bookmarked) R.drawable.ic_bookmark_24 else R.drawable.ic_bookmark_border_24)
+            setTitle(if (bookmarked) R.string.text_bookmark_remove else R.string.text_bookmark_add)
+        }
+        menu.findItem(R.id.action_bookmarks)?.isVisible = ready
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
         menu.findItem(R.id.action_preferences)?.isVisible = ready
         menu.findItem(R.id.action_scroll_mode)?.apply {
@@ -406,6 +453,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_search -> {
             showSearch()
+            true
+        }
+        R.id.action_bookmark -> {
+            toggleBookmark()
+            true
+        }
+        R.id.action_bookmarks -> {
+            showBookmarks()
             true
         }
         R.id.action_table_of_contents -> {
@@ -531,6 +586,68 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         pendingJump = null
         supportFragmentManager.commitNow { remove(fragment) }
         if (model.state.value is OpenState.Ready) showReader()
+    }
+
+    // Bookmarks (roadmap P2.6)
+
+    internal val bookmarks: StateFlow<List<Bookmark>> get() = model.bookmarks
+
+    private fun updateCurrentPage(page: PageLocation?) {
+        currentPage = page
+        refreshCurrentBookmark()
+    }
+
+    private fun refreshCurrentBookmark() {
+        val bookmark = BookmarkPolicy.current(model.bookmarks.value, currentPage)
+        if (bookmark?.id != _currentBookmark.value?.id) {
+            _currentBookmark.value = bookmark
+            invalidateOptionsMenu()
+        }
+    }
+
+    /** The toolbar icon: removes the page's bookmark when it has one, adds one otherwise. */
+    internal fun toggleBookmark() {
+        val current = _currentBookmark.value
+        if (current != null) removeBookmark(current.id) else addBookmark()
+    }
+
+    /**
+     * Bookmarks the page on screen: the navigator's locator carries the page and the chapter
+     * title, the first visible element (reflowable only) contributes the anchor and the excerpt.
+     */
+    internal fun addBookmark() {
+        val fragment = navigator?.takeIf { it.isAdded && navigatorReady } ?: return
+        val publication = model.publication ?: return
+        lifecycleScope.launch {
+            val current = fragment.currentLocator.value
+            val visible = if (fixedLayout) null else runCatching { fragment.firstVisibleElementLocator() }.getOrNull()
+            val href = current.href.toString()
+            val chapter = current.title?.takeIf { it.isNotBlank() }
+                ?: TocSheet.chapterTitle(publication, href)
+                ?: current.locations.position?.takeIf { fixedLayout }?.let { getString(R.string.text_progress_page_of, it, model.positionCount.value) }
+                ?: href.substringAfterLast('/')
+            val highlight = visible?.text?.highlight
+            val locator = BookmarkPolicy.composeLocator(current.toJSON(), visible?.locations?.cssSelector, highlight)
+            when (val result = model.addBookmark(locator, chapter, BookmarkPolicy.snippet(highlight))) {
+                is BookmarkAddResult.Added -> Toast.makeText(this@EpubReaderActivity, R.string.text_bookmark_added, Toast.LENGTH_SHORT).show()
+                is BookmarkAddResult.Full -> Toast.makeText(this@EpubReaderActivity, getString(R.string.text_bookmark_full, result.limit), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    internal fun removeBookmark(id: Long) {
+        if (model.removeBookmark(id)) Toast.makeText(this, R.string.text_bookmark_removed, Toast.LENGTH_SHORT).show()
+    }
+
+    internal fun clearBookmarks() = model.clearBookmarks()
+
+    internal fun openBookmark(bookmark: Bookmark) {
+        Locator.fromJSON(bookmark.locator)?.let { jumpTo(it) }
+    }
+
+    internal fun showBookmarks() {
+        if (model.publication == null) return
+        BookmarkSheet.show(supportFragmentManager)
     }
 
     // Full-text search (roadmap P2.5)

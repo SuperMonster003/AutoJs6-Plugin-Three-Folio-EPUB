@@ -6,6 +6,17 @@
     <string name="plugin_description">EPUB 電子書籍を読み, 目次, 検索, 読み上げとスクリプト抽出を提供</string>
     <string name="release_history">リリース履歴</string>
     <string name="release_history_unavailable">リリース履歴を表示できません</string>
+    <string name="text_bookmark_add">ブックマークを追加</string>
+    <string name="text_bookmark_added">ブックマークを追加しました</string>
+    <string name="text_bookmark_clear_all">すべて消去</string>
+    <string name="text_bookmark_clear_all_message">この本のブックマーク %1$d 件をすべて削除しますか?</string>
+    <string name="text_bookmark_delete">ブックマークを削除</string>
+    <string name="text_bookmark_empty">ブックマークはまだありません</string>
+    <string name="text_bookmark_full">ブックマークの上限 (%1$d 件) に達しました</string>
+    <string name="text_bookmark_here">このページをブックマーク</string>
+    <string name="text_bookmark_remove">ブックマークを削除</string>
+    <string name="text_bookmark_removed">ブックマークを削除しました</string>
+    <string name="text_bookmarks">ブックマーク</string>
     <string name="text_cannot_open_link">リンクを開けません</string>
     <string name="text_cannot_read_file">EPUB ファイルを読み取れません</string>
     <string name="text_column_count_auto">自動</string>

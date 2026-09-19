@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book. Bookmarks, read-aloud, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks. Read-aloud, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -61,6 +61,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Vertical CJK and right-to-left books: the reading progression follows the publication, so tap zones mirror for right-to-left books; Japanese and Chinese books with a right-to-left page progression render vertically, and a `Text direction` preference forces horizontal or vertical text. The interface follows the AutoJs6 language for its own layout direction, independently of the book.
 - Fixed-layout books: pages are counted as `Page x of N`, the panel offers a `Page spread` choice (automatic shows two pages side by side in landscape) and hides the text preferences that do not apply; pinch zoom and panning are Readium's own.
 - Full-text search: a `Search` entry in the toolbar finds every occurrence in the book, 50 at a time (up to 500), grouped by chapter with the surrounding text; tapping a result jumps to it, highlights it on the page and offers previous / next above the progress bar.
+- Bookmarks: the toolbar icon marks the current page (it fills when the page is bookmarked) and the `Bookmarks` entry lists every bookmark with its chapter, an excerpt and the time, newest first, to jump, delete or clear them all; they are stored per book (up to 500) next to the reading position.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -181,6 +182,7 @@ _2026/09/19_
 - `Feature` Vertical CJK and right-to-left books: the reading progression follows the publication (tap zones mirror for right-to-left books), Japanese / Chinese books with a right-to-left page progression render vertically through Readium CSS, a `Text direction` preference forces horizontal or vertical text, and the interface layout direction stays independent of the book
 - `Feature` Fixed-layout books: `Page x of N` in the progress bar, a `Page spread` preference (auto = two pages in landscape, single page, two pages) with the text preferences hidden, and Readium's pinch zoom
 - `Feature` Full-text search: a `Search` toolbar entry opens a results panel that loads 50 hits at a time (up to 500) grouped by chapter with context; tapping a hit jumps there and highlights it on the page, with previous / next in a bar above the progress bar
+- `Feature` Bookmarks: a toolbar icon adds or removes a bookmark for the current page (with chapter and a text excerpt), and a `Bookmarks` panel lists them newest first with jump, delete and clear all; stored per book (up to 500) next to the reading position
 - `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 - `Feature` Interface, instructions, README, and changelog in 10 languages
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
