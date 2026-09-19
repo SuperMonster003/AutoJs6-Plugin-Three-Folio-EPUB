@@ -170,6 +170,7 @@ _2026/09/19_
 - `新增` AutoJs6 檔案管理器中為 `.epub` 檔案提供 `閱讀 EPUB` 主按鈕與溢位選單動作 (外掛程式 ID `readium-epub-reader`, Explorer Action v2); 宿主回報為 `application/zip` 且副檔名為 `.epub` 的檔案同樣接受
 - `新增` 閱讀器基線: EPUB 2 與 EPUB 3 書籍經 Readium 導覽器算繪, 提供目錄與需確認的外部連結
 - `新增` 閱讀位置記憶: 每本書的最後位置按內容指紋儲存 (開啟時用快速鍵, 隨後遷移到全檔案 SHA-256), 下次開啟自動恢復; `從頭開始` 可清除
+- `新增` 閱讀器介面: 工具列顯示書名與目前章節, 進度列顯示合成位置與百分比, 點按中央切換沉浸模式, 點按區與音量鍵翻頁, 可切換捲動模式
 - `新增` 書籍透過宿主授予的檔案描述元按位置就地讀取, 不複製也不解壓縮到儲存空間
 - `新增` 介面, 說明, README 與更新日誌提供 10 種語言
 - `相依性` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)

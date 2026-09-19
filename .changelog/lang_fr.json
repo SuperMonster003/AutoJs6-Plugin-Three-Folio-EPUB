@@ -14,6 +14,7 @@
         "Un bouton principal `Lire l'EPUB` et une action de menu pour les fichiers `.epub` dans le gestionnaire de fichiers d'AutoJs6 (ID de plugin `readium-epub-reader`, Explorer Action v2); les fichiers portant l'extension `.epub` que l'hôte signale comme `application/zip` sont aussi acceptés",
         "Base de la liseuse : les livres EPUB 2 et EPUB 3 sont rendus par le navigateur Readium, avec une table des matières et des liens externes confirmés",
         "Mémoire de la position de lecture : la dernière position de chaque livre est enregistrée sous l'empreinte de son contenu (clé rapide à l'ouverture, puis SHA-256 du fichier complet) et restaurée à l'ouverture suivante ; `Reprendre au début` l'efface",
+        "Interface de la liseuse : titre du livre et chapitre courant dans la barre d'outils, barre de progression avec position synthétique et pourcentage, mode immersif par un appui au centre, zones d'appui et touches de volume pour tourner les pages, bascule du mode défilement",
         "Les livres sont lus sur place à travers le descripteur de fichier accordé, avec des lectures positionnelles ; rien n'est copié ni extrait vers le stockage",
         "Interface, instructions, README et changelog en 10 langues"
       ],
