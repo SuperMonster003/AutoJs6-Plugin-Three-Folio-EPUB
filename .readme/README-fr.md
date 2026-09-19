@@ -43,7 +43,7 @@ Lecture en un geste : ouvrez un fichier `.epub` directement depuis le gestionnai
 
 Le plugin lit le livre directement à travers le descripteur de fichier temporaire accordé par l'hôte. Il ne reçoit jamais de chemin du système de fichiers, ne copie jamais le livre et ne l'extrait jamais vers le stockage.
 
-> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium, propose une table des matières, mémorise la position de lecture de chaque livre et offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif. Les signets, les préférences, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'import de polices, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
+> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium, propose une table des matières, mémorise la position de lecture de chaque livre, offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif, et dispose d'un panneau de préférences pour la taille du texte, la police, les espacements, l'alignement, les colonnes et les thèmes, qui peut suivre le mode nuit de l'hôte. Les signets, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'import de polices, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
 
 ******
 
@@ -56,6 +56,7 @@ Le plugin lit le livre directement à travers le descripteur de fichier temporai
 - Table des matières : accédez à n'importe quel chapitre depuis la barre d'outils ; les entrées imbriquées conservent leur niveau.
 - Mémoire de la position de lecture : la dernière position de chaque livre est stockée dans l'espace privé du plugin sous une empreinte de son contenu, si bien que le même livre reprend même après un déplacement ou un renommage ; `Reprendre au début` l'efface.
 - Interface de la liseuse : titre et chapitre dans la barre d'outils, barre de progression avec position et pourcentage, mode immersif par un appui au centre, zones d'appui et touches de volume pour tourner les pages, mode défilement ou paginé.
+- Préférences de lecture : un panneau inférieur règle la taille du texte, la police, l'interligne, les marges, l'espacement des paragraphes, l'alignement, la césure, les styles de l'éditeur, le nombre de colonnes et la mise en page paginée ou défilante ; les changements s'appliquent immédiatement et sont mémorisés pour chaque livre. Thèmes clair, sépia et sombre, ou suivi du mode nuit de l'hôte ; la barre d'outils et les barres système prennent les couleurs du thème.
 - Liens externes : toucher un lien `http` ou `https` affiche l'adresse complète et n'ouvre le navigateur système qu'après confirmation.
 - Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.
 - Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.
@@ -69,7 +70,7 @@ Le plugin lit le livre directement à travers le descripteur de fichier temporai
 1. Téléchargez le dernier APK du plugin depuis la page [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) et installez-le sur votre appareil.
 2. Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `Readium EPUB Reader`.
 3. Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`.
-4. Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre, touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.
+4. Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre et le bouton de préférences pour ajuster le texte et le thème ; touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.
 
 > Si le plugin n'apparaît pas dans le centre de plugins, mettez d'abord AutoJs6 à jour vers une version récente (build interne 5269 ou ultérieur). Explorer Action v2 prend en charge le bouton principal et le menu contextuel pour un fichier, avec une autorisation temporaire de lecture du document et de son dossier parent.
 
@@ -99,7 +100,7 @@ La dernière position de chaque livre est enregistrée dans l'espace privé du p
 
 #### Puis-je changer la police, la taille du texte ou le thème ?
 
-Pas encore. Les préférences de lecture (police, taille, interligne, marges, thèmes) arrivent avec le jalon des préférences ; le build actuel propose le mode défilement ou paginé et utilise les réglages par défaut de Readium pour le reste.
+Oui. Ouvrez le panneau de préférences depuis la barre d'outils pour régler la taille du texte, la police (valeur de l'éditeur, avec ou sans empattement, chasse fixe ou les polices d'accessibilité fournies avec Readium), l'interligne, les marges, les espacements, l'alignement, les colonnes et le thème (clair, sépia, sombre ou suivre l'hôte). L'import de vos propres fichiers de polices arrivera avec un jalon ultérieur.
 
 #### Ce plugin envoie-t-il mes livres quelque part ?
 

@@ -1,17 +1,35 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader
 
 import android.app.Activity
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Build
+import android.util.TypedValue
+import android.view.Menu
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.get
 import androidx.core.view.isVisible
+import androidx.core.view.size
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivityEpubReaderBinding
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderThemeColors
 
 /**
- * Toolbar, progress bar and immersive mode of the reader (roadmap P1.2). Immersive mode hides the
- * chrome and the system bars, exactly like the sibling previewers' fullscreen mode; the reader
- * itself never moves, so toggling is instant and keeps the locator.
+ * Toolbar, progress bar, immersive mode and colours of the reader (roadmap P1.2 / P2.1).
+ *
+ * The window draws edge to edge on every API level: the toolbar extends under the status bar and
+ * the progress panel under the navigation bar, both painted in the chrome colour of the current
+ * [ReaderTheme], so the bars never flash a foreign colour when immersive mode toggles or the theme
+ * changes. Immersive mode hides the chrome and the system bars, exactly like the sibling
+ * previewers' fullscreen mode; the reader itself never moves, so toggling keeps the locator.
  */
 internal class ReaderChrome(
     private val activity: Activity,
@@ -27,6 +45,32 @@ internal class ReaderChrome(
             field = value
             applyVisibility()
         }
+
+    var theme: ReaderTheme = ReaderTheme.LIGHT
+        private set
+
+    var colors: ChromeColors = ReaderThemeColors.forTheme(theme)
+        private set
+
+    private val actionBarSize: Int = TypedValue().let { value ->
+        activity.theme.resolveAttribute(android.R.attr.actionBarSize, value, true)
+        TypedValue.complexToDimensionPixelSize(value.data, activity.resources.displayMetrics)
+    }
+    private val statusPanelPaddingBottom = binding.statusPanel.paddingBottom
+
+    init {
+        WindowCompat.setDecorFitsSystemWindows(activity.window, false)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { root, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.updatePadding(left = bars.left, right = bars.right)
+            binding.toolbar.updatePadding(top = bars.top)
+            binding.toolbar.updateLayoutParams { height = actionBarSize + bars.top }
+            binding.progressPanel.updatePadding(bottom = bars.bottom)
+            binding.statusPanel.updatePadding(bottom = statusPanelPaddingBottom + bars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        applyTheme(theme)
+    }
 
     fun setImmersive(enabled: Boolean) {
         immersive = enabled
@@ -65,6 +109,39 @@ internal class ReaderChrome(
         }
     }
 
+    /** Recolours the chrome, the loading panel, the window and the system bars for [theme]. */
+    fun applyTheme(theme: ReaderTheme) {
+        this.theme = theme
+        colors = ReaderThemeColors.forTheme(theme)
+        activity.window.setBackgroundDrawable(theme.backgroundColor.toDrawable())
+        binding.root.setBackgroundColor(theme.backgroundColor)
+        binding.readerContainer.setBackgroundColor(theme.backgroundColor)
+        binding.statusText.setTextColor(theme.contentColor)
+        binding.statusProgress.indeterminateTintList = ColorStateList.valueOf(colors.accent)
+        binding.toolbar.setBackgroundColor(colors.background)
+        binding.toolbar.setTitleTextColor(colors.foreground)
+        binding.toolbar.setSubtitleTextColor(colors.secondaryForeground)
+        binding.progressPanel.setBackgroundColor(colors.background)
+        binding.progressBar.progressTintList = ColorStateList.valueOf(colors.accent)
+        binding.progressBar.progressBackgroundTintList =
+            ColorStateList.valueOf(ReaderThemeColors.withAlpha(colors.foreground, TRACK_ALPHA))
+        binding.progressText.setTextColor(colors.secondaryForeground)
+        tintToolbarIcons(binding.toolbar.menu)
+        applySystemBars()
+    }
+
+    /** Menu icons are inflated after the theme: the Activity calls this again from `onPrepareOptionsMenu`. */
+    fun tintToolbarIcons(menu: Menu?) {
+        val tint = colors.foreground
+        binding.toolbar.navigationIcon = binding.toolbar.navigationIcon?.mutate()?.apply { setTint(tint) }
+        binding.toolbar.overflowIcon = binding.toolbar.overflowIcon?.mutate()?.apply { setTint(tint) }
+        if (menu == null) return
+        for (index in 0 until menu.size) {
+            val item = menu[index]
+            item.icon = item.icon?.mutate()?.apply { setTint(tint) }
+        }
+    }
+
     private fun applyVisibility() {
         binding.toolbar.isVisible = !immersive
         binding.progressPanel.isVisible = readerVisible && !immersive
@@ -72,18 +149,31 @@ internal class ReaderChrome(
 
     private fun applySystemBars() {
         val window = activity.window
-        WindowInsetsControllerCompat(window, window.decorView).apply {
-            if (immersive) {
-                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                hide(WindowInsetsCompat.Type.systemBars())
-            } else {
-                show(WindowInsetsCompat.Type.systemBars())
-            }
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        controller.isAppearanceLightStatusBars = colors.lightBars
+        controller.isAppearanceLightNavigationBars = colors.lightBars
+        // API 24 and 25 cannot draw dark navigation bar icons: keep the classic dark bar there.
+        val legacyLightBars = colors.lightBars && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+        setBarColors(if (legacyLightBars) LEGACY_NAVIGATION_BAR else Color.TRANSPARENT)
+        if (immersive) {
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            controller.show(WindowInsetsCompat.Type.systemBars())
         }
         ViewCompat.requestApplyInsets(binding.root)
     }
 
+    // Both setters are no-ops from API 35 on, where edge-to-edge is enforced and the bars are transparent.
+    @Suppress("DEPRECATION")
+    private fun setBarColors(navigationBar: Int) {
+        activity.window.statusBarColor = Color.TRANSPARENT
+        activity.window.navigationBarColor = navigationBar
+    }
+
     companion object {
         private const val PROGRESS_SCALE = 1000
+        private const val TRACK_ALPHA = 0.12
+        private const val LEGACY_NAVIGATION_BAR = 0xFF000000.toInt()
     }
 }

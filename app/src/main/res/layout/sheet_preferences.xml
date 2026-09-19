@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_preferences"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <TextView
+            style="@style/Widget.Reader.PreferenceLabel"
+            android:text="@string/text_preferences_theme" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/theme_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_light"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_theme_light" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_sepia"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_theme_sepia" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_dark"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_theme_dark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_host"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_theme_host" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <TextView
+            style="@style/Widget.Reader.PreferenceLabel"
+            android:text="@string/text_preferences_overflow" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/overflow_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overflow_paged"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_overflow_paged" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overflow_scrolled"
+                style="@style/Widget.Reader.ToggleButton"
+                android:text="@string/text_overflow_scrolled" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <TextView
+            android:id="@+id/fixed_layout_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/text_preferences_fixed_layout_hint"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/reflowable_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/text_preferences_font_size"
+                    android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+                <TextView
+                    android:id="@+id/font_size_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="56dp"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_size_decrease"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/text_preferences_decrease"
+                    android:minWidth="48dp"
+                    android:text="@string/text_symbol_minus"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/font_size_slider"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:stepSize="10"
+                    android:valueFrom="50"
+                    android:valueTo="300" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_size_increase"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/text_preferences_increase"
+                    android:minWidth="48dp"
+                    android:text="@string/text_symbol_plus"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/Widget.Reader.PreferenceLabel"
+                android:text="@string/text_preferences_font_family" />
+
+            <Spinner
+                android:id="@+id/font_family"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:minHeight="48dp" />
+
+            <TextView
+                style="@style/Widget.Reader.PreferenceLabel"
+                android:text="@string/text_preferences_page_margins" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/page_margins_slider"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:stepSize="25"
+                    android:valueFrom="0"
+                    android:valueTo="400" />
+
+                <TextView
+                    android:id="@+id/page_margins_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="56dp"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/Widget.Reader.PreferenceLabel"
+                android:text="@string/text_preferences_column_count" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/column_count_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/column_count_auto"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_column_count_auto" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/column_count_one"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_column_count_one" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/column_count_two"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_column_count_two" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/publisher_styles_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:minHeight="48dp"
+                android:text="@string/text_preferences_publisher_styles"
+                android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+            <TextView
+                android:id="@+id/publisher_styles_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_preferences_publisher_styles_hint"
+                android:textAppearance="?attr/textAppearanceCaption" />
+
+            <LinearLayout
+                android:id="@+id/advanced_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Widget.Reader.PreferenceLabel"
+                    android:text="@string/text_preferences_line_height" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/line_height_slider"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:stepSize="10"
+                        android:valueFrom="100"
+                        android:valueTo="200" />
+
+                    <TextView
+                        android:id="@+id/line_height_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="56dp"
+                        android:textAlignment="viewEnd"
+                        android:textAppearance="?attr/textAppearanceBody2" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/Widget.Reader.PreferenceLabel"
+                    android:text="@string/text_preferences_paragraph_spacing" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/paragraph_spacing_slider"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:stepSize="25"
+                        android:valueFrom="0"
+                        android:valueTo="200" />
+
+                    <TextView
+                        android:id="@+id/paragraph_spacing_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="56dp"
+                        android:textAlignment="viewEnd"
+                        android:textAppearance="?attr/textAppearanceBody2" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/Widget.Reader.PreferenceLabel"
+                    android:text="@string/text_preferences_text_align" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/text_align_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/text_align_publisher"
+                        style="@style/Widget.Reader.ToggleButton"
+                        android:text="@string/text_preferences_publisher_default" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/text_align_start"
+                        style="@style/Widget.Reader.ToggleButton"
+                        android:text="@string/text_text_align_start" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/text_align_justify"
+                        style="@style/Widget.Reader.ToggleButton"
+                        android:text="@string/text_text_align_justify" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/hyphens_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:minHeight="48dp"
+                    android:text="@string/text_preferences_hyphens"
+                    android:textAppearance="?attr/textAppearanceSubtitle2" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset_button"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/text_preferences_reset" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

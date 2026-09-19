@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, and provides scroll mode, tap zones, volume keys and immersive mode. Bookmarks, preferences, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode. Bookmarks, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -56,6 +56,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Table of contents: jump to any chapter from the toolbar; nested entries keep their depth.
 - Reading position memory: the last position of every book is stored under a fingerprint of its content in the plugin's private storage, so the same book resumes even after it is moved or renamed; `Start from the beginning` clears it.
 - Reader chrome: title and chapter in the toolbar, a progress bar with position and percentage, immersive mode on a center tap, tap zones and volume keys for page turns, and scroll or paginated mode.
+- Reading preferences: a bottom panel sets text size, font family, line height, page margins, paragraph spacing, alignment, hyphenation, publisher styles, column count and paged or scrolled layout; changes apply immediately and are remembered for every book. Light, sepia and dark themes, or follow the host's night mode; the toolbar and system bars take the theme's colours.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -69,7 +70,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 1. Download the latest plugin APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) page and install it on your device.
 2. Open the AutoJs6 plugin center and enable the `Readium EPUB Reader` plugin.
 3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Readium EPUB Reader`.
-4. Use the table of contents button in the toolbar to jump between chapters, tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
+4. Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
 
 > If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
 
@@ -99,7 +100,7 @@ The last position of each book is saved in the plugin's private storage under a 
 
 #### Can I change the font, text size or theme?
 
-Not yet. Reader preferences (font, size, line height, margins, themes) arrive with the preferences milestone; the current build offers scroll or paginated mode and uses Readium's defaults for everything else.
+Yes. Open the preferences panel from the toolbar to set the text size, the font family (publisher default, serif, sans-serif, monospace or the accessibility fonts bundled with Readium), line height, margins, spacing, alignment, columns and the theme (light, sepia, dark or follow the host). Importing your own font files arrives with a later milestone.
 
 #### Does this plugin upload my books anywhere?
 

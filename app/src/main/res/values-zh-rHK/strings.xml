@@ -8,6 +8,10 @@
     <string name="release_history_unavailable">發行歷史暫不可用</string>
     <string name="text_cannot_open_link">無法開啟連結</string>
     <string name="text_cannot_read_file">無法讀取 EPUB 檔案</string>
+    <string name="text_column_count_auto">自動</string>
+    <string name="text_font_family_monospace">等寬</string>
+    <string name="text_font_family_sans_serif">無襯線</string>
+    <string name="text_font_family_serif">襯線</string>
     <string name="text_invalid_request">請求未指向單一 EPUB 檔案</string>
     <string name="text_no_table_of_contents">這本書沒有目錄</string>
     <string name="text_open_failed">無法開啟 EPUB 檔案: %1$s</string>
@@ -15,10 +19,36 @@
     <string name="text_open_failed_protected">不支援受 DRM 保護的書籍</string>
     <string name="text_open_failed_timeout">開啟書籍逾時</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">正在開啟書籍...</string>
+    <string name="text_overflow_paged">分頁</string>
+    <string name="text_overflow_scrolled">捲動</string>
+    <string name="text_preferences">閱讀偏好</string>
+    <string name="text_preferences_column_count">欄數</string>
+    <string name="text_preferences_decrease">縮小</string>
+    <string name="text_preferences_fixed_layout_hint">這本書是固定版式, 只有主題設定生效</string>
+    <string name="text_preferences_font_family">字體</string>
+    <string name="text_preferences_font_size">字號</string>
+    <string name="text_preferences_hyphens">連字號</string>
+    <string name="text_preferences_increase">放大</string>
+    <string name="text_preferences_line_height">行距</string>
+    <string name="text_preferences_overflow">頁面佈局</string>
+    <string name="text_preferences_page_margins">頁邊距</string>
+    <string name="text_preferences_paragraph_spacing">段落間距</string>
+    <string name="text_preferences_publisher_default">出版商預設</string>
+    <string name="text_preferences_publisher_styles">出版商樣式</string>
+    <string name="text_preferences_publisher_styles_hint">出版商樣式會覆蓋行距, 段落間距, 對齊與連字號; 修改其中任一項會關閉出版商樣式</string>
+    <string name="text_preferences_reset">恢復預設</string>
+    <string name="text_preferences_text_align">對齊</string>
+    <string name="text_preferences_theme">主題</string>
     <string name="text_restart_book">從頭開始</string>
     <string name="text_restart_book_message">清除這本書已儲存的閱讀位置並從頭開始?</string>
     <string name="text_scroll_mode">捲動模式</string>
     <string name="text_settings">設定</string>
     <string name="text_table_of_contents">目錄</string>
+    <string name="text_text_align_justify">兩端對齊</string>
+    <string name="text_text_align_start">起始對齊</string>
+    <string name="text_theme_dark">深色</string>
+    <string name="text_theme_host">跟隨宿主</string>
+    <string name="text_theme_light">淺色</string>
+    <string name="text_theme_sepia">護眼</string>
     <string name="text_volume_keys_turn_pages">音量鍵翻頁</string>
 </resources>

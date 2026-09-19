@@ -8,7 +8,7 @@ Tap the left or right third of the page or press the volume keys to turn pages; 
 
 The plugin receives temporary read access to the selected file and its parent directory through content URIs. It never receives a raw filesystem path, never copies the book to storage, and reads the EPUB container directly through the granted file descriptor.
 
-Current stage: the reader shows the book with Readium's default settings, provides a table of contents, remembers the reading position of every book, and offers scroll mode, tap zones, volume keys and immersive mode. Bookmarks, preferences, search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are tracked in ROADMAP.md and arrive in later builds.
+Current stage: the reader shows the book with Readium's default settings, provides a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes. Bookmarks, search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are tracked in ROADMAP.md and arrive in later builds.
 
 Books may contain scripts and remote resources; the plugin keeps Readium's default behavior and does not block them, including plain `http://` resources. Only open books you trust.
 

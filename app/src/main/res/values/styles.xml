@@ -8,7 +8,6 @@
         <item name="colorPrimaryVariant">@color/color_primary_dark</item>
         <item name="colorSecondary">@color/color_secondary</item>
         <item name="android:colorAccent">@color/color_secondary</item>
-        <item name="android:navigationBarColor">@color/window_background</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/window_background</item>
         <item name="windowActionModeOverlay">true</item>
@@ -32,6 +31,24 @@
 
     <style name="Widget.Reader.DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/dialog_foreground</item>
+    </style>
+
+    <style name="Widget.Reader.PreferenceLabel" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+    </style>
+
+    <style name="Widget.Reader.ToggleButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="Widget.PluginOverflowButton" parent="Widget.AppCompat.ActionButton.Overflow">

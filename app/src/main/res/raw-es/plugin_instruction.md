@@ -8,7 +8,7 @@ Toque el tercio izquierdo o derecho de la página o pulse las teclas de volumen 
 
 El complemento recibe acceso temporal de lectura al archivo seleccionado y a su carpeta mediante content URI. Nunca recibe una ruta del sistema de archivos, nunca copia el libro al almacenamiento y lee el contenedor EPUB directamente a través del descriptor de archivo concedido.
 
-Etapa actual: el lector muestra el libro con la configuración predeterminada de Readium, ofrece un índice, recuerda la posición de lectura de cada libro y proporciona modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo. Los marcadores, las preferencias, la búsqueda, la lectura en voz alta, el diseño fijo, la importación de fuentes, la entrada independiente desde el lanzador y la API de scripts `epub` se siguen en ROADMAP.md y llegarán en compilaciones posteriores.
+Etapa actual: el lector muestra el libro con la configuración predeterminada de Readium, ofrece un índice, recuerda la posición de lectura de cada libro, proporciona modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo, y cuenta con un panel de preferencias para el tamaño del texto, la fuente, los espaciados, la alineación, las columnas y los temas. Los marcadores, la búsqueda, la lectura en voz alta, el diseño fijo, la importación de fuentes, la entrada independiente y la API de scripts `epub` se siguen en ROADMAP.md y llegarán en compilaciones posteriores.
 
 Los libros pueden contener scripts y recursos remotos; el complemento mantiene el comportamiento predeterminado de Readium y no los bloquea, incluidos los recursos `http://` sin cifrar. Abra solo libros de confianza.
 

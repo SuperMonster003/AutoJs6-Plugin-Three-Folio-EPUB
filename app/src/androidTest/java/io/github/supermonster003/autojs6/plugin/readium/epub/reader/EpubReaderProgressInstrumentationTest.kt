@@ -12,6 +12,7 @@ import androidx.test.runner.AndroidJUnit4
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import org.autojs.plugin.explorer.api.ExplorerActionIntentExtras
 import org.autojs.plugin.explorer.api.ExplorerActionIntentValues
@@ -45,12 +46,14 @@ class EpubReaderProgressInstrumentationTest {
     @Before
     fun resetState() {
         booksDirectory.deleteRecursively()
+        ReaderPreferencesStore.forFilesDirectory(context.filesDir).clear()
         context.getSharedPreferences(ReaderSettings.PREFERENCES_NAME, 0).edit().clear().commit()
     }
 
     @After
     fun cleanUp() {
         booksDirectory.deleteRecursively()
+        ReaderPreferencesStore.forFilesDirectory(context.filesDir).clear()
         context.getSharedPreferences(ReaderSettings.PREFERENCES_NAME, 0).edit().clear().commit()
     }
 
@@ -166,7 +169,7 @@ class EpubReaderProgressInstrumentationTest {
             main { assertFalse(navigator(activity).settings.value.scroll) }
             main { activity.setScrollMode(true) }
             await("scroll mode applied") { navigator(activity).settings.value.scroll }
-            assertTrue(ReaderSettings(context).scrollMode)
+            main { assertTrue(activity.readerModel.preferences.value.epub.scroll == true) }
             main { activity.setScrollMode(false) }
             await("paginated again") { !navigator(activity).settings.value.scroll }
 

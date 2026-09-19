@@ -8,6 +8,10 @@
     <string name="release_history_unavailable">L\'historique des versions est indisponible</string>
     <string name="text_cannot_open_link">Ouverture du lien impossible</string>
     <string name="text_cannot_read_file">Impossible de lire le fichier EPUB</string>
+    <string name="text_column_count_auto">Automatique</string>
+    <string name="text_font_family_monospace">Chasse fixe</string>
+    <string name="text_font_family_sans_serif">Sans empattement</string>
+    <string name="text_font_family_serif">Avec empattement</string>
     <string name="text_invalid_request">La demande ne désigne pas un seul fichier EPUB</string>
     <string name="text_no_table_of_contents">Ce livre n\'a pas de table des matières</string>
     <string name="text_open_failed">Impossible d\'ouvrir le fichier EPUB : %1$s</string>
@@ -15,10 +19,36 @@
     <string name="text_open_failed_protected">Les livres protégés par DRM ne sont pas pris en charge</string>
     <string name="text_open_failed_timeout">L\'ouverture du livre a expiré</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">Ouverture du livre...</string>
+    <string name="text_overflow_paged">Paginé</string>
+    <string name="text_overflow_scrolled">Défilement</string>
+    <string name="text_preferences">Préférences de lecture</string>
+    <string name="text_preferences_column_count">Colonnes</string>
+    <string name="text_preferences_decrease">Réduire</string>
+    <string name="text_preferences_fixed_layout_hint">Ce livre a une mise en page fixe; seul le thème s\'applique</string>
+    <string name="text_preferences_font_family">Police</string>
+    <string name="text_preferences_font_size">Taille du texte</string>
+    <string name="text_preferences_hyphens">Césure</string>
+    <string name="text_preferences_increase">Agrandir</string>
+    <string name="text_preferences_line_height">Interligne</string>
+    <string name="text_preferences_overflow">Mise en page</string>
+    <string name="text_preferences_page_margins">Marges</string>
+    <string name="text_preferences_paragraph_spacing">Espacement des paragraphes</string>
+    <string name="text_preferences_publisher_default">Valeur de l\'éditeur</string>
+    <string name="text_preferences_publisher_styles">Styles de l\'éditeur</string>
+    <string name="text_preferences_publisher_styles_hint">Les styles de l\'éditeur remplacent l\'interligne, l\'espacement des paragraphes, l\'alignement et la césure; modifier l\'un d\'eux désactive les styles de l\'éditeur</string>
+    <string name="text_preferences_reset">Restaurer les valeurs par défaut</string>
+    <string name="text_preferences_text_align">Alignement</string>
+    <string name="text_preferences_theme">Thème</string>
     <string name="text_restart_book">Reprendre au début</string>
     <string name="text_restart_book_message">Effacer la position de lecture enregistrée de ce livre et reprendre au début ?</string>
     <string name="text_scroll_mode">Mode défilement</string>
     <string name="text_settings">Paramètres</string>
     <string name="text_table_of_contents">Table des matières</string>
+    <string name="text_text_align_justify">Justifié</string>
+    <string name="text_text_align_start">Début</string>
+    <string name="text_theme_dark">Sombre</string>
+    <string name="text_theme_host">Suivre l\'hôte</string>
+    <string name="text_theme_light">Clair</string>
+    <string name="text_theme_sepia">Sépia</string>
     <string name="text_volume_keys_turn_pages">Tourner les pages avec les touches de volume</string>
 </resources>

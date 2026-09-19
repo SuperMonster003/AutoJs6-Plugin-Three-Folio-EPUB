@@ -8,6 +8,10 @@
     <string name="release_history_unavailable">سجل الإصدارات غير متاح</string>
     <string name="text_cannot_open_link">تعذر فتح الرابط</string>
     <string name="text_cannot_read_file">تعذر قراءة ملف EPUB</string>
+    <string name="text_column_count_auto">تلقائي</string>
+    <string name="text_font_family_monospace">أحادي المسافة</string>
+    <string name="text_font_family_sans_serif">بلا زوائد</string>
+    <string name="text_font_family_serif">بزوائد</string>
     <string name="text_invalid_request">الطلب لا يشير إلى ملف EPUB واحد</string>
     <string name="text_no_table_of_contents">لا يحتوي هذا الكتاب على جدول محتويات</string>
     <string name="text_open_failed">تعذر فتح ملف EPUB: %1$s</string>
@@ -15,10 +19,36 @@
     <string name="text_open_failed_protected">الكتب المحمية بإدارة الحقوق الرقمية (DRM) غير مدعومة</string>
     <string name="text_open_failed_timeout">انتهت مهلة فتح الكتاب</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">يتم فتح الكتاب...</string>
+    <string name="text_overflow_paged">صفحات</string>
+    <string name="text_overflow_scrolled">تمرير</string>
+    <string name="text_preferences">تفضيلات القراءة</string>
+    <string name="text_preferences_column_count">الأعمدة</string>
+    <string name="text_preferences_decrease">أصغر</string>
+    <string name="text_preferences_fixed_layout_hint">هذا الكتاب ذو تخطيط ثابت; ينطبق المظهر فقط</string>
+    <string name="text_preferences_font_family">الخط</string>
+    <string name="text_preferences_font_size">حجم النص</string>
+    <string name="text_preferences_hyphens">الوصل بالشرطات</string>
+    <string name="text_preferences_increase">أكبر</string>
+    <string name="text_preferences_line_height">تباعد الأسطر</string>
+    <string name="text_preferences_overflow">تخطيط الصفحة</string>
+    <string name="text_preferences_page_margins">هوامش الصفحة</string>
+    <string name="text_preferences_paragraph_spacing">تباعد الفقرات</string>
+    <string name="text_preferences_publisher_default">افتراضي الناشر</string>
+    <string name="text_preferences_publisher_styles">أنماط الناشر</string>
+    <string name="text_preferences_publisher_styles_hint">تتجاوز أنماط الناشر تباعد الأسطر وتباعد الفقرات والمحاذاة والوصل بالشرطات; تغيير أي منها يوقف أنماط الناشر</string>
+    <string name="text_preferences_reset">استعادة الافتراضيات</string>
+    <string name="text_preferences_text_align">المحاذاة</string>
+    <string name="text_preferences_theme">المظهر</string>
     <string name="text_restart_book">البدء من البداية</string>
     <string name="text_restart_book_message">هل تريد مسح موضع القراءة المحفوظ لهذا الكتاب والبدء من البداية؟</string>
     <string name="text_scroll_mode">وضع التمرير</string>
     <string name="text_settings">الإعدادات</string>
     <string name="text_table_of_contents">جدول المحتويات</string>
+    <string name="text_text_align_justify">ضبط</string>
+    <string name="text_text_align_start">البداية</string>
+    <string name="text_theme_dark">داكن</string>
+    <string name="text_theme_host">اتباع المضيف</string>
+    <string name="text_theme_light">فاتح</string>
+    <string name="text_theme_sepia">سيبيا</string>
     <string name="text_volume_keys_turn_pages">تقليب الصفحات بمفاتيح الصوت</string>
 </resources>

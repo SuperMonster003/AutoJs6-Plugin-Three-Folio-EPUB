@@ -10,9 +10,12 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFin
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpenError
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpener
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressThrottle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,12 +23,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
+import org.readium.r2.navigator.epub.EpubPreferences
+import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.publication.services.positions
@@ -54,16 +60,27 @@ internal sealed class OpenState {
  * 2. the full-file SHA-256 is computed in the background and the store migrates to it (D23);
  * 3. every locator change is throttled to disk, and [flushProgress] writes the pending one.
  *
+ * It also owns the global reading preferences (roadmap P2.1 / D14): loaded from
+ * `reader-preferences.json` before the book opens, edited in place by the panel and the menu, and
+ * written back atomically after a short debounce (or from [flushPreferences] on pause).
+ *
  * The publication lives only in memory: after process death the Activity reopens the book from its
  * Intent and the saved locator instead of restoring fragments.
  */
+@OptIn(ExperimentalReadiumApi::class)
 internal class EpubReaderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val store = BookDataStore.forFilesDirectory(application.filesDir)
     private val storeMutex = Mutex()
 
-    /** Survives [onCleared] so the final flush and a late migration always complete. */
-    private val persistScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val preferencesStore = ReaderPreferencesStore.forFilesDirectory(application.filesDir)
+    private val preferencesMutex = Mutex()
+
+    /**
+     * Survives [onCleared] so the final flush and a late migration always complete; single-lane so
+     * two writes of the same file can never land out of order.
+     */
+    private val persistScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))
     private val throttle = ProgressThrottle<ProgressRecord>()
     private var delayedFlush: Job? = null
 
@@ -72,6 +89,30 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     private val _positionCount = MutableStateFlow(0)
     val positionCount: StateFlow<Int> get() = _positionCount
+
+    /**
+     * Read synchronously, once per process: the file is a few hundred bytes and reading it before
+     * the first frame is what keeps a dark or sepia reader from flashing the light chrome on open.
+     */
+    private val _preferences = MutableStateFlow(
+        preferencesStore.read()?.let(ReaderPreferencesState::fromStored) ?: ReaderPreferencesState.DEFAULT,
+    )
+
+    /** The global reading preferences (roadmap D14). */
+    val preferences: StateFlow<ReaderPreferencesState> get() = _preferences
+
+    private var preferencesDirty = false
+    private var delayedPreferencesFlush: Job? = null
+
+    init {
+        // The first run after the pre-P2.1 builds adopts the old scroll toggle so an update keeps
+        // the user's choice; a corrupt file (exists but unreadable) falls back to the defaults.
+        if (!preferencesStore.exists() && ReaderSettings(application).scrollMode) {
+            _preferences.value = ReaderPreferencesState.DEFAULT.copy(epub = EpubPreferences(scroll = true))
+            preferencesDirty = true
+            flushPreferences()
+        }
+    }
 
     var resource: PfdResource? = null
         private set
@@ -219,6 +260,45 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         }
     }
 
+    // ---- Reading preferences (roadmap P2.1) ----
+
+    /** Applies [transform] to the stored Readium preferences; the theme stays derived from the mode. */
+    fun editPreferences(transform: (EpubPreferences) -> EpubPreferences) {
+        _preferences.update { it.copy(epub = transform(it.epub).copy(theme = null)) }
+        schedulePreferencesFlush()
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        _preferences.update { it.copy(themeMode = mode) }
+        schedulePreferencesFlush()
+    }
+
+    /** "Restore defaults": every preference back to Readium's defaults and the theme back to the host's. */
+    fun resetPreferences() {
+        _preferences.value = ReaderPreferencesState.DEFAULT
+        schedulePreferencesFlush()
+    }
+
+    private fun schedulePreferencesFlush() {
+        preferencesDirty = true
+        delayedPreferencesFlush?.cancel()
+        delayedPreferencesFlush = viewModelScope.launch {
+            delay(PREFERENCES_FLUSH_DELAY_MILLIS)
+            flushPreferences()
+        }
+    }
+
+    /** Writes the preferences now when an edit is pending (pause, close, process end). */
+    fun flushPreferences() {
+        delayedPreferencesFlush?.cancel()
+        if (!preferencesDirty) return
+        preferencesDirty = false
+        val stored = _preferences.value.toStored()
+        persistScope.launch {
+            preferencesMutex.withLock { runCatching { preferencesStore.write(stored) } }
+        }
+    }
+
     private fun release() {
         navigatorFactory = null
         publication?.close()
@@ -230,6 +310,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     override fun onCleared() {
         flushProgress()
+        flushPreferences()
         release()
     }
 
@@ -245,5 +326,6 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     companion object {
         const val OPEN_TIMEOUT_MILLIS = 60_000L
+        const val PREFERENCES_FLUSH_DELAY_MILLIS = 400L
     }
 }

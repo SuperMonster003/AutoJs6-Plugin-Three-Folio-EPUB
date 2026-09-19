@@ -49,6 +49,11 @@ internal data class HostAppearance(val languageTag: String, val darkMode: Boolea
 abstract class HostAppearanceActivity : AppCompatActivity() {
     private var hostAppearance: HostAppearance? = null
 
+    /** The host's night mode, or the system's when the host settings are unavailable. */
+    internal val hostDarkMode: Boolean
+        get() = hostAppearance?.darkMode
+            ?: (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
+
     override fun attachBaseContext(newBase: Context) {
         hostAppearance = HostAppearance.read(newBase)
         super.attachBaseContext(hostAppearance?.wrap(newBase) ?: newBase)

@@ -17,17 +17,23 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivityEpubReaderBinding
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnAction
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PreferencesSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderChrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderProgress
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.epub.EpubNavigatorFragment
 import org.readium.r2.navigator.epub.EpubPreferences
+import org.readium.r2.navigator.epub.EpubSettings
 import org.readium.r2.navigator.input.InputListener
 import org.readium.r2.navigator.input.TapEvent
 import org.readium.r2.navigator.preferences.ReadingProgression
@@ -41,7 +47,8 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * Explorer Action execution entry (roadmap P1.2): validates the v2 envelope, lets the view model
  * open the book through the granted descriptor, and hosts Readium's [EpubNavigatorFragment] with
  * the reader chrome (title and chapter, progress bar, immersive mode), the table of contents,
- * scroll or paginated overflow, tap zones and volume keys, and progress memory (P1.3).
+ * scroll or paginated overflow, tap zones and volume keys, progress memory (P1.3) and the reading
+ * preferences panel with its themes (P2.1).
  */
 @OptIn(ExperimentalReadiumApi::class)
 class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
@@ -89,6 +96,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     internal fun toggleImmersive() = chrome.toggleImmersive()
 
+    /** The theme currently painted on the chrome and handed to the navigator. */
+    internal val resolvedTheme: ReaderTheme get() = model.preferences.value.resolvedTheme(hostDarkMode)
+
+    internal val chromeColors: ChromeColors get() = chrome.colors
+
+    internal val preferencesSheet: PreferencesSheet?
+        get() = supportFragmentManager.findFragmentByTag(PreferencesSheet.TAG) as? PreferencesSheet
+
     private val inputListener = object : InputListener {
         override fun onTap(event: TapEvent): Boolean {
             val fragment = navigator ?: return false
@@ -113,6 +128,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
         chrome = ReaderChrome(this, binding)
+        chrome.applyTheme(resolvedTheme)
 
         if (restoredFactory == null && savedInstanceState != null) {
             supportFragmentManager.findFragmentByTag(NAVIGATOR_TAG)?.let { stale ->
@@ -141,6 +157,11 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
                 }
             }
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.preferences.collect { applyPreferences(it) }
+            }
+        }
     }
 
     private fun describe(failure: OpenFailure): String = when (failure) {
@@ -153,7 +174,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     private fun fragmentFactory(factory: EpubNavigatorFactory) = factory.createFragmentFactory(
         initialLocator = model.lastLocator,
-        initialPreferences = EpubPreferences(scroll = settings.scrollMode),
+        initialPreferences = model.preferences.value.effective(hostDarkMode),
         listener = this,
         paginationListener = paginationListener,
     )
@@ -175,6 +196,9 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             observedNavigator = fragment
             navigatorReady = false
             fragment.addInputListener(inputListener)
+            // A retained navigator keeps the preferences it last received; the host's night mode
+            // may have changed since, so hand it the current effective set once.
+            fragment.submitPreferences(model.preferences.value.effective(hostDarkMode))
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     combine(fragment.currentLocator, model.positionCount) { locator, count -> locator to count }
@@ -192,6 +216,13 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         chrome.showProgress(
             ReaderProgress.snapshot(locator.locations.position, positionCount, locator.locations.totalProgression),
         )
+    }
+
+    /** Every preference change: recolour the chrome, hand the navigator the effective set, refresh the menu. */
+    private fun applyPreferences(state: ReaderPreferencesState) {
+        chrome.applyTheme(state.resolvedTheme(hostDarkMode))
+        navigator?.takeIf { it.isAdded }?.submitPreferences(state.effective(hostDarkMode))
+        invalidateOptionsMenu()
     }
 
     private fun perform(action: PageTurnAction) {
@@ -239,6 +270,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     override fun onPause() {
         model.flushProgress()
+        model.flushPreferences()
         super.onPause()
     }
 
@@ -269,15 +301,17 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val ready = model.publication != null
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
+        menu.findItem(R.id.action_preferences)?.isVisible = ready
         menu.findItem(R.id.action_scroll_mode)?.apply {
             isVisible = ready
-            isChecked = settings.scrollMode
+            isChecked = scrollMode
         }
         menu.findItem(R.id.action_volume_keys_turn_pages)?.apply {
             isVisible = ready
             isChecked = settings.volumeKeysTurnPages
         }
         menu.findItem(R.id.action_restart_book)?.isVisible = ready
+        chrome.tintToolbarIcons(menu)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -286,8 +320,12 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             showTableOfContents()
             true
         }
+        R.id.action_preferences -> {
+            showPreferences()
+            true
+        }
         R.id.action_scroll_mode -> {
-            setScrollMode(!settings.scrollMode)
+            setScrollMode(!scrollMode)
             true
         }
         R.id.action_volume_keys_turn_pages -> {
@@ -302,11 +340,33 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         else -> super.onOptionsItemSelected(item)
     }
 
+    /** The overflow the navigator currently uses, or the stored preference before it exists. */
+    private val scrollMode: Boolean
+        get() = navigatorSettings?.value?.scroll ?: (model.preferences.value.epub.scroll ?: false)
+
     internal fun setScrollMode(enabled: Boolean) {
-        settings.scrollMode = enabled
-        navigator?.submitPreferences(EpubPreferences(scroll = enabled))
-        invalidateOptionsMenu()
+        model.editPreferences { it.copy(scroll = enabled) }
     }
+
+    internal fun showPreferences() {
+        if (model.publication == null) return
+        PreferencesSheet.show(supportFragmentManager)
+    }
+
+    // Preferences access for the panel (roadmap P2.1)
+
+    internal val preferencesState: StateFlow<ReaderPreferencesState> get() = model.preferences
+
+    internal val navigatorSettings: StateFlow<EpubSettings>?
+        get() = navigator?.takeIf { it.isAdded }?.settings
+
+    internal val fixedLayout: Boolean get() = model.publication?.metadata?.layout == Layout.FIXED
+
+    internal fun editPreferences(transform: (EpubPreferences) -> EpubPreferences) = model.editPreferences(transform)
+
+    internal fun setThemeMode(mode: ThemeMode) = model.setThemeMode(mode)
+
+    internal fun resetPreferences() = model.resetPreferences()
 
     private fun showTableOfContents() {
         val publication = model.publication ?: return

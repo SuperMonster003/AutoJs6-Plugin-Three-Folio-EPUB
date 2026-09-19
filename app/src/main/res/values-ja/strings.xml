@@ -8,6 +8,10 @@
     <string name="release_history_unavailable">リリース履歴を表示できません</string>
     <string name="text_cannot_open_link">リンクを開けません</string>
     <string name="text_cannot_read_file">EPUB ファイルを読み取れません</string>
+    <string name="text_column_count_auto">自動</string>
+    <string name="text_font_family_monospace">等幅</string>
+    <string name="text_font_family_sans_serif">サンセリフ</string>
+    <string name="text_font_family_serif">セリフ</string>
     <string name="text_invalid_request">リクエストが単一の EPUB ファイルを指していません</string>
     <string name="text_no_table_of_contents">この本には目次がありません</string>
     <string name="text_open_failed">EPUB ファイルを開けません: %1$s</string>
@@ -15,10 +19,36 @@
     <string name="text_open_failed_protected">DRM で保護された書籍には対応していません</string>
     <string name="text_open_failed_timeout">書籍を開く処理がタイムアウトしました</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">本を開いています...</string>
+    <string name="text_overflow_paged">ページ</string>
+    <string name="text_overflow_scrolled">スクロール</string>
+    <string name="text_preferences">読書設定</string>
+    <string name="text_preferences_column_count">段組</string>
+    <string name="text_preferences_decrease">小さく</string>
+    <string name="text_preferences_fixed_layout_hint">この本は固定レイアウトのため, テーマのみ適用されます</string>
+    <string name="text_preferences_font_family">フォント</string>
+    <string name="text_preferences_font_size">文字サイズ</string>
+    <string name="text_preferences_hyphens">ハイフネーション</string>
+    <string name="text_preferences_increase">大きく</string>
+    <string name="text_preferences_line_height">行間</string>
+    <string name="text_preferences_overflow">ページレイアウト</string>
+    <string name="text_preferences_page_margins">ページ余白</string>
+    <string name="text_preferences_paragraph_spacing">段落間隔</string>
+    <string name="text_preferences_publisher_default">出版社の既定</string>
+    <string name="text_preferences_publisher_styles">出版社のスタイル</string>
+    <string name="text_preferences_publisher_styles_hint">出版社のスタイルは行間, 段落間隔, 配置, ハイフネーションを上書きします. いずれかを変更すると出版社のスタイルはオフになります</string>
+    <string name="text_preferences_reset">既定に戻す</string>
+    <string name="text_preferences_text_align">配置</string>
+    <string name="text_preferences_theme">テーマ</string>
     <string name="text_restart_book">最初から読む</string>
     <string name="text_restart_book_message">この書籍の保存された読書位置を消去して最初から読みますか?</string>
     <string name="text_scroll_mode">スクロールモード</string>
     <string name="text_settings">設定</string>
     <string name="text_table_of_contents">目次</string>
+    <string name="text_text_align_justify">両端揃え</string>
+    <string name="text_text_align_start">先頭揃え</string>
+    <string name="text_theme_dark">ダーク</string>
+    <string name="text_theme_host">ホストに従う</string>
+    <string name="text_theme_light">ライト</string>
+    <string name="text_theme_sepia">セピア</string>
     <string name="text_volume_keys_turn_pages">音量キーでページをめくる</string>
 </resources>

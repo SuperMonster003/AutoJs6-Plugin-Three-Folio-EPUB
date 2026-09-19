@@ -8,6 +8,10 @@
     <string name="release_history_unavailable">릴리스 기록을 사용할 수 없습니다</string>
     <string name="text_cannot_open_link">링크를 열 수 없습니다</string>
     <string name="text_cannot_read_file">EPUB 파일을 읽을 수 없습니다</string>
+    <string name="text_column_count_auto">자동</string>
+    <string name="text_font_family_monospace">고정폭</string>
+    <string name="text_font_family_sans_serif">산세리프</string>
+    <string name="text_font_family_serif">세리프</string>
     <string name="text_invalid_request">요청이 단일 EPUB 파일을 가리키지 않습니다</string>
     <string name="text_no_table_of_contents">이 책에는 목차가 없습니다</string>
     <string name="text_open_failed">EPUB 파일을 열 수 없습니다: %1$s</string>
@@ -15,10 +19,36 @@
     <string name="text_open_failed_protected">DRM으로 보호된 책은 지원되지 않습니다</string>
     <string name="text_open_failed_timeout">책을 여는 동안 시간이 초과되었습니다</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">책을 여는 중...</string>
+    <string name="text_overflow_paged">페이지</string>
+    <string name="text_overflow_scrolled">스크롤</string>
+    <string name="text_preferences">읽기 설정</string>
+    <string name="text_preferences_column_count">단 수</string>
+    <string name="text_preferences_decrease">작게</string>
+    <string name="text_preferences_fixed_layout_hint">이 책은 고정 레이아웃이므로 테마만 적용됩니다</string>
+    <string name="text_preferences_font_family">글꼴</string>
+    <string name="text_preferences_font_size">글자 크기</string>
+    <string name="text_preferences_hyphens">하이픈 연결</string>
+    <string name="text_preferences_increase">크게</string>
+    <string name="text_preferences_line_height">줄 간격</string>
+    <string name="text_preferences_overflow">페이지 레이아웃</string>
+    <string name="text_preferences_page_margins">페이지 여백</string>
+    <string name="text_preferences_paragraph_spacing">문단 간격</string>
+    <string name="text_preferences_publisher_default">출판사 기본값</string>
+    <string name="text_preferences_publisher_styles">출판사 스타일</string>
+    <string name="text_preferences_publisher_styles_hint">출판사 스타일은 줄 간격, 문단 간격, 정렬, 하이픈 연결을 덮어씁니다. 그중 하나를 변경하면 출판사 스타일이 꺼집니다</string>
+    <string name="text_preferences_reset">기본값 복원</string>
+    <string name="text_preferences_text_align">정렬</string>
+    <string name="text_preferences_theme">테마</string>
     <string name="text_restart_book">처음부터 읽기</string>
     <string name="text_restart_book_message">이 책의 저장된 읽기 위치를 지우고 처음부터 읽을까요?</string>
     <string name="text_scroll_mode">스크롤 모드</string>
     <string name="text_settings">설정</string>
     <string name="text_table_of_contents">목차</string>
+    <string name="text_text_align_justify">양쪽 정렬</string>
+    <string name="text_text_align_start">시작 정렬</string>
+    <string name="text_theme_dark">다크</string>
+    <string name="text_theme_host">호스트 따르기</string>
+    <string name="text_theme_light">라이트</string>
+    <string name="text_theme_sepia">세피아</string>
     <string name="text_volume_keys_turn_pages">볼륨 키로 페이지 넘기기</string>
 </resources>

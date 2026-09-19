@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Readium EPUB Reader</string>
+    <string name="text_column_count_one" translatable="false">1</string>
+    <string name="text_column_count_two" translatable="false">2</string>
+    <string name="text_font_family_accessible_dfa" translatable="false">AccessibleDfA</string>
+    <string name="text_font_family_ia_writer_duospace" translatable="false">IA Writer Duospace</string>
+    <string name="text_font_family_open_dyslexic" translatable="false">OpenDyslexic</string>
+    <string name="text_percent_value" translatable="false">%1$d%%</string>
     <string name="text_progress_percent" translatable="false">%1$d%%</string>
     <string name="text_progress_position_and_percent" translatable="false">%1$d / %2$d (%3$d%%)</string>
+    <string name="text_symbol_minus" translatable="false">-</string>
+    <string name="text_symbol_plus" translatable="false">+</string>
 </resources>
