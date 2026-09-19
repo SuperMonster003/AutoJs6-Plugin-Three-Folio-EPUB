@@ -20,4 +20,5 @@
 * `新增` 書籍透過宿主授予的檔案描述符按位置就地讀取, 不複製也不解壓到儲存空間
 * `新增` 介面, 說明, README 與更新日誌提供 10 種語言
 * `修復` AGP 9.1 構建時的 SDK XML v4 解析警告及 JVM 單元測試組裝任務誤觸發 APK 原生程式庫對齊檢查的問題 (共用構建外掛 1.8.3)
+* `修復` 閱讀進度寫入失敗 (書籍目錄被移除, 儲存空間不可寫) 不再令閱讀器崩潰, 僅遺失該條記錄並繼續閱讀
 * `依賴` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)

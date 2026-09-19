@@ -20,4 +20,5 @@
 * `Fonctionnalité` Les livres sont lus sur place à travers le descripteur de fichier accordé, avec des lectures positionnelles ; rien n'est copié ni extrait vers le stockage
 * `Fonctionnalité` Interface, instructions, README et changelog en 10 langues
 * `Correctif` Avertissements de lecture SDK XML v4 avec AGP 9.1 et contrôles d'alignement natif des APK déclenchés par erreur lors de l'assemblage des tests unitaires JVM, avec les plugins de compilation partagés 1.8.3
+* `Correctif` Un échec d'écriture de la progression (dossier du livre supprimé, stockage non inscriptible) ne fait plus planter le lecteur ; cet enregistrement est perdu et la lecture continue
 * `Dépendance` Ajout de Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)

@@ -20,4 +20,5 @@
 * `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 * `Feature` Interface, instructions, README, and changelog in 10 languages
 * `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
+* `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 * `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)

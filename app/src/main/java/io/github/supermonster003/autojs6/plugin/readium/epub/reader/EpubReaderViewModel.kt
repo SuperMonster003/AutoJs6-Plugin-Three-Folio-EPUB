@@ -235,9 +235,13 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         fullFingerprintMillis = SystemClock.elapsedRealtime() - started
         storeMutex.withLock {
             val current = bookKey ?: return
-            if (current == fullKey || store.migrate(current, fullKey)) {
-                store.writeAlias(quickKey, fullKey)
-                bookKey = fullKey
+            // Store writes never take the reader down (see persist): a failed alias write only
+            // means the next open fingerprints the file again.
+            runCatching {
+                if (current == fullKey || store.migrate(current, fullKey)) {
+                    store.writeAlias(quickKey, fullKey)
+                    bookKey = fullKey
+                }
             }
         }
     }
@@ -273,9 +277,14 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         persistScope.launch { storeMutex.withLock { store.clearProgress(key) } }
     }
 
+    /**
+     * A write can fail underneath the reader (book directory removed meanwhile, storage not
+     * writable); that loses this one record and must never crash the process, as an uncaught
+     * exception on [persistScope] would.
+     */
     private fun persist(record: ProgressRecord) {
         persistScope.launch {
-            storeMutex.withLock { bookKey?.let { store.writeProgress(it, record) } }
+            storeMutex.withLock { bookKey?.let { key -> runCatching { store.writeProgress(key, record) } } }
         }
     }
 

@@ -20,4 +20,5 @@
 * `기능` 책은 호스트가 부여한 파일 디스크립터로 위치 기반으로 제자리에서 읽으며 저장소에 복사하거나 압축을 풀지 않음
 * `기능` 인터페이스, 설명, README, changelog를 10개 언어로 제공
 * `수정` 공유 빌드 플러그인 1.8.3을 통해 AGP 9.1의 SDK XML v4 파싱 경고 및 JVM 단위 테스트 조립 작업에서 APK 네이티브 라이브러리 정렬 검사가 잘못 실행되는 문제 해결
+* `수정` 읽기 진행 기록 저장에 실패해도 (책 디렉터리가 제거됨, 저장소에 쓸 수 없음) 리더가 더 이상 중단되지 않고, 해당 기록만 잃은 채 계속 읽습니다
 * `의존성` Readium Kotlin Toolkit 3.4.0 추가 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
