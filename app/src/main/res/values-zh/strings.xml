@@ -52,7 +52,9 @@
     <string name="text_preferences_publisher_styles_hint">出版商样式会覆盖行距, 段间距, 对齐与连字符; 修改其中任一项会关闭出版商样式</string>
     <string name="text_preferences_reset">恢复默认</string>
     <string name="text_preferences_text_align">对齐</string>
+    <string name="text_preferences_text_direction">文字方向</string>
     <string name="text_preferences_theme">主题</string>
+    <string name="text_preferences_vertical_text_hint">竖排文本始终滚动, 分页布局不可用</string>
     <string name="text_restart_book">从头开始</string>
     <string name="text_restart_book_message">清除这本书已保存的阅读位置并从头开始?</string>
     <string name="text_scroll_mode">滚动模式</string>
@@ -60,6 +62,9 @@
     <string name="text_table_of_contents">目录</string>
     <string name="text_text_align_justify">两端对齐</string>
     <string name="text_text_align_start">起始对齐</string>
+    <string name="text_text_direction_auto">自动</string>
+    <string name="text_text_direction_horizontal">横排</string>
+    <string name="text_text_direction_vertical">竖排</string>
     <string name="text_theme_dark">深色</string>
     <string name="text_theme_host">跟随宿主</string>
     <string name="text_theme_light">浅色</string>

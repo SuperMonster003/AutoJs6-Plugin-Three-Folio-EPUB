@@ -47,6 +47,10 @@ import kotlin.math.roundToInt
  *
  * The font list ends with the imported fonts (P2.2); the buttons under it open the document
  * picker and the management list, where tapping a font deletes it after confirmation.
+ *
+ * Text direction (P2.3) is a three-way choice: automatic (Readium turns CJK books with a
+ * right-to-left page progression vertical), horizontal or vertical. Readium cannot paginate
+ * vertical text, so the page layout group is disabled and a hint explains it while it is vertical.
  */
 @OptIn(ExperimentalReadiumApi::class)
 internal class PreferencesSheet : BottomSheetDialogFragment() {
@@ -96,6 +100,15 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
         }
         overflowGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked && !rendering) host.editPreferences { it.copy(scroll = checkedId == R.id.overflow_scrolled) }
+        }
+        textDirectionGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || rendering) return@addOnButtonCheckedListener
+            val vertical = when (checkedId) {
+                R.id.text_direction_horizontal -> false
+                R.id.text_direction_vertical -> true
+                else -> null
+            }
+            host.editPreferences { it.copy(verticalText = vertical) }
         }
 
         fontSizeDecrease.setOnClickListener { stepFontSize(-1) }
@@ -195,12 +208,22 @@ internal class PreferencesSheet : BottomSheetDialogFragment() {
             val fixed = host.fixedLayout
             themeGroup.check(themeButtonFor(state.themeMode))
 
-            val scroll = settings?.scroll ?: state.epub.scroll ?: false
+            // Readium forces scrolling for vertical text: CSS columns cannot paginate it.
+            val vertical = settings?.verticalText ?: state.epub.verticalText ?: false
+            val scroll = settings?.scroll ?: state.epub.scroll ?: vertical
             overflowGroup.check(if (scroll) R.id.overflow_scrolled else R.id.overflow_paged)
-            setGroupEnabled(overflowGroup, !fixed)
+            setGroupEnabled(overflowGroup, !fixed && !vertical)
 
             reflowableGroup.isVisible = !fixed
             fixedLayoutHint.isVisible = fixed
+            textDirectionGroup.check(
+                when (state.epub.verticalText) {
+                    null -> R.id.text_direction_auto
+                    true -> R.id.text_direction_vertical
+                    false -> R.id.text_direction_horizontal
+                },
+            )
+            verticalTextHint.isVisible = vertical
 
             setSlider(fontSizeSlider, fontSizeValue, settings?.fontSize ?: state.epub.fontSize ?: 1.0)
             if (fonts != catalog) setFontFamilies(fonts)

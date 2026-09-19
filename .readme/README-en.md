@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts. Bookmarks, full-text search, read-aloud, fixed layout, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books. Bookmarks, full-text search, read-aloud, fixed layout, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -58,6 +58,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Reader chrome: title and chapter in the toolbar, a progress bar with position and percentage, immersive mode on a center tap, tap zones and volume keys for page turns, and scroll or paginated mode.
 - Reading preferences: a bottom panel sets text size, font family, line height, page margins, paragraph spacing, alignment, hyphenation, publisher styles, column count and paged or scrolled layout; changes apply immediately and are remembered for every book. Light, sepia and dark themes, or follow the host's night mode; the toolbar and system bars take the theme's colours.
 - Font import: pick TTF or OTF files with the system document picker; they are validated, stored privately in the plugin (up to 10 fonts, 20 MB each), listed in the preferences panel next to the built-in fonts, served to every book and removable from the same panel.
+- Vertical CJK and right-to-left books: the reading progression follows the publication, so tap zones mirror for right-to-left books; Japanese and Chinese books with a right-to-left page progression render vertically, and a `Text direction` preference forces horizontal or vertical text. The interface follows the AutoJs6 language for its own layout direction, independently of the book.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -175,6 +176,7 @@ _2026/09/19_
 - `Feature` Reader chrome: book title and current chapter in the toolbar, a progress bar with synthetic position and percentage, immersive mode on a center tap, tap zones and volume keys for page turns, and a scroll mode toggle
 - `Feature` Reading preferences panel: text size, font family, line height, page margins, paragraph spacing, alignment, hyphenation, publisher styles, column count and paged or scrolled layout apply immediately and are remembered across books; light, sepia and dark themes plus `Follow host`, with the toolbar and system bars recoloured to match
 - `Feature` Font import: TTF and OTF files picked with the system document picker are validated (SFNT signature, `name` table, 20 MB per file, 10 fonts), stored privately under `files/fonts/<sha256>` and served to the Readium navigator as `@font-face` declarations; imported fonts appear in the preferences panel next to the built-in ones and can be deleted there
+- `Feature` Vertical CJK and right-to-left books: the reading progression follows the publication (tap zones mirror for right-to-left books), Japanese / Chinese books with a right-to-left page progression render vertically through Readium CSS, a `Text direction` preference forces horizontal or vertical text, and the interface layout direction stays independent of the book
 - `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 - `Feature` Interface, instructions, README, and changelog in 10 languages
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3

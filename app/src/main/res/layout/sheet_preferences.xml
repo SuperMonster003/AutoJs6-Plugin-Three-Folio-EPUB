@@ -88,6 +88,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                style="@style/Widget.Reader.PreferenceLabel"
+                android:text="@string/text_preferences_text_direction" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/text_direction_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/text_direction_auto"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_text_direction_auto" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/text_direction_horizontal"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_text_direction_horizontal" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/text_direction_vertical"
+                    style="@style/Widget.Reader.ToggleButton"
+                    android:text="@string/text_text_direction_vertical" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <TextView
+                android:id="@+id/vertical_text_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_preferences_vertical_text_hint"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

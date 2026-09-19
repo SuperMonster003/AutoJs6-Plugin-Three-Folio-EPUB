@@ -52,7 +52,9 @@
     <string name="text_preferences_publisher_styles_hint">Les styles de l\'éditeur remplacent l\'interligne, l\'espacement des paragraphes, l\'alignement et la césure; modifier l\'un d\'eux désactive les styles de l\'éditeur</string>
     <string name="text_preferences_reset">Restaurer les valeurs par défaut</string>
     <string name="text_preferences_text_align">Alignement</string>
+    <string name="text_preferences_text_direction">Sens du texte</string>
     <string name="text_preferences_theme">Thème</string>
+    <string name="text_preferences_vertical_text_hint">Le texte vertical défile toujours; la mise en page paginée n\'est pas disponible</string>
     <string name="text_restart_book">Reprendre au début</string>
     <string name="text_restart_book_message">Effacer la position de lecture enregistrée de ce livre et reprendre au début ?</string>
     <string name="text_scroll_mode">Mode défilement</string>
@@ -60,6 +62,9 @@
     <string name="text_table_of_contents">Table des matières</string>
     <string name="text_text_align_justify">Justifié</string>
     <string name="text_text_align_start">Début</string>
+    <string name="text_text_direction_auto">Automatique</string>
+    <string name="text_text_direction_horizontal">Horizontal</string>
+    <string name="text_text_direction_vertical">Vertical</string>
     <string name="text_theme_dark">Sombre</string>
     <string name="text_theme_host">Suivre l\'hôte</string>
     <string name="text_theme_light">Clair</string>
