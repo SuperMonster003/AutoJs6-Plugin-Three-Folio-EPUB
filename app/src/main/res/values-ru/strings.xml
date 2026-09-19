@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">Можно импортировать не более %1$d шрифтов</string>
     <string name="text_font_import_failed_truncated">Файл шрифта обрезан</string>
     <string name="text_font_imported">Шрифт импортирован: %1$s</string>
+    <string name="text_image">Изображение</string>
+    <string name="text_image_unavailable">Не удалось показать изображение</string>
     <string name="text_invalid_request">Запрос не указывает на один файл EPUB</string>
     <string name="text_no_app_for_action">Нет приложения для этого действия</string>
     <string name="text_no_file_picker">На этом устройстве нет доступного средства выбора файлов</string>

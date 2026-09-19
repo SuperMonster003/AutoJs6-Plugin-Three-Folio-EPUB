@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">يمكن استيراد %1$d خطوط كحد أقصى</string>
     <string name="text_font_import_failed_truncated">ملف الخط مقطوع</string>
     <string name="text_font_imported">تم استيراد الخط: %1$s</string>
+    <string name="text_image">صورة</string>
+    <string name="text_image_unavailable">تعذر عرض الصورة</string>
     <string name="text_invalid_request">الطلب لا يشير إلى ملف EPUB واحد</string>
     <string name="text_no_app_for_action">لا يوجد تطبيق يمكنه تنفيذ هذا الإجراء</string>
     <string name="text_no_file_picker">لا يتوفر منتقي ملفات على هذا الجهاز</string>

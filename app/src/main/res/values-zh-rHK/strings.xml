@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">最多只能匯入 %1$d 個字型</string>
     <string name="text_font_import_failed_truncated">字型檔案不完整</string>
     <string name="text_font_imported">已匯入字型: %1$s</string>
+    <string name="text_image">圖片</string>
+    <string name="text_image_unavailable">無法顯示這張圖片</string>
     <string name="text_invalid_request">請求未指向單一 EPUB 檔案</string>
     <string name="text_no_app_for_action">沒有應用程式能處理此操作</string>
     <string name="text_no_file_picker">此裝置沒有可用的檔案選擇器</string>

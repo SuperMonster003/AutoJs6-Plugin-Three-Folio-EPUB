@@ -7,5 +7,6 @@
     <color name="section_header">#00695C</color>
     <color name="ic_launcher_background">#00695C</color>
     <color name="toolbar_text">#FFFFFFFF</color>
+    <color name="image_caption_scrim">#99000000</color>
     <color name="window_background">#FFFFFFFF</color>
 </resources>

@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">Se pueden importar como máximo %1$d fuentes</string>
     <string name="text_font_import_failed_truncated">El archivo de fuente está truncado</string>
     <string name="text_font_imported">Fuente importada: %1$s</string>
+    <string name="text_image">Imagen</string>
+    <string name="text_image_unavailable">No se pudo mostrar la imagen</string>
     <string name="text_invalid_request">La solicitud no describe un único archivo EPUB</string>
     <string name="text_no_app_for_action">Ninguna aplicación puede realizar esta acción</string>
     <string name="text_no_file_picker">No hay ningún selector de archivos disponible en este dispositivo</string>

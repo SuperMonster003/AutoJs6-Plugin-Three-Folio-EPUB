@@ -39,6 +39,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeM
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ExternalLink
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ImageViewerDialog
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.LinkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageLocation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnAction
@@ -84,6 +85,7 @@ import org.readium.r2.shared.publication.Layout
 import org.readium.r2.shared.publication.Link
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.html.cssSelector
+import org.readium.r2.shared.publication.services.content.Content
 import org.readium.r2.shared.util.AbsoluteUrl
 
 /**
@@ -200,6 +202,11 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     private val inputListener = object : InputListener {
         override fun onTap(event: TapEvent): Boolean {
             val fragment = navigator ?: return false
+            val image = event.targetElement?.content as? Content.ImageElement
+            if (image != null) {
+                showImage(image)
+                return true
+            }
             val view = fragment.publicationView
             perform(PageTurnPolicy.resolveTap(event.point.x, event.point.y, view.width, view.height, settings.tapZones, rightToLeft))
             return true
@@ -738,6 +745,16 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             Toast.makeText(this, R.string.text_no_app_for_action, Toast.LENGTH_SHORT).show()
         }
     }
+
+    // Images (roadmap P2.7)
+
+    /** Opens the tapped image full screen. Only reflowable pages report the tapped element. */
+    private fun showImage(image: Content.ImageElement) {
+        ImageViewerDialog.show(supportFragmentManager, image.embeddedLink.url().toString(), image.text)
+    }
+
+    internal val imageViewer: ImageViewerDialog?
+        get() = supportFragmentManager.findFragmentByTag(ImageViewerDialog.TAG) as? ImageViewerDialog
 
     // Bookmarks (roadmap P2.6)
 

@@ -21,6 +21,7 @@
 * `Función` Marcadores: un icono de la barra de herramientas añade o quita un marcador de la página actual (con el capítulo y un extracto del texto), y un panel `Marcadores` los lista del más reciente al más antiguo con saltar, eliminar y borrar todo; se guardan por libro (hasta 500) junto a la posición de lectura
 * `Función` Controles de lectura: las zonas de toque pueden desactivarse o fijarse en izquierda / derecha o arriba / abajo, los teclados físicos pasan página con las flechas, las teclas de página y el espacio, y el texto seleccionado ofrece copiar, compartir, búsqueda web y las aplicaciones de procesamiento de texto del sistema
 * `Función` Enlaces: los enlaces internos del libro se abren en el lector y la tecla atrás vuelve a donde estaba, las notas al pie y finales se abren en un diálogo, y los enlaces externos se abren tras confirmar o, si así lo elige, directamente en el navegador; los enlaces de otros esquemas se rechazan
+* `Función` Imágenes: tocar una imagen la abre a pantalla completa con su pie
 * `Función` Los libros se leen en su lugar a través del descriptor de archivo concedido, con lecturas posicionales; nada se copia ni se extrae al almacenamiento
 * `Función` Interfaz, instrucciones, README y changelog en 10 idiomas
 * `Corrección` Advertencias de lectura de SDK XML v4 con AGP 9.1 y comprobaciones de alineación nativa de APK activadas por error al ensamblar pruebas unitarias JVM, mediante los plugins de compilación compartidos 1.8.3

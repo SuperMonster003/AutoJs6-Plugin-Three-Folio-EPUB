@@ -2,6 +2,7 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
 import android.app.Application
 import android.content.ContentResolver
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
@@ -17,6 +18,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCa
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ImageDecoding
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.LinkHistory
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchSession
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
@@ -28,7 +31,6 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Progre
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressThrottle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderPreferencesStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
-import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.LinkHistory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,7 +51,9 @@ import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.publication.services.positions
+import org.readium.r2.shared.util.Url
 import org.readium.r2.shared.util.getOrElse
+import org.readium.r2.shared.util.use
 
 /** Why the book did not open; the Activity maps each case to a localized message. */
 internal sealed class OpenFailure {
@@ -464,6 +468,17 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) cursor.getString(0) else null
         }
+
+    /**
+     * The image at [href] inside the open book, downsampled so its longer side is at most
+     * [maxSide] pixels; null when the book has no such resource or it does not decode.
+     */
+    suspend fun decodeImage(href: String, maxSide: Int): Bitmap? = withContext(Dispatchers.IO) {
+        val publication = publication ?: return@withContext null
+        val url = Url(href) ?: return@withContext null
+        val bytes = publication.get(url)?.use { resource -> resource.read().getOrNull() } ?: return@withContext null
+        ImageDecoding.decode(bytes, maxSide)
+    }
 
     private fun release() {
         searchSession.detach()

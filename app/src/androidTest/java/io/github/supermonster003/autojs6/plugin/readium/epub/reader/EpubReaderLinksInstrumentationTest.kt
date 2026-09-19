@@ -5,9 +5,13 @@ import android.app.Instrumentation
 import android.content.ClipData
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.os.Build
+import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.view.PixelCopy
+import android.view.Window
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.test.platform.app.InstrumentationRegistry
@@ -112,6 +116,7 @@ class EpubReaderLinksInstrumentationTest {
             val note = onMain { activity.noteText.toString() }
             assertTrue(note, note.contains("nobody in particular"))
             SystemClock.sleep(500)
+            onMain { activity.noteDialog?.window }?.let { screenshot(it, "links-note") }
             assertTrue(currentHref(activity)?.endsWith("chapter1.xhtml") == true)
             assertEquals(0, onMain { activity.readerModel.linkHistory.size })
             main { activity.dismissLinkDialogs() }
@@ -206,6 +211,26 @@ class EpubReaderLinksInstrumentationTest {
         }
         latch.await(10, TimeUnit.SECONDS)
         return result
+    }
+
+
+    /** A PixelCopy of [window] (the dialog's own window, which the Activity's copy would not include). */
+    private fun screenshot(window: Window, name: String) {
+        check(Looper.myLooper() != Looper.getMainLooper())
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val decor = window.decorView
+            if (decor.width == 0 || decor.height == 0) return
+            val target = Bitmap.createBitmap(decor.width, decor.height, Bitmap.Config.ARGB_8888)
+            val done = CountDownLatch(1)
+            var result = PixelCopy.ERROR_UNKNOWN
+            PixelCopy.request(window, target, { result = it; done.countDown() }, Handler(Looper.getMainLooper()))
+            if (!done.await(10, TimeUnit.SECONDS) || result != PixelCopy.SUCCESS) return
+            target
+        } else {
+            instrumentation.uiAutomation.takeScreenshot() ?: return
+        }
+        File(context.filesDir, "p2-evidence").apply { mkdirs() }.resolve("$name-api${Build.VERSION.SDK_INT}.png")
+            .outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
 
     private fun record(name: String, lines: List<String>) {

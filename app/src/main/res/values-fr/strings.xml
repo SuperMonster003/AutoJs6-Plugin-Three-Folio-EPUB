@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">Au plus %1$d polices peuvent être importées</string>
     <string name="text_font_import_failed_truncated">Le fichier de police est tronqué</string>
     <string name="text_font_imported">Police importée : %1$s</string>
+    <string name="text_image">Image</string>
+    <string name="text_image_unavailable">L\'image n\'a pas pu être affichée</string>
     <string name="text_invalid_request">La demande ne désigne pas un seul fichier EPUB</string>
     <string name="text_no_app_for_action">Aucune application ne peut traiter cette action</string>
     <string name="text_no_file_picker">Aucun sélecteur de fichiers n\'est disponible sur cet appareil</string>

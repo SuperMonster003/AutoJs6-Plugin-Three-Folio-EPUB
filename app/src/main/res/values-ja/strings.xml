@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">取り込めるフォントは最大 %1$d 個です</string>
     <string name="text_font_import_failed_truncated">フォントファイルが不完全です</string>
     <string name="text_font_imported">フォントを取り込みました: %1$s</string>
+    <string name="text_image">画像</string>
+    <string name="text_image_unavailable">この画像を表示できません</string>
     <string name="text_invalid_request">リクエストが単一の EPUB ファイルを指していません</string>
     <string name="text_no_app_for_action">この操作を処理できるアプリがありません</string>
     <string name="text_no_file_picker">このデバイスには利用できるファイル選択ツールがありません</string>

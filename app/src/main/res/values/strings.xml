@@ -37,6 +37,8 @@
     <string name="text_font_import_failed_too_many">At most %1$d fonts can be imported</string>
     <string name="text_font_import_failed_truncated">The font file is truncated</string>
     <string name="text_font_imported">Font imported: %1$s</string>
+    <string name="text_image">Image</string>
+    <string name="text_image_unavailable">The image could not be shown</string>
     <string name="text_invalid_request">The request does not describe a single EPUB file</string>
     <string name="text_no_app_for_action">No app can handle this action</string>
     <string name="text_no_file_picker">No file picker is available on this device</string>
