@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- The text-selection toolbar is a framework floating ActionMode (AppCompat only wraps primary
+     action modes), so its inflater reads android:showAsAction; app:showAsAction would leave every
+     item in the overflow. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="AppCompatResource">
 
     <item
         android:id="@+id/selection_copy"
