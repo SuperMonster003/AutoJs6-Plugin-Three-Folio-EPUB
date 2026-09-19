@@ -4,6 +4,7 @@
     <color name="color_primary_dark">#00251A</color>
     <color name="color_secondary">#FFCA28</color>
     <color name="dialog_foreground">#FFFFFFFF</color>
+    <color name="section_header">#4DB6AC</color>
     <color name="toolbar_text">#FFFFFFFF</color>
     <color name="window_background">#FF0D1117</color>
 </resources>

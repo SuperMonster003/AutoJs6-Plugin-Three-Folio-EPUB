@@ -30,6 +30,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.Reader
  * [ReaderTheme], so the bars never flash a foreign colour when immersive mode toggles or the theme
  * changes. Immersive mode hides the chrome and the system bars, exactly like the sibling
  * previewers' fullscreen mode; the reader itself never moves, so toggling keeps the locator.
+ * The search bar (P2.5) sits above the progress panel while a search hit is open and follows the
+ * same colours and immersive rule.
  */
 internal class ReaderChrome(
     private val activity: Activity,
@@ -45,6 +47,10 @@ internal class ReaderChrome(
             field = value
             applyVisibility()
         }
+
+    /** True while a search hit is open; the bar shows only together with the rest of the chrome. */
+    var searchBarVisible: Boolean = false
+        private set
 
     var theme: ReaderTheme = ReaderTheme.LIGHT
         private set
@@ -93,6 +99,28 @@ internal class ReaderChrome(
         binding.toolbar.subtitle = title
     }
 
+    fun setSearchBarListeners(onPrevious: () -> Unit, onNext: () -> Unit, onClose: () -> Unit) {
+        binding.searchPrevious.setOnClickListener { onPrevious() }
+        binding.searchNext.setOnClickListener { onNext() }
+        binding.searchClose.setOnClickListener { onClose() }
+    }
+
+    /** Shows `x of N` for the open hit ([index] is zero-based), or hides the bar when [index] is null. */
+    fun showSearchPosition(index: Int?, count: Int) {
+        searchBarVisible = index != null && count > 0
+        if (index != null) {
+            binding.searchPosition.text = activity.getString(R.string.text_search_position, index + 1, count)
+            setEnabled(binding.searchPrevious, index > 0)
+            setEnabled(binding.searchNext, index < count - 1)
+        }
+        applyVisibility()
+    }
+
+    private fun setEnabled(button: android.view.View, enabled: Boolean) {
+        button.isEnabled = enabled
+        button.alpha = if (enabled) 1f else DISABLED_ALPHA
+    }
+
     fun showProgress(snapshot: ProgressSnapshot) {
         binding.progressBar.max = PROGRESS_SCALE
         binding.progressBar.progress = snapshot.percent * PROGRESS_SCALE / 100
@@ -128,6 +156,12 @@ internal class ReaderChrome(
         binding.progressBar.progressBackgroundTintList =
             ColorStateList.valueOf(ReaderThemeColors.withAlpha(colors.foreground, TRACK_ALPHA))
         binding.progressText.setTextColor(colors.secondaryForeground)
+        binding.searchBar.setBackgroundColor(colors.background)
+        binding.searchPosition.setTextColor(colors.foreground)
+        val iconTint = ColorStateList.valueOf(colors.foreground)
+        binding.searchPrevious.imageTintList = iconTint
+        binding.searchNext.imageTintList = iconTint
+        binding.searchClose.imageTintList = iconTint
         tintToolbarIcons(binding.toolbar.menu)
         applySystemBars()
     }
@@ -146,6 +180,7 @@ internal class ReaderChrome(
 
     private fun applyVisibility() {
         binding.toolbar.isVisible = !immersive
+        binding.searchBar.isVisible = readerVisible && searchBarVisible && !immersive
         binding.progressPanel.isVisible = readerVisible && !immersive
     }
 
@@ -175,6 +210,7 @@ internal class ReaderChrome(
 
     companion object {
         private const val PROGRESS_SCALE = 1000
+        private const val DISABLED_ALPHA = 0.38f
         private const val TRACK_ALPHA = 0.12
         private const val LEGACY_NAVIGATION_BAR = 0xFF000000.toInt()
     }

@@ -17,6 +17,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCa
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchSession
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontStore
@@ -72,7 +74,9 @@ internal sealed class OpenState {
  * `reader-preferences.json` before the book opens, edited in place by the panel and the menu, and
  * written back atomically after a short debounce (or from [flushPreferences] on pause), and the
  * imported fonts (roadmap P2.2): the catalog is read once, served to the book through
- * [FontsContainer], and updated by [importFont] / [deleteFont].
+ * [FontsContainer], and updated by [importFont] / [deleteFont], and the full-text search
+ * (roadmap P2.5): one [SearchSession] per book, whose results and active hit survive rotation and
+ * the panel being closed, and which is dropped with the book.
  *
  * The publication lives only in memory: after process death the Activity reopens the book from its
  * Intent and the saved locator instead of restoring fragments.
@@ -120,6 +124,11 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     /** The imported fonts (roadmap P2.2); the Activity rebuilds the navigator when this changes. */
     val fonts: StateFlow<FontCatalog> get() = _fonts
+
+    private val searchSession = SearchSession(viewModelScope)
+
+    /** The full-text search over the open book (roadmap P2.5). */
+    val search: StateFlow<SearchState> get() = searchSession.state
 
     init {
         // The first run after the pre-P2.1 builds adopts the old scroll toggle so an update keeps
@@ -207,6 +216,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         release()
         this.resource = resource
         this.publication = publication
+        searchSession.attach(publication)
         navigatorFactory = EpubNavigatorFactory(publication)
         bookKey = initialKey
         lastLocator = savedLocator ?: storedProgress?.let { Locator.fromJSON(it.locator) }
@@ -361,12 +371,25 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         return deleted
     }
 
+    // ---- Full-text search (roadmap P2.5) ----
+
+    fun search(query: String) = searchSession.search(query)
+
+    fun loadMoreSearchResults() = searchSession.loadMore()
+
+    fun cancelSearch() = searchSession.cancel()
+
+    fun selectSearchResult(index: Int?) = searchSession.select(index)
+
+    fun closeSearch() = searchSession.close()
+
     private fun displayName(contentResolver: ContentResolver, uri: Uri): String? =
         contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) cursor.getString(0) else null
         }
 
     private fun release() {
+        searchSession.detach()
         navigatorFactory = null
         publication?.close()
         publication = null

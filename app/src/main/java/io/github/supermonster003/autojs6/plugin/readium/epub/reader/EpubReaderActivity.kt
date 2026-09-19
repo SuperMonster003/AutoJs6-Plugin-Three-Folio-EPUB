@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
@@ -33,8 +34,10 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageT
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PreferencesSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderChrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderProgress
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SearchSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -45,6 +48,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.epub.EpubNavigatorFragment
 import org.readium.r2.navigator.epub.EpubPreferences
@@ -65,7 +71,8 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * open the book through the granted descriptor, and hosts Readium's [EpubNavigatorFragment] with
  * the reader chrome (title and chapter, progress bar, immersive mode), the table of contents,
  * scroll or paginated overflow, tap zones and volume keys, progress memory (P1.3), the reading
- * preferences panel with its themes (P2.1) and imported fonts (P2.2).
+ * preferences panel with its themes (P2.1) and imported fonts (P2.2), and the full-text search
+ * with its results panel, hit decorations and previous / next bar (P2.5).
  */
 @OptIn(ExperimentalReadiumApi::class)
 class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
@@ -90,7 +97,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     internal var navigatorReady = false
         private set
 
-    private var pendingJump: Link? = null
+    private var pendingJump: Locator? = null
 
     /** The navigator whose settings the panel follows; null between a removal and its replacement. */
     private val activeNavigator = MutableStateFlow<EpubNavigatorFragment?>(null)
@@ -129,6 +136,12 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     internal val preferencesSheet: PreferencesSheet?
         get() = supportFragmentManager.findFragmentByTag(PreferencesSheet.TAG) as? PreferencesSheet
 
+    internal val searchSheet: SearchSheet?
+        get() = supportFragmentManager.findFragmentByTag(SearchSheet.TAG) as? SearchSheet
+
+    /** Search decorations are applied one batch at a time: Readium diffs against the last batch it got. */
+    private val decorationMutex = Mutex()
+
     private val inputListener = object : InputListener {
         override fun onTap(event: TapEvent): Boolean {
             val fragment = navigator ?: return false
@@ -154,6 +167,11 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         binding.toolbar.setNavigationOnClickListener { finish() }
         chrome = ReaderChrome(this, binding)
         chrome.applyTheme(resolvedTheme)
+        chrome.setSearchBarListeners(
+            onPrevious = { stepSearchResult(-1) },
+            onNext = { stepSearchResult(+1) },
+            onClose = { closeSearch() },
+        )
 
         if (restoredFactory == null && savedInstanceState != null) {
             supportFragmentManager.findFragmentByTag(NAVIGATOR_TAG)?.let { stale ->
@@ -185,6 +203,11 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.preferences.collect { applyPreferences(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.search.collect { onSearchState(it) }
             }
         }
     }
@@ -242,6 +265,8 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
                         .collect { (locator, count) -> onLocator(locator, count) }
                 }
             }
+            // A rebuilt navigator starts without decorations: hand it the current search hits.
+            applySearchDecorations(model.search.value)
         }
         invalidateOptionsMenu()
     }
@@ -259,6 +284,8 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     private fun applyPreferences(state: ReaderPreferencesState) {
         chrome.applyTheme(state.resolvedTheme(hostDarkMode))
         navigator?.takeIf { it.isAdded }?.submitPreferences(effectivePreferences(state))
+        // The hit decorations take the theme's accent colour.
+        applySearchDecorations(model.search.value)
         invalidateOptionsMenu()
     }
 
@@ -291,15 +318,21 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     private fun markNavigatorReady() {
         if (navigatorReady) return
         navigatorReady = true
-        pendingJump?.let { link ->
+        pendingJump?.let { locator ->
             pendingJump = null
-            navigator?.go(link, animated = true)
+            navigator?.go(locator, animated = true)
         }
     }
 
     /** Jumps to [link] now, or as soon as the navigator has loaded its initial resource. */
     internal fun jumpTo(link: Link) {
-        if (navigatorReady) navigator?.go(link, animated = true) else pendingJump = link
+        val locator = model.publication?.locatorFromLink(link) ?: return
+        jumpTo(locator)
+    }
+
+    /** Jumps to [locator] (a search hit scrolls to its text) now, or once the navigator is ready. */
+    internal fun jumpTo(locator: Locator) {
+        if (navigatorReady) navigator?.go(locator, animated = true) else pendingJump = locator
     }
 
     private fun showStatus(message: String) {
@@ -354,6 +387,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val ready = model.publication != null
+        menu.findItem(R.id.action_search)?.isVisible = ready
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
         menu.findItem(R.id.action_preferences)?.isVisible = ready
         menu.findItem(R.id.action_scroll_mode)?.apply {
@@ -370,6 +404,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_search -> {
+            showSearch()
+            true
+        }
         R.id.action_table_of_contents -> {
             showTableOfContents()
             true
@@ -495,6 +533,68 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         if (model.state.value is OpenState.Ready) showReader()
     }
 
+    // Full-text search (roadmap P2.5)
+
+    internal val searchState: StateFlow<SearchState> get() = model.search
+
+    internal fun showSearch() {
+        if (model.publication == null) return
+        SearchSheet.show(supportFragmentManager)
+    }
+
+    internal fun submitSearch(query: String) = model.search(query)
+
+    internal fun loadMoreSearchResults() = model.loadMoreSearchResults()
+
+    internal fun cancelSearch() = model.cancelSearch()
+
+    /** Shows the [index]th hit: the reader scrolls to it and decorates it. */
+    internal fun openSearchResult(index: Int) {
+        val locator = model.search.value.results.getOrNull(index) ?: return
+        model.selectSearchResult(index)
+        jumpTo(locator)
+    }
+
+    /** The bar's previous / next: moves the active hit by [delta] within the loaded results. */
+    internal fun stepSearchResult(delta: Int) {
+        val current = model.search.value.activeIndex ?: return
+        openSearchResult(current + delta)
+    }
+
+    /** Leaves search mode: the bar and the decorations go, the results are dropped. */
+    internal fun closeSearch() = model.closeSearch()
+
+    private fun onSearchState(state: SearchState) {
+        chrome.showSearchPosition(if (state.active) state.activeIndex else null, state.results.size)
+        applySearchDecorations(state)
+    }
+
+    /**
+     * Decorates the open hit in the same amber as the panel's snippets, or clears the group. Only
+     * the active hit is decorated: Readium anchors and lays out every decoration of a page one by
+     * one, and a chapter with dozens of hits took tens of seconds to settle on a 2017 phone when
+     * all of them were decorated. The id carries the index so that moving to another hit removes
+     * the old decoration from its page and adds the new one to its own. Fixed layouts render no
+     * decorations in Readium 3.4.0; the jump still works there.
+     */
+    private fun applySearchDecorations(state: SearchState) {
+        val fragment = navigator?.takeIf { it.isAdded && it.view != null } ?: return
+        val decorations = state.activeIndex?.takeIf { state.active }?.let { index ->
+            listOf(
+                Decoration(
+                    id = "$SEARCH_DECORATIONS-$index",
+                    locator = state.results[index],
+                    style = Decoration.Style.Highlight(tint = ContextCompat.getColor(this, R.color.color_secondary), isActive = true),
+                ),
+            )
+        } ?: emptyList()
+        lifecycleScope.launch {
+            decorationMutex.withLock {
+                if (fragment.isAdded && fragment.view != null) fragment.applyDecorations(decorations, SEARCH_DECORATIONS)
+            }
+        }
+    }
+
     private fun showTableOfContents() {
         val publication = model.publication ?: return
         val rows = TocSheet.rows(publication)
@@ -557,6 +657,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     companion object {
         internal const val NAVIGATOR_TAG = "readium-epub-navigator"
+        internal const val SEARCH_DECORATIONS = "search"
         private const val STATE_LOCATOR = "locator"
         private const val STATE_IMMERSIVE = "immersive"
 

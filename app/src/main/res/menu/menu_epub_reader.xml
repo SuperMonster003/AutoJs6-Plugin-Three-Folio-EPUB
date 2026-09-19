@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_24"
+        android:title="@string/text_search"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_table_of_contents"
         android:icon="@drawable/ic_toc_24"
         android:title="@string/text_table_of_contents"
