@@ -1,9 +1,12 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
@@ -15,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
@@ -34,15 +38,20 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Bookm
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageLocation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnAction
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ProcessTextTarget
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PreferencesSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderChrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderProgress
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SearchSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActionMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActions
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.TapZones
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -173,11 +182,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     private val inputListener = object : InputListener {
         override fun onTap(event: TapEvent): Boolean {
             val fragment = navigator ?: return false
-            val rightToLeft = fragment.overflow.value.readingProgression == ReadingProgression.RTL
-            perform(PageTurnPolicy.resolveTap(event.point.x, fragment.publicationView.width, rightToLeft))
+            val view = fragment.publicationView
+            perform(PageTurnPolicy.resolveTap(event.point.x, event.point.y, view.width, view.height, settings.tapZones, rightToLeft))
             return true
         }
     }
+
+    private val rightToLeft: Boolean
+        get() = navigator?.overflow?.value?.readingProgression == ReadingProgression.RTL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val restoredFactory = model.navigatorFactory
@@ -263,6 +275,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
 
     /** Every imported font becomes a `@font-face` served from the book's package host (see [FontsContainer]). */
     private fun navigatorConfiguration(catalog: FontCatalog) = EpubNavigatorFragment.Configuration().apply {
+        selectionActionModeCallback = SelectionActionMode(this@EpubReaderActivity)
         for (entry in catalog.fonts) {
             addFontFamilyDeclaration(FontFamily(entry.family)) {
                 addFontFace { addSource(FontsContainer.urlFor(entry)) }
@@ -420,6 +433,30 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         return PageTurnPolicy.resolveKey(keyCode, settings.volumeKeysTurnPages)
     }
 
+    /**
+     * Keyboard page turns are taken here, before the focused view sees the key: a focused page
+     * would otherwise swallow the arrows for its own focus navigation, and the navigator's key
+     * listener only learns keys whose `KeyboardEvent.code` is set. Views that are editing text
+     * keep their keys: the search field, or a form field inside the page (the web view reports
+     * that through onCheckIsTextEditor).
+     */
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val code = PageTurnPolicy.keyboardCode(event.keyCode)
+        if (code != null && currentFocus?.onCheckIsTextEditor() != true) {
+            val action = keyboardAction(code, event.isShiftPressed)
+            if (action != null) {
+                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) perform(action)
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    private fun keyboardAction(code: String, shift: Boolean): PageTurnAction? {
+        if (!navigatorReady || model.state.value !is OpenState.Ready) return null
+        return PageTurnPolicy.resolveKeyboard(code, shift, rightToLeft, scrollMode)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_epub_reader, menu)
         return true
@@ -445,6 +482,14 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             isVisible = ready
             isChecked = settings.volumeKeysTurnPages
         }
+        menu.findItem(R.id.action_tap_zones)?.isVisible = ready
+        menu.findItem(
+            when (settings.tapZones) {
+                TapZones.OFF -> R.id.action_tap_zones_off
+                TapZones.HORIZONTAL -> R.id.action_tap_zones_horizontal
+                TapZones.VERTICAL -> R.id.action_tap_zones_vertical
+            },
+        )?.isChecked = true
         menu.findItem(R.id.action_restart_book)?.isVisible = ready
         chrome.tintToolbarIcons(menu)
         return super.onPrepareOptionsMenu(menu)
@@ -478,6 +523,18 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         R.id.action_volume_keys_turn_pages -> {
             settings.volumeKeysTurnPages = !settings.volumeKeysTurnPages
             invalidateOptionsMenu()
+            true
+        }
+        R.id.action_tap_zones_off -> {
+            setTapZones(TapZones.OFF)
+            true
+        }
+        R.id.action_tap_zones_horizontal -> {
+            setTapZones(TapZones.HORIZONTAL)
+            true
+        }
+        R.id.action_tap_zones_vertical -> {
+            setTapZones(TapZones.VERTICAL)
             true
         }
         R.id.action_restart_book -> {
@@ -586,6 +643,75 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         pendingJump = null
         supportFragmentManager.commitNow { remove(fragment) }
         if (model.state.value is OpenState.Ready) showReader()
+    }
+
+    // Reading controls (roadmap P2.7)
+
+    internal val tapZones: TapZones get() = settings.tapZones
+
+    internal fun setTapZones(zones: TapZones) {
+        settings.tapZones = zones
+        invalidateOptionsMenu()
+    }
+
+    /** True while the chrome and the system bars are hidden; the middle tap zone toggles it. */
+    internal val immersive: Boolean get() = chrome.immersive
+
+    /** The selected text as last fetched from the navigator (see [SelectionActionMode]). */
+    internal var rememberedSelection: String? = null
+        private set
+
+    internal fun rememberSelection() {
+        val fragment = navigator ?: return
+        lifecycleScope.launch { selectedText(fragment)?.let { rememberedSelection = it } }
+    }
+
+    private suspend fun selectedText(fragment: EpubNavigatorFragment): String? =
+        runCatching { fragment.currentSelection()?.locator?.text?.highlight }.getOrNull()?.takeIf { it.isNotBlank() }
+
+    /** Copies, shares or web-searches the selection; false when [itemId] is not one of the selection items. */
+    internal fun performSelectionAction(itemId: Int): Boolean {
+        when (itemId) {
+            R.id.selection_copy -> withSelection(::copyToClipboard)
+            R.id.selection_share -> withSelection { launchOrToast(SelectionActions.shareIntent(it)) }
+            R.id.selection_web_search -> withSelection { launchOrToast(SelectionActions.webSearchIntent(it)) }
+            else -> return false
+        }
+        return true
+    }
+
+    /** Hands the selection to one of the system's text processors (translate, define, ...). */
+    internal fun processSelection(target: ProcessTextTarget): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
+        withSelection { launchOrToast(SelectionActions.processTextIntent(target, it)) }
+        return true
+    }
+
+    /**
+     * Runs [action] with the live selection when the page still has one, else with the text
+     * remembered while the toolbar was up. `Main.immediate` issues the page query before the
+     * navigator's own post-click clearing runs.
+     */
+    private fun withSelection(action: (String) -> Unit) {
+        val fragment = navigator
+        lifecycleScope.launch(Dispatchers.Main.immediate) {
+            val text = (if (fragment != null) selectedText(fragment) else null) ?: rememberedSelection ?: return@launch
+            action(text)
+        }
+    }
+
+    private fun copyToClipboard(text: String) {
+        getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(SelectionActions.MIME_TEXT, text))
+        // Android 13+ shows its own confirmation.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) Toast.makeText(this, R.string.text_copied, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun launchOrToast(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.text_no_app_for_action, Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Bookmarks (roadmap P2.6)

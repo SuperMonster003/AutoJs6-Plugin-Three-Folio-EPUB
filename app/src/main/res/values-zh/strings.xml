@@ -20,6 +20,7 @@
     <string name="text_cannot_open_link">无法打开链接</string>
     <string name="text_cannot_read_file">无法读取 EPUB 文件</string>
     <string name="text_column_count_auto">自动</string>
+    <string name="text_copied">已复制</string>
     <string name="text_delete_font">删除字体</string>
     <string name="text_delete_font_message">删除 %1$s? 使用它的书籍将回到出版商字体.</string>
     <string name="text_font_already_imported">已导入过: %1$s</string>
@@ -35,6 +36,7 @@
     <string name="text_font_import_failed_truncated">字体文件不完整</string>
     <string name="text_font_imported">已导入字体: %1$s</string>
     <string name="text_invalid_request">请求未指向单个 EPUB 文件</string>
+    <string name="text_no_app_for_action">没有应用能处理此操作</string>
     <string name="text_no_file_picker">此设备没有可用的文件选择器</string>
     <string name="text_no_table_of_contents">这本书没有目录</string>
     <string name="text_open_failed">无法打开 EPUB 文件: %1$s</string>
@@ -87,11 +89,18 @@
     <string name="text_search_result_count_truncated">只显示前 %1$d 处结果</string>
     <string name="text_search_searching">正在搜索...</string>
     <string name="text_search_too_short">至少输入 2 个字符</string>
+    <string name="text_selection_copy">复制</string>
+    <string name="text_selection_share">分享</string>
+    <string name="text_selection_web_search">网页搜索</string>
     <string name="text_settings">设置</string>
     <string name="text_spread_always">双页</string>
     <string name="text_spread_auto">自动</string>
     <string name="text_spread_never">单页</string>
     <string name="text_table_of_contents">目录</string>
+    <string name="text_tap_zones">点按翻页</string>
+    <string name="text_tap_zones_horizontal">左右</string>
+    <string name="text_tap_zones_off">关闭</string>
+    <string name="text_tap_zones_vertical">上下</string>
     <string name="text_text_align_justify">两端对齐</string>
     <string name="text_text_align_start">起始对齐</string>
     <string name="text_text_direction_auto">自动</string>

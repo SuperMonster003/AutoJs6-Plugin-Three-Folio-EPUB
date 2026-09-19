@@ -44,6 +44,27 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_tap_zones"
+        android:title="@string/text_tap_zones"
+        app:showAsAction="never">
+        <menu>
+            <group
+                android:id="@+id/group_tap_zones"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_tap_zones_off"
+                    android:title="@string/text_tap_zones_off" />
+                <item
+                    android:id="@+id/action_tap_zones_horizontal"
+                    android:title="@string/text_tap_zones_horizontal" />
+                <item
+                    android:id="@+id/action_tap_zones_vertical"
+                    android:title="@string/text_tap_zones_vertical" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/action_restart_book"
         android:title="@string/text_restart_book"
         app:showAsAction="never" />

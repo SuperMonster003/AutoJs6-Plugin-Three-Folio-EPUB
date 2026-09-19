@@ -20,6 +20,7 @@
     <string name="text_cannot_open_link">Не удалось открыть ссылку</string>
     <string name="text_cannot_read_file">Не удалось прочитать файл EPUB</string>
     <string name="text_column_count_auto">Авто</string>
+    <string name="text_copied">Скопировано</string>
     <string name="text_delete_font">Удалить шрифт</string>
     <string name="text_delete_font_message">Удалить %1$s? Книги, использующие его, вернутся к шрифту издателя.</string>
     <string name="text_font_already_imported">Уже импортирован: %1$s</string>
@@ -35,6 +36,7 @@
     <string name="text_font_import_failed_truncated">Файл шрифта обрезан</string>
     <string name="text_font_imported">Шрифт импортирован: %1$s</string>
     <string name="text_invalid_request">Запрос не указывает на один файл EPUB</string>
+    <string name="text_no_app_for_action">Нет приложения для этого действия</string>
     <string name="text_no_file_picker">На этом устройстве нет доступного средства выбора файлов</string>
     <string name="text_no_table_of_contents">У этой книги нет оглавления</string>
     <string name="text_open_failed">Не удалось открыть файл EPUB: %1$s</string>
@@ -87,11 +89,18 @@
     <string name="text_search_result_count_truncated">Показаны только первые %1$d результатов</string>
     <string name="text_search_searching">Поиск...</string>
     <string name="text_search_too_short">Введите не менее 2 символов</string>
+    <string name="text_selection_copy">Копировать</string>
+    <string name="text_selection_share">Поделиться</string>
+    <string name="text_selection_web_search">Поиск в интернете</string>
     <string name="text_settings">Настройки</string>
     <string name="text_spread_always">Две страницы</string>
     <string name="text_spread_auto">Авто</string>
     <string name="text_spread_never">Одна страница</string>
     <string name="text_table_of_contents">Оглавление</string>
+    <string name="text_tap_zones">Зоны касания</string>
+    <string name="text_tap_zones_horizontal">Слева / справа</string>
+    <string name="text_tap_zones_off">Выключены</string>
+    <string name="text_tap_zones_vertical">Сверху / снизу</string>
     <string name="text_text_align_justify">По ширине</string>
     <string name="text_text_align_start">По началу строки</string>
     <string name="text_text_direction_auto">Авто</string>

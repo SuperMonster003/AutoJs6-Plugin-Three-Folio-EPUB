@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/selection_copy"
+        android:icon="@drawable/ic_copy_24"
+        android:showAsAction="always"
+        android:title="@string/text_selection_copy" />
+
+    <item
+        android:id="@+id/selection_share"
+        android:icon="@drawable/ic_share_24"
+        android:showAsAction="always"
+        android:title="@string/text_selection_share" />
+
+    <item
+        android:id="@+id/selection_web_search"
+        android:icon="@drawable/ic_web_search_24"
+        android:showAsAction="ifRoom"
+        android:title="@string/text_selection_web_search" />
+
+</menu>
