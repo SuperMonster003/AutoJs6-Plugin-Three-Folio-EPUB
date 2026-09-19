@@ -29,6 +29,7 @@ compilation and expose the protocol and host boundaries through generated `Build
 | `5269` | v2-v3, primary placement and output transactions | v2 legacy envelope | Audited |
 | `5276` | v4-v21, multi-target, directory, host-session, archive, and transaction extensions | v2 legacy envelope; new capabilities are not declared | Audited |
 | `5277` | v22, bounded related-file descriptors | v2 legacy envelope; related files are not declared | Audited |
+| `5279` | v22, host source and device metadata in the envelope | v2 primary and overflow actions | Audited |
 | `5282` | v22, current host source (`1db2d9b87`) | v2 primary and overflow actions | Audited |
 | `> 5282` | Later protocol | Accepted only when the host still honors a v2 catalog and envelope | Forward-compatible, not yet audited |
 

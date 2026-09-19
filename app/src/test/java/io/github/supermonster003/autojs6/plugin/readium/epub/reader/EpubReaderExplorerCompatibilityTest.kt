@@ -30,7 +30,7 @@ class EpubReaderExplorerCompatibilityTest {
         val checkpoints = EpubReaderExplorerCompatibility.hostProtocolCheckpoints
 
         assertEquals(
-            listOf(5268L to 1, 5269L to 3, 5276L to 21, 5277L to 22, 5282L to 22),
+            listOf(5268L to 1, 5269L to 3, 5276L to 21, 5277L to 22, 5279L to 22, 5282L to 22),
             checkpoints.map { it.hostVersionCode to it.maximumProtocolVersion },
         )
         assertTrue(checkpoints.zipWithNext().all { (left, right) ->

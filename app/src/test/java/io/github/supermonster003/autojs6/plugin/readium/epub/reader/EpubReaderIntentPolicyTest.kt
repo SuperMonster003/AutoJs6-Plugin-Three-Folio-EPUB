@@ -14,6 +14,8 @@ class EpubReaderIntentPolicyTest {
         assertTrue(EpubReaderIntentPolicy.isSupportedEpub("application/epub+zip", "Book.EPUB"))
         assertTrue(EpubReaderIntentPolicy.isSupportedEpub("application/octet-stream", "novel.epub"))
         assertTrue(EpubReaderIntentPolicy.isSupportedEpub("text/plain; charset=utf-8", "notes.epub"))
+        assertTrue(EpubReaderIntentPolicy.isSupportedEpub("application/zip", "sniffed.epub"))
+        assertTrue(EpubReaderIntentPolicy.isSupportedEpub("Application/ZIP", "sniffed.epub"))
     }
 
     @Test
@@ -29,7 +31,7 @@ class EpubReaderIntentPolicyTest {
         assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/epub+zip", "book.zip"))
         assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/epub+zip", "book.cbz"))
         assertFalse(EpubReaderIntentPolicy.isSupportedEpub(null, "book.pdf"))
-        assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/zip", "book.epub"))
+        assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/zip", "book"))
         assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/pdf", "book.epub"))
         assertFalse(EpubReaderIntentPolicy.isSupportedEpub("application/vnd.comicbook+zip", "book.epub"))
     }

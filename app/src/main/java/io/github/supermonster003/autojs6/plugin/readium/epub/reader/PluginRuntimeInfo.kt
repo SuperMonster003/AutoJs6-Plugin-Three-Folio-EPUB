@@ -19,6 +19,7 @@ internal object ReadiumEpubReaderPlugin {
     const val PRIMARY_ACTION_ID = "$ID.primary"
     // Explorer Action v2 adds primary placement to the unchanged single-file envelope.
     const val PRIMARY_PLACEMENT = 2
+    const val ACTION_PRIORITY = 100
     const val VARIANT = "default"
     const val LABEL_RESOURCE_NAME = "action_readium_epub_reader"
     const val LABEL_FALLBACK = "Readium EPUB Reader"
@@ -33,7 +34,43 @@ internal object ReadiumEpubReaderPlugin {
 
     val MIME_TYPES = arrayOf(EPUB_MIME_TYPE)
     val EXTENSIONS = arrayOf(EPUB_EXTENSION)
+
+    /**
+     * The two catalog actions (roadmap P1.1): the primary button and the overflow entry share
+     * every attribute except their ID and placement. Android-free so JUnit can lock the shape.
+     */
+    fun actionSpecs(): List<ExplorerActionSpec> = listOf(
+        actionSpec(PRIMARY_ACTION_ID, PRIMARY_PLACEMENT),
+        actionSpec(ID, ExplorerActionValues.PLACEMENT_OVERFLOW),
+    )
+
+    private fun actionSpec(id: String, placement: Int) = ExplorerActionSpec(
+        id = id,
+        placement = placement,
+        priority = ACTION_PRIORITY,
+        targetKind = ExplorerActionValues.TARGET_FILE,
+        accessMode = ExplorerActionValues.ACCESS_READ_ONLY,
+        mimeTypes = MIME_TYPES.asList(),
+        extensions = EXTENSIONS.asList(),
+        labelResourceName = LABEL_RESOURCE_NAME,
+        labelFallback = LABEL_FALLBACK,
+        activityClassName = ACTIVITY_CLASS_NAME,
+    )
 }
+
+/** One catalog action as pure data; [readiumEpubReaderActionCatalog] turns it into the host Bundle. */
+internal data class ExplorerActionSpec(
+    val id: String,
+    val placement: Int,
+    val priority: Int,
+    val targetKind: Int,
+    val accessMode: Int,
+    val mimeTypes: List<String>,
+    val extensions: List<String>,
+    val labelResourceName: String,
+    val labelFallback: String,
+    val activityClassName: String,
+)
 
 internal fun Context.readiumEpubReaderPluginInfo(): PluginInfo {
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -65,32 +102,23 @@ internal fun Context.readiumEpubReaderPluginInfo(): PluginInfo {
 }
 
 internal fun readiumEpubReaderActionCatalog(): Bundle {
-    fun action(id: String, placement: Int) = Bundle().apply {
-        putString(ExplorerActionCatalogKeys.ID, id)
-        putString(ExplorerActionCatalogKeys.LABEL_RESOURCE_NAME, ReadiumEpubReaderPlugin.LABEL_RESOURCE_NAME)
-        putString(ExplorerActionCatalogKeys.LABEL_FALLBACK, ReadiumEpubReaderPlugin.LABEL_FALLBACK)
-        putString(ExplorerActionCatalogKeys.ACTIVITY_CLASS_NAME, ReadiumEpubReaderPlugin.ACTIVITY_CLASS_NAME)
-        putInt(ExplorerActionCatalogKeys.PRIORITY, 100)
-        putInt(ExplorerActionCatalogKeys.TARGET_KIND, ExplorerActionValues.TARGET_FILE)
-        putInt(ExplorerActionCatalogKeys.ACCESS_MODE, ExplorerActionValues.ACCESS_READ_ONLY)
-        putInt(ExplorerActionCatalogKeys.PLACEMENT, placement)
-        putStringArrayList(
-            ExplorerActionCatalogKeys.MIME_TYPES,
-            ArrayList(ReadiumEpubReaderPlugin.MIME_TYPES.asList()),
-        )
-        putStringArrayList(
-            ExplorerActionCatalogKeys.EXTENSIONS,
-            ArrayList(ReadiumEpubReaderPlugin.EXTENSIONS.asList()),
-        )
+    fun action(spec: ExplorerActionSpec) = Bundle().apply {
+        putString(ExplorerActionCatalogKeys.ID, spec.id)
+        putString(ExplorerActionCatalogKeys.LABEL_RESOURCE_NAME, spec.labelResourceName)
+        putString(ExplorerActionCatalogKeys.LABEL_FALLBACK, spec.labelFallback)
+        putString(ExplorerActionCatalogKeys.ACTIVITY_CLASS_NAME, spec.activityClassName)
+        putInt(ExplorerActionCatalogKeys.PRIORITY, spec.priority)
+        putInt(ExplorerActionCatalogKeys.TARGET_KIND, spec.targetKind)
+        putInt(ExplorerActionCatalogKeys.ACCESS_MODE, spec.accessMode)
+        putInt(ExplorerActionCatalogKeys.PLACEMENT, spec.placement)
+        putStringArrayList(ExplorerActionCatalogKeys.MIME_TYPES, ArrayList(spec.mimeTypes))
+        putStringArrayList(ExplorerActionCatalogKeys.EXTENSIONS, ArrayList(spec.extensions))
     }
     return Bundle().apply {
         putInt(ExplorerActionCatalogKeys.PROTOCOL_VERSION, ReadiumEpubReaderPlugin.PROTOCOL_VERSION)
         putParcelableArrayList(
             ExplorerActionCatalogKeys.ACTIONS,
-            arrayListOf(
-                action(ReadiumEpubReaderPlugin.PRIMARY_ACTION_ID, ReadiumEpubReaderPlugin.PRIMARY_PLACEMENT),
-                action(ReadiumEpubReaderPlugin.ID, ExplorerActionValues.PLACEMENT_OVERFLOW),
-            ),
+            ArrayList(ReadiumEpubReaderPlugin.actionSpecs().map(::action)),
         )
     }
 }

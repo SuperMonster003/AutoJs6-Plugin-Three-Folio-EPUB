@@ -24,6 +24,7 @@ internal object EpubReaderExplorerCompatibility {
         HostProtocolCheckpoint(hostVersionCode = 5269L, maximumProtocolVersion = 3),
         HostProtocolCheckpoint(hostVersionCode = 5276L, maximumProtocolVersion = 21),
         HostProtocolCheckpoint(hostVersionCode = 5277L, maximumProtocolVersion = 22),
+        HostProtocolCheckpoint(hostVersionCode = 5279L, maximumProtocolVersion = 22),
         HostProtocolCheckpoint(hostVersionCode = 5282L, maximumProtocolVersion = 22),
     )
 

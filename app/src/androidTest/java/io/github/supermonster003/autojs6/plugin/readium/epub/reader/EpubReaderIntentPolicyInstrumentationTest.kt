@@ -85,7 +85,9 @@ class EpubReaderIntentPolicyInstrumentationTest {
     @Test
     fun onlyEpubFilesPassTheFormatGate() {
         assertNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "text/html", displayName = "page.html")))
-        assertNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "application/zip", displayName = "novel.epub")))
+        assertNotNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "application/zip", displayName = "novel.epub")))
+        assertNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "application/pdf", displayName = "novel.epub")))
+        assertNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "application/zip", displayName = "novel.zip")))
         assertNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = null, displayName = "novel")))
         assertNotNull(EpubReaderIntentPolicy.resolve(validIntent(mimeType = "application/epub+zip", displayName = "novel")))
     }
