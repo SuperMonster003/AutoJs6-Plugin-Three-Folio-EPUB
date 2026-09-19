@@ -11,7 +11,14 @@
     <string name="text_invalid_request">リクエストが単一の EPUB ファイルを指していません</string>
     <string name="text_no_table_of_contents">この本には目次がありません</string>
     <string name="text_open_failed">EPUB ファイルを開けません: %1$s</string>
+    <string name="text_open_failed_not_epub">このファイルは EPUB 電子書籍ではありません</string>
+    <string name="text_open_failed_protected">DRM で保護された書籍には対応していません</string>
+    <string name="text_open_failed_timeout">書籍を開く処理がタイムアウトしました</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">本を開いています...</string>
+    <string name="text_restart_book">最初から読む</string>
+    <string name="text_restart_book_message">この書籍の保存された読書位置を消去して最初から読みますか?</string>
+    <string name="text_scroll_mode">スクロールモード</string>
     <string name="text_settings">設定</string>
     <string name="text_table_of_contents">目次</string>
+    <string name="text_volume_keys_turn_pages">音量キーでページをめくる</string>
 </resources>

@@ -11,7 +11,14 @@
     <string name="text_invalid_request">请求未指向单个 EPUB 文件</string>
     <string name="text_no_table_of_contents">这本书没有目录</string>
     <string name="text_open_failed">无法打开 EPUB 文件: %1$s</string>
+    <string name="text_open_failed_not_epub">该文件不是 EPUB 电子书</string>
+    <string name="text_open_failed_protected">不支持受 DRM 保护的书籍</string>
+    <string name="text_open_failed_timeout">打开书籍超时</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">正在打开书籍...</string>
+    <string name="text_restart_book">从头开始</string>
+    <string name="text_restart_book_message">清除这本书已保存的阅读位置并从头开始?</string>
+    <string name="text_scroll_mode">滚动模式</string>
     <string name="text_settings">设置</string>
     <string name="text_table_of_contents">目录</string>
+    <string name="text_volume_keys_turn_pages">音量键翻页</string>
 </resources>

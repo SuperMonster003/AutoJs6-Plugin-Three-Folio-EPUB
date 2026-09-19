@@ -47,9 +47,9 @@ class EpubReaderUiInstrumentationTest {
         val started = SystemClock.uptimeMillis()
         var activity = instrumentation.startActivitySync(request) as EpubReaderActivity
         try {
-            await("reader did not show chapter 1") { currentHref(activity)?.endsWith("chapter1.xhtml") == true }
+            await("reader did not show chapter 1") { activity.navigatorReady && currentHref(activity)?.endsWith("chapter1.xhtml") == true }
             val openMillis = SystemClock.uptimeMillis() - started
-            await("toolbar title") { activity.supportActionBar?.title == "minimal-epub3.epub" }
+            await("toolbar title") { activity.supportActionBar?.title == "Minimal EPUB 3" }
             assertEquals(1, EpubReaderTestContentProvider.openCount.get())
             SystemClock.sleep(1500) // let the WebView paint before the first screenshot
             screenshot("reader-chapter1")
@@ -115,8 +115,11 @@ class EpubReaderUiInstrumentationTest {
             main {
                 val text = activity.findViewById<android.widget.TextView>(R.id.status_text).text.toString()
                 assertNotEquals(activity.getString(R.string.text_invalid_request), text)
-                assertTrue(text, text.startsWith(activity.getString(R.string.text_open_failed, "").trimEnd()))
+                val expected = text == activity.getString(R.string.text_open_failed_not_epub) ||
+                    text.startsWith(activity.getString(R.string.text_open_failed, "").trimEnd())
+                assertTrue(text, expected)
                 assertFalse(activity.findViewById<View>(R.id.status_progress).isShown)
+                assertFalse(activity.findViewById<View>(R.id.progress_panel).isShown)
             }
             assertFalse(activity.isFinishing)
         } finally {

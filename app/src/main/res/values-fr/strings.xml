@@ -11,7 +11,14 @@
     <string name="text_invalid_request">La demande ne désigne pas un seul fichier EPUB</string>
     <string name="text_no_table_of_contents">Ce livre n\'a pas de table des matières</string>
     <string name="text_open_failed">Impossible d\'ouvrir le fichier EPUB : %1$s</string>
+    <string name="text_open_failed_not_epub">Le fichier n\'est pas un livre EPUB</string>
+    <string name="text_open_failed_protected">Les livres protégés par DRM ne sont pas pris en charge</string>
+    <string name="text_open_failed_timeout">L\'ouverture du livre a expiré</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">Ouverture du livre...</string>
+    <string name="text_restart_book">Reprendre au début</string>
+    <string name="text_restart_book_message">Effacer la position de lecture enregistrée de ce livre et reprendre au début ?</string>
+    <string name="text_scroll_mode">Mode défilement</string>
     <string name="text_settings">Paramètres</string>
     <string name="text_table_of_contents">Table des matières</string>
+    <string name="text_volume_keys_turn_pages">Tourner les pages avec les touches de volume</string>
 </resources>

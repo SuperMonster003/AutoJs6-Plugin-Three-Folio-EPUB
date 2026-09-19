@@ -8,4 +8,21 @@
         android:title="@string/text_table_of_contents"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_scroll_mode"
+        android:checkable="true"
+        android:title="@string/text_scroll_mode"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_volume_keys_turn_pages"
+        android:checkable="true"
+        android:title="@string/text_volume_keys_turn_pages"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_restart_book"
+        android:title="@string/text_restart_book"
+        app:showAsAction="never" />
+
 </menu>

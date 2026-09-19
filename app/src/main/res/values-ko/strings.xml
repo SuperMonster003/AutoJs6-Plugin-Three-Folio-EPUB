@@ -11,7 +11,14 @@
     <string name="text_invalid_request">요청이 단일 EPUB 파일을 가리키지 않습니다</string>
     <string name="text_no_table_of_contents">이 책에는 목차가 없습니다</string>
     <string name="text_open_failed">EPUB 파일을 열 수 없습니다: %1$s</string>
+    <string name="text_open_failed_not_epub">이 파일은 EPUB 전자책이 아닙니다</string>
+    <string name="text_open_failed_protected">DRM으로 보호된 책은 지원되지 않습니다</string>
+    <string name="text_open_failed_timeout">책을 여는 동안 시간이 초과되었습니다</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">책을 여는 중...</string>
+    <string name="text_restart_book">처음부터 읽기</string>
+    <string name="text_restart_book_message">이 책의 저장된 읽기 위치를 지우고 처음부터 읽을까요?</string>
+    <string name="text_scroll_mode">스크롤 모드</string>
     <string name="text_settings">설정</string>
     <string name="text_table_of_contents">목차</string>
+    <string name="text_volume_keys_turn_pages">볼륨 키로 페이지 넘기기</string>
 </resources>

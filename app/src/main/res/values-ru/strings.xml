@@ -11,7 +11,14 @@
     <string name="text_invalid_request">Запрос не указывает на один файл EPUB</string>
     <string name="text_no_table_of_contents">У этой книги нет оглавления</string>
     <string name="text_open_failed">Не удалось открыть файл EPUB: %1$s</string>
+    <string name="text_open_failed_not_epub">Файл не является книгой EPUB</string>
+    <string name="text_open_failed_protected">Книги с защитой DRM не поддерживаются</string>
+    <string name="text_open_failed_timeout">Время ожидания открытия книги истекло</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">Открытие книги...</string>
+    <string name="text_restart_book">Начать сначала</string>
+    <string name="text_restart_book_message">Удалить сохраненную позицию чтения этой книги и начать сначала?</string>
+    <string name="text_scroll_mode">Режим прокрутки</string>
     <string name="text_settings">Настройки</string>
     <string name="text_table_of_contents">Оглавление</string>
+    <string name="text_volume_keys_turn_pages">Листать кнопками громкости</string>
 </resources>

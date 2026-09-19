@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings and offers a table of contents. Reading position memory, bookmarks, preferences, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, and provides scroll mode, tap zones, volume keys and immersive mode. Bookmarks, preferences, full-text search, read-aloud, fixed layout, font import, the standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -54,6 +54,8 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Readium engine: EPUB 2 (NCX) and EPUB 3 (NAV) books render through the Readium navigator with Readium CSS, including internal links, footnotes and images.
 - No copies: the EPUB container is read in place through a read-only descriptor with positional reads, so even large books open without a cache file.
 - Table of contents: jump to any chapter from the toolbar; nested entries keep their depth.
+- Reading position memory: the last position of every book is stored under a fingerprint of its content in the plugin's private storage, so the same book resumes even after it is moved or renamed; `Start from the beginning` clears it.
+- Reader chrome: title and chapter in the toolbar, a progress bar with position and percentage, immersive mode on a center tap, tap zones and volume keys for page turns, and scroll or paginated mode.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
@@ -67,7 +69,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 1. Download the latest plugin APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) page and install it on your device.
 2. Open the AutoJs6 plugin center and enable the `Readium EPUB Reader` plugin.
 3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Readium EPUB Reader`.
-4. Use the table of contents button in the toolbar to jump between chapters; press Back to close the reader.
+4. Use the table of contents button in the toolbar to jump between chapters, tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
 
 > If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
 
@@ -91,13 +93,13 @@ Only EPUB is supported: reflowable and fixed-layout books in EPUB 2 or EPUB 3. C
 
 ******
 
-#### Why is my reading position not remembered yet?
+#### How is my reading position remembered?
 
-Reading position memory and bookmarks belong to the next milestone of ROADMAP.md. The current build always opens the book at its beginning.
+The last position of each book is saved in the plugin's private storage under a fingerprint of the file content, never under its path, so reopening the same book resumes where you left off. Choose `Start from the beginning` in the overflow menu to clear it.
 
 #### Can I change the font, text size or theme?
 
-Not yet. Reader preferences (font, size, line height, margins, themes, page or scroll mode) arrive with the preferences milestone; the current build uses Readium's defaults.
+Not yet. Reader preferences (font, size, line height, margins, themes) arrive with the preferences milestone; the current build offers scroll or paginated mode and uses Readium's defaults for everything else.
 
 #### Does this plugin upload my books anywhere?
 
@@ -115,6 +117,7 @@ The plugin keeps Readium's default behavior for book content: scripts and remote
 - Strict envelope: the Explorer Action request must carry exactly one EPUB target, its parent directory, a matching protocol version, a supported host build and both read grants; anything else is rejected before the file is opened.
 - Bounded parsing: a malformed container (not a ZIP, missing `container.xml`, missing package document, path traversal in the manifest) fails with an error message instead of a crash.
 - External links are shown in full and opened in the system browser only after confirmation; schemes other than `http` and `https` are refused.
+- Reading data stays local: positions are keyed by a content fingerprint and no file path or name is written to storage.
 
 The manifest requests only the network permission and the AutoJs6 plugin permission. AndroidX also contributes a package-scoped signature permission that protects non-exported dynamic receivers; it grants no access to device data. No storage, media, camera, location, accessibility or overlay permission is requested.
 

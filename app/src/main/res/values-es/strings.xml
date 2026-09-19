@@ -11,7 +11,14 @@
     <string name="text_invalid_request">La solicitud no describe un único archivo EPUB</string>
     <string name="text_no_table_of_contents">Este libro no tiene índice</string>
     <string name="text_open_failed">No se puede abrir el archivo EPUB: %1$s</string>
+    <string name="text_open_failed_not_epub">El archivo no es un libro EPUB</string>
+    <string name="text_open_failed_protected">No se admiten libros protegidos por DRM</string>
+    <string name="text_open_failed_timeout">Se agotó el tiempo para abrir el libro</string>
     <string name="text_opening_book" tools:ignore="TypographyEllipsis">Abriendo el libro...</string>
+    <string name="text_restart_book">Empezar desde el principio</string>
+    <string name="text_restart_book_message">¿Borrar la posición de lectura guardada de este libro y empezar desde el principio?</string>
+    <string name="text_scroll_mode">Modo de desplazamiento</string>
     <string name="text_settings">Configuración</string>
     <string name="text_table_of_contents">Índice</string>
+    <string name="text_volume_keys_turn_pages">Pasar páginas con las teclas de volumen</string>
 </resources>

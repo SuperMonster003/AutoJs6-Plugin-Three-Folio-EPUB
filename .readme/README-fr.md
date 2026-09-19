@@ -43,7 +43,7 @@ Lecture en un geste : ouvrez un fichier `.epub` directement depuis le gestionnai
 
 Le plugin lit le livre directement à travers le descripteur de fichier temporaire accordé par l'hôte. Il ne reçoit jamais de chemin du système de fichiers, ne copie jamais le livre et ne l'extrait jamais vers le stockage.
 
-> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium et propose une table des matières. La mémorisation de la position, les signets, les préférences, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'import de polices, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
+> Étape actuelle (build de développement 1.0.0) : la liseuse ouvre le livre avec les réglages par défaut de Readium, propose une table des matières, mémorise la position de lecture de chaque livre et offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif. Les signets, les préférences, la recherche plein texte, la lecture à voix haute, la mise en page fixe, l'import de polices, l'entrée autonome depuis le lanceur et l'API de script `epub` sont planifiés dans ROADMAP.md et ne sont pas encore disponibles.
 
 ******
 
@@ -54,6 +54,8 @@ Le plugin lit le livre directement à travers le descripteur de fichier temporai
 - Moteur Readium : les livres EPUB 2 (NCX) et EPUB 3 (NAV) sont rendus par le navigateur Readium avec Readium CSS, y compris les liens internes, les notes et les images.
 - Aucune copie : le conteneur EPUB est lu sur place via un descripteur en lecture seule avec des lectures positionnelles, donc même les gros livres s'ouvrent sans fichier cache.
 - Table des matières : accédez à n'importe quel chapitre depuis la barre d'outils ; les entrées imbriquées conservent leur niveau.
+- Mémoire de la position de lecture : la dernière position de chaque livre est stockée dans l'espace privé du plugin sous une empreinte de son contenu, si bien que le même livre reprend même après un déplacement ou un renommage ; `Reprendre au début` l'efface.
+- Interface de la liseuse : titre et chapitre dans la barre d'outils, barre de progression avec position et pourcentage, mode immersif par un appui au centre, zones d'appui et touches de volume pour tourner les pages, mode défilement ou paginé.
 - Liens externes : toucher un lien `http` ou `https` affiche l'adresse complète et n'ouvre le navigateur système qu'après confirmation.
 - Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.
 - Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.
@@ -67,7 +69,7 @@ Le plugin lit le livre directement à travers le descripteur de fichier temporai
 1. Téléchargez le dernier APK du plugin depuis la page [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) et installez-le sur votre appareil.
 2. Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `Readium EPUB Reader`.
 3. Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`.
-4. Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre ; appuyez sur Retour pour fermer la liseuse.
+4. Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre, touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.
 
 > Si le plugin n'apparaît pas dans le centre de plugins, mettez d'abord AutoJs6 à jour vers une version récente (build interne 5269 ou ultérieur). Explorer Action v2 prend en charge le bouton principal et le menu contextuel pour un fichier, avec une autorisation temporaire de lecture du document et de son dossier parent.
 
@@ -91,13 +93,13 @@ Seul l'EPUB est pris en charge : livres redistribuables et à mise en page fixe 
 
 ******
 
-#### Pourquoi ma position de lecture n'est-elle pas encore mémorisée ?
+#### Comment ma position de lecture est-elle mémorisée ?
 
-La mémorisation de la position et les signets appartiennent au prochain jalon de ROADMAP.md. La version actuelle ouvre toujours le livre au début.
+La dernière position de chaque livre est enregistrée dans l'espace privé du plugin sous une empreinte du contenu du fichier, jamais sous son chemin ; rouvrir le même livre reprend là où vous vous étiez arrêté. Choisissez `Reprendre au début` dans le menu pour l'effacer.
 
 #### Puis-je changer la police, la taille du texte ou le thème ?
 
-Pas encore. Les préférences de lecture (police, taille, interligne, marges, thèmes, mode paginé ou défilement) arrivent avec le jalon des préférences ; la version actuelle utilise les valeurs par défaut de Readium.
+Pas encore. Les préférences de lecture (police, taille, interligne, marges, thèmes) arrivent avec le jalon des préférences ; le build actuel propose le mode défilement ou paginé et utilise les réglages par défaut de Readium pour le reste.
 
 #### Ce plugin envoie-t-il mes livres quelque part ?
 
@@ -115,6 +117,7 @@ Le plugin conserve le comportement par défaut de Readium pour le contenu des li
 - Enveloppe stricte : la requête Explorer Action doit porter exactement une cible EPUB, son dossier parent, une version de protocole correspondante, un build hôte pris en charge et les deux autorisations de lecture ; tout le reste est rejeté avant l'ouverture du fichier.
 - Analyse bornée : un conteneur malformé (pas un ZIP, `container.xml` absent, document de paquet absent, traversée de chemin dans le manifest) se termine par un message d'erreur plutôt qu'un plantage.
 - Les liens externes sont affichés en entier et ouverts dans le navigateur système uniquement après confirmation ; les schémas autres que `http` et `https` sont refusés.
+- Les données de lecture restent locales : les positions sont indexées par une empreinte du contenu et aucun chemin ni nom de fichier n'est écrit sur le stockage.
 
 Le manifeste ne demande que l'autorisation réseau et l'autorisation de plugin AutoJs6. AndroidX ajoute aussi une autorisation de signature limitée au paquet qui protège les récepteurs dynamiques non exportés ; elle ne donne aucun accès aux données de l'appareil. Aucune autorisation de stockage, média, caméra, localisation, accessibilité ou superposition n'est demandée.
 
