@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">EPUB 읽기</string>
     <string name="dialog_button_cancel">취소</string>
+    <string name="dialog_button_close">닫기</string>
     <string name="dialog_button_confirm">확인</string>
     <string name="plugin_description">EPUB 전자책을 읽고 목차, 검색, 읽어주기와 스크립트 추출을 제공</string>
     <string name="release_history">릴리스 기록</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">복사했습니다</string>
     <string name="text_delete_font">글꼴 삭제</string>
     <string name="text_delete_font_message">%1$s을(를) 삭제할까요? 이 글꼴을 사용하는 책은 출판사 글꼴로 돌아갑니다.</string>
+    <string name="text_external_links_direct">외부 링크를 확인 없이 열기</string>
     <string name="text_font_already_imported">이미 가져온 글꼴입니다: %1$s</string>
     <string name="text_font_deleted">글꼴을 삭제했습니다</string>
     <string name="text_font_family_monospace">고정폭</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">이 작업을 처리할 수 있는 앱이 없습니다</string>
     <string name="text_no_file_picker">이 기기에서 사용할 수 있는 파일 선택기가 없습니다</string>
     <string name="text_no_table_of_contents">이 책에는 목차가 없습니다</string>
+    <string name="text_note">주석</string>
     <string name="text_open_failed">EPUB 파일을 열 수 없습니다: %1$s</string>
     <string name="text_open_failed_not_epub">이 파일은 EPUB 전자책이 아닙니다</string>
     <string name="text_open_failed_protected">DRM으로 보호된 책은 지원되지 않습니다</string>

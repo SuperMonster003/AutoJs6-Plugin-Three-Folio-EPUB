@@ -11,11 +11,14 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
+import androidx.core.text.HtmlCompat
 import androidx.core.os.BundleCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -35,11 +38,13 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.Reader
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ExternalLink
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.LinkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageLocation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnAction
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PageTurnPolicy
-import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ProcessTextTarget
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.PreferencesSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ProcessTextTarget
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderChrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ReaderProgress
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SearchSheet
@@ -65,6 +70,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
+import org.readium.r2.navigator.HyperlinkNavigator
 import org.readium.r2.navigator.epub.EpubNavigatorFragment
 import org.readium.r2.navigator.epub.EpubPreferences
 import org.readium.r2.navigator.epub.EpubSettings
@@ -147,6 +153,18 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     internal var tableOfContentsDialog: AlertDialog? = null
         private set
 
+    internal var noteDialog: AlertDialog? = null
+        private set
+    internal var externalLinkDialog: AlertDialog? = null
+        private set
+
+    /** Enabled while the link history has somewhere to go back to (roadmap P2.7). */
+    private val linkBackCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            returnFromLink()
+        }
+    }
+
     internal val isImmersive: Boolean get() = chrome.immersive
 
     /** Test hooks: the view model that owns the book, and the chrome toggle the center tap triggers. */
@@ -205,6 +223,8 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
+        onBackPressedDispatcher.addCallback(this, linkBackCallback)
+        linkBackCallback.isEnabled = !model.linkHistory.isEmpty()
         chrome = ReaderChrome(this, binding)
         chrome.applyTheme(resolvedTheme)
         chrome.setSearchBarListeners(
@@ -483,6 +503,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             isChecked = settings.volumeKeysTurnPages
         }
         menu.findItem(R.id.action_tap_zones)?.isVisible = ready
+        menu.findItem(R.id.action_external_links_direct)?.apply {
+            isVisible = ready
+            isChecked = settings.externalLinksDirect
+        }
         menu.findItem(
             when (settings.tapZones) {
                 TapZones.OFF -> R.id.action_tap_zones_off
@@ -535,6 +559,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         }
         R.id.action_tap_zones_vertical -> {
             setTapZones(TapZones.VERTICAL)
+            true
+        }
+        R.id.action_external_links_direct -> {
+            setExternalLinksDirect(!settings.externalLinksDirect)
             true
         }
         R.id.action_restart_book -> {
@@ -653,9 +681,6 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         settings.tapZones = zones
         invalidateOptionsMenu()
     }
-
-    /** True while the chrome and the system bars are hidden; the middle tap zone toggles it. */
-    internal val immersive: Boolean get() = chrome.immersive
 
     /** The selected text as last fetched from the navigator (see [SelectionActionMode]). */
     internal var rememberedSelection: String? = null
@@ -873,24 +898,93 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
     override fun onDestroy() {
         tableOfContentsDialog?.dismiss()
         tableOfContentsDialog = null
+        dismissLinkDialogs()
         super.onDestroy()
     }
 
-    // HyperlinkNavigator.Listener: external links are confirmed before the browser opens (roadmap D25 default).
-    override fun onExternalLinkActivated(url: AbsoluteUrl) {
-        val target = url.toString()
-        if (!target.startsWith("http://") && !target.startsWith("https://")) {
-            Toast.makeText(this, R.string.text_cannot_open_link, Toast.LENGTH_SHORT).show()
-            return
+    // Links (roadmap P2.7)
+
+    internal val externalLinksDirect: Boolean get() = settings.externalLinksDirect
+
+    internal fun setExternalLinksDirect(direct: Boolean) {
+        settings.externalLinksDirect = direct
+        invalidateOptionsMenu()
+    }
+
+    /** The note the open dialog shows, or null when none is showing. */
+    internal val noteText: CharSequence?
+        get() = noteDialog?.takeIf { it.isShowing }?.findViewById<TextView>(android.R.id.message)?.text
+
+    internal fun dismissLinkDialogs() {
+        noteDialog?.dismiss()
+        noteDialog = null
+        externalLinkDialog?.dismiss()
+        externalLinkDialog = null
+    }
+
+    /**
+     * HyperlinkNavigator.Listener: a footnote (the navigator hands over its content) opens in a
+     * dialog; any other in-book link is followed here so the place it was followed from goes on
+     * the back stack. Readium 3.4 resolves the link to its resource before this call, so the
+     * jump lands at the resource's start even when the link named an anchor.
+     */
+    override fun shouldFollowInternalLink(link: Link, context: HyperlinkNavigator.LinkContext?): Boolean {
+        if (context is HyperlinkNavigator.FootnoteContext) {
+            showNote(context.noteContent)
+            return false
         }
-        AlertDialog.Builder(this)
-            .setMessage(target)
-            .setPositiveButton(R.string.dialog_button_confirm) { _, _ -> openInBrowser(target) }
-            .setNegativeButton(R.string.dialog_button_cancel, null)
+        val target = model.publication?.locatorFromLink(link) ?: return true
+        navigator?.currentLocator?.value?.let { model.linkHistory.push(it) }
+        linkBackCallback.isEnabled = true
+        jumpTo(target)
+        return false
+    }
+
+    /** Back to where the newest in-book link was followed from; false when there is no such place. */
+    internal fun returnFromLink(): Boolean {
+        val origin = model.linkHistory.pop() ?: return false
+        linkBackCallback.isEnabled = !model.linkHistory.isEmpty()
+        jumpTo(origin)
+        return true
+    }
+
+    private fun showNote(html: String) {
+        noteDialog?.dismiss()
+        noteDialog = AlertDialog.Builder(this)
+            .setTitle(R.string.text_note)
+            .setMessage(HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT))
+            .setPositiveButton(R.string.dialog_button_close, null)
+            .setOnDismissListener { if (noteDialog === it) noteDialog = null }
             .show()
     }
 
-    private fun openInBrowser(target: String) {
+    /**
+     * HyperlinkNavigator.Listener: links that leave the book follow roadmap decision D25. The
+     * navigator only reports hierarchical URLs here; `mailto:` and `tel:` links never arrive
+     * (Readium 3.4 leaves them to the web view), so their branch is reached through
+     * [openExternalLink] alone.
+     */
+    override fun onExternalLinkActivated(url: AbsoluteUrl) = openExternalLink(url.toString())
+
+    internal fun openExternalLink(url: String) {
+        when (val link = LinkPolicy.classifyExternal(url)) {
+            is ExternalLink.Web -> if (settings.externalLinksDirect) openExternal(link.url) else confirmExternal(link.url)
+            is ExternalLink.System -> openExternal(link.url)
+            is ExternalLink.Rejected -> Toast.makeText(this, R.string.text_cannot_open_link, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun confirmExternal(target: String) {
+        externalLinkDialog?.dismiss()
+        externalLinkDialog = AlertDialog.Builder(this)
+            .setMessage(target)
+            .setPositiveButton(R.string.dialog_button_confirm) { _, _ -> openExternal(target) }
+            .setNegativeButton(R.string.dialog_button_cancel, null)
+            .setOnDismissListener { if (externalLinkDialog === it) externalLinkDialog = null }
+            .show()
+    }
+
+    private fun openExternal(target: String) {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, target.toUri()))
         } catch (_: ActivityNotFoundException) {

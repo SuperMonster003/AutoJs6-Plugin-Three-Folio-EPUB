@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">Читать EPUB</string>
     <string name="dialog_button_cancel">Отмена</string>
+    <string name="dialog_button_close">Закрыть</string>
     <string name="dialog_button_confirm">Подтвердить</string>
     <string name="plugin_description">Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</string>
     <string name="release_history">История выпусков</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">Скопировано</string>
     <string name="text_delete_font">Удалить шрифт</string>
     <string name="text_delete_font_message">Удалить %1$s? Книги, использующие его, вернутся к шрифту издателя.</string>
+    <string name="text_external_links_direct">Открывать внешние ссылки без подтверждения</string>
     <string name="text_font_already_imported">Уже импортирован: %1$s</string>
     <string name="text_font_deleted">Шрифт удален</string>
     <string name="text_font_family_monospace">Моноширинный</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">Нет приложения для этого действия</string>
     <string name="text_no_file_picker">На этом устройстве нет доступного средства выбора файлов</string>
     <string name="text_no_table_of_contents">У этой книги нет оглавления</string>
+    <string name="text_note">Примечание</string>
     <string name="text_open_failed">Не удалось открыть файл EPUB: %1$s</string>
     <string name="text_open_failed_not_epub">Файл не является книгой EPUB</string>
     <string name="text_open_failed_protected">Книги с защитой DRM не поддерживаются</string>

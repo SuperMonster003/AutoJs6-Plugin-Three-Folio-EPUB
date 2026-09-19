@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">EPUB を読む</string>
     <string name="dialog_button_cancel">キャンセル</string>
+    <string name="dialog_button_close">閉じる</string>
     <string name="dialog_button_confirm">確認</string>
     <string name="plugin_description">EPUB 電子書籍を読み, 目次, 検索, 読み上げとスクリプト抽出を提供</string>
     <string name="release_history">リリース履歴</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">コピーしました</string>
     <string name="text_delete_font">フォントを削除</string>
     <string name="text_delete_font_message">%1$s を削除しますか? このフォントを使う本は出版社のフォントに戻ります.</string>
+    <string name="text_external_links_direct">外部リンクを確認なしで開く</string>
     <string name="text_font_already_imported">取り込み済みです: %1$s</string>
     <string name="text_font_deleted">フォントを削除しました</string>
     <string name="text_font_family_monospace">等幅</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">この操作を処理できるアプリがありません</string>
     <string name="text_no_file_picker">このデバイスには利用できるファイル選択ツールがありません</string>
     <string name="text_no_table_of_contents">この本には目次がありません</string>
+    <string name="text_note">注</string>
     <string name="text_open_failed">EPUB ファイルを開けません: %1$s</string>
     <string name="text_open_failed_not_epub">このファイルは EPUB 電子書籍ではありません</string>
     <string name="text_open_failed_protected">DRM で保護された書籍には対応していません</string>

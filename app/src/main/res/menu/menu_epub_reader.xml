@@ -65,6 +65,12 @@
     </item>
 
     <item
+        android:id="@+id/action_external_links_direct"
+        android:checkable="true"
+        android:title="@string/text_external_links_direct"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_restart_book"
         android:title="@string/text_restart_book"
         app:showAsAction="never" />

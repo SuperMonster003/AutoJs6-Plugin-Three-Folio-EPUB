@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">Leer EPUB</string>
     <string name="dialog_button_cancel">Cancelar</string>
+    <string name="dialog_button_close">Cerrar</string>
     <string name="dialog_button_confirm">Confirmar</string>
     <string name="plugin_description">Lee libros EPUB con navegación, búsqueda, lectura en voz alta y acceso desde scripts</string>
     <string name="release_history">Historial de versiones</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">Copiado</string>
     <string name="text_delete_font">Eliminar fuente</string>
     <string name="text_delete_font_message">¿Eliminar %1$s? Los libros que la usan vuelven a la fuente del editor.</string>
+    <string name="text_external_links_direct">Abrir enlaces externos sin preguntar</string>
     <string name="text_font_already_imported">Ya importada: %1$s</string>
     <string name="text_font_deleted">Fuente eliminada</string>
     <string name="text_font_family_monospace">Monoespaciada</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">Ninguna aplicación puede realizar esta acción</string>
     <string name="text_no_file_picker">No hay ningún selector de archivos disponible en este dispositivo</string>
     <string name="text_no_table_of_contents">Este libro no tiene índice</string>
+    <string name="text_note">Nota</string>
     <string name="text_open_failed">No se puede abrir el archivo EPUB: %1$s</string>
     <string name="text_open_failed_not_epub">El archivo no es un libro EPUB</string>
     <string name="text_open_failed_protected">No se admiten libros protegidos por DRM</string>

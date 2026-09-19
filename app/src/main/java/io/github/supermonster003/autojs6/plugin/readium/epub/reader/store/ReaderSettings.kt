@@ -22,7 +22,7 @@ internal enum class TapZones(val key: String) {
  * Global reader toggles that already exist before the preferences panel (roadmap P1.2):
  * scroll versus paginated overflow, and whether the volume keys turn pages. Roadmap P2.1 adds the
  * serialized `EpubPreferences` next to these; both live in the plugin's private preferences.
- * Roadmap P2.7 adds the tap zones.
+ * Roadmap P2.7 adds the tap zones and whether web links open without asking.
  */
 internal class ReaderSettings(context: Context) {
 
@@ -41,12 +41,19 @@ internal class ReaderSettings(context: Context) {
         get() = TapZones.fromKey(preferences.getString(KEY_TAP_ZONES, null)) ?: TapZones.DEFAULT
         set(value) = preferences.edit { putString(KEY_TAP_ZONES, value.key) }
 
+    /** Roadmap decision D25: web links ask first by default; this opens them straight away. */
+    var externalLinksDirect: Boolean
+        get() = preferences.getBoolean(KEY_EXTERNAL_LINKS_DIRECT, DEFAULT_EXTERNAL_LINKS_DIRECT)
+        set(value) = preferences.edit { putBoolean(KEY_EXTERNAL_LINKS_DIRECT, value) }
+
     companion object {
         internal const val PREFERENCES_NAME = "reader_settings"
         internal const val KEY_SCROLL_MODE = "scroll_mode"
         internal const val KEY_VOLUME_KEYS_TURN_PAGES = "volume_keys_turn_pages"
         internal const val KEY_TAP_ZONES = "tap_zones"
+        internal const val KEY_EXTERNAL_LINKS_DIRECT = "external_links_direct"
         const val DEFAULT_SCROLL_MODE = false
         const val DEFAULT_VOLUME_KEYS_TURN_PAGES = true
+        const val DEFAULT_EXTERNAL_LINKS_DIRECT = false
     }
 }

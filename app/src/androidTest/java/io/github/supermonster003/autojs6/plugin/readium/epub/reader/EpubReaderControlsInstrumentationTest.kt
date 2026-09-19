@@ -76,18 +76,18 @@ class EpubReaderControlsInstrumentationTest {
             // Off: a tap on the right edge changes nothing but the chrome. The taps stay in the
             // lower part of the page, where the short chapter has no text (and no links).
             main { activity.setTapZones(TapZones.OFF) }
-            assertFalse(onMain { activity.immersive })
+            assertFalse(onMain { activity.isImmersive })
             var offTaps = 0
-            while (!onMain { activity.immersive } && offTaps < 4) {
+            while (!onMain { activity.isImmersive } && offTaps < 4) {
                 tap(activity, view, 0.85f, 0.9f)
                 offTaps++
                 SystemClock.sleep(1000)
             }
-            await("chrome hidden") { activity.immersive }
+            await("chrome hidden") { activity.isImmersive }
             SystemClock.sleep(800)
             assertTrue(currentHref(activity)?.endsWith("chapter1.xhtml") == true)
             tap(activity, view, 0.85f, 0.9f)
-            await("chrome shown again") { !activity.immersive }
+            await("chrome shown again") { !activity.isImmersive }
 
             // Top / bottom.
             main { activity.setTapZones(TapZones.VERTICAL) }

@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">阅读 EPUB</string>
     <string name="dialog_button_cancel">取消</string>
+    <string name="dialog_button_close">关闭</string>
     <string name="dialog_button_confirm">确认</string>
     <string name="plugin_description">阅读 EPUB 电子书并提供目录, 搜索, 朗读与脚本提取能力</string>
     <string name="release_history">发行历史</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">已复制</string>
     <string name="text_delete_font">删除字体</string>
     <string name="text_delete_font_message">删除 %1$s? 使用它的书籍将回到出版商字体.</string>
+    <string name="text_external_links_direct">外部链接不经确认直接打开</string>
     <string name="text_font_already_imported">已导入过: %1$s</string>
     <string name="text_font_deleted">字体已删除</string>
     <string name="text_font_family_monospace">等宽</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">没有应用能处理此操作</string>
     <string name="text_no_file_picker">此设备没有可用的文件选择器</string>
     <string name="text_no_table_of_contents">这本书没有目录</string>
+    <string name="text_note">注释</string>
     <string name="text_open_failed">无法打开 EPUB 文件: %1$s</string>
     <string name="text_open_failed_not_epub">该文件不是 EPUB 电子书</string>
     <string name="text_open_failed_protected">不支持受 DRM 保护的书籍</string>

@@ -184,6 +184,7 @@ _2026/09/19_
 - `Feature` Full-text search: a `Search` toolbar entry opens a results panel that loads 50 hits at a time (up to 500) grouped by chapter with context; tapping a hit jumps there and highlights it on the page, with previous / next in a bar above the progress bar
 - `Feature` Bookmarks: a toolbar icon adds or removes a bookmark for the current page (with chapter and a text excerpt), and a `Bookmarks` panel lists them newest first with jump, delete and clear all; stored per book (up to 500) next to the reading position
 - `Feature` Reading controls: tap zones can be switched off or set to left / right or top / bottom, hardware keyboards turn pages with the arrow, page and space keys, and selected text offers copy, share, web search and the system's text-processing apps
+- `Feature` Links: in-book links open in the reader and the back key returns to where you were, footnotes and endnotes open in a dialog, and external links open after confirmation or, if you choose so, directly in the browser; links with other schemes are refused
 - `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 - `Feature` Interface, instructions, README, and changelog in 10 languages
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3

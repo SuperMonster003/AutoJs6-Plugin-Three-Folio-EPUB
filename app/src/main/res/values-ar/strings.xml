@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_readium_epub_reader">قراءة EPUB</string>
     <string name="dialog_button_cancel">إلغاء</string>
+    <string name="dialog_button_close">إغلاق</string>
     <string name="dialog_button_confirm">تأكيد</string>
     <string name="plugin_description">قراءة كتب EPUB مع التنقل والبحث والقراءة الصوتية والوصول من السكربتات</string>
     <string name="release_history">سجل الإصدارات</string>
@@ -23,6 +24,7 @@
     <string name="text_copied">تم النسخ</string>
     <string name="text_delete_font">حذف الخط</string>
     <string name="text_delete_font_message">هل تريد حذف %1$s؟ ستعود الكتب التي تستخدمه إلى خط الناشر.</string>
+    <string name="text_external_links_direct">فتح الروابط الخارجية دون تأكيد</string>
     <string name="text_font_already_imported">تم استيراده من قبل: %1$s</string>
     <string name="text_font_deleted">تم حذف الخط</string>
     <string name="text_font_family_monospace">أحادي المسافة</string>
@@ -39,6 +41,7 @@
     <string name="text_no_app_for_action">لا يوجد تطبيق يمكنه تنفيذ هذا الإجراء</string>
     <string name="text_no_file_picker">لا يتوفر منتقي ملفات على هذا الجهاز</string>
     <string name="text_no_table_of_contents">لا يحتوي هذا الكتاب على جدول محتويات</string>
+    <string name="text_note">ملاحظة</string>
     <string name="text_open_failed">تعذر فتح ملف EPUB: %1$s</string>
     <string name="text_open_failed_not_epub">الملف ليس كتاب EPUB</string>
     <string name="text_open_failed_protected">الكتب المحمية بإدارة الحقوق الرقمية (DRM) غير مدعومة</string>
