@@ -33,9 +33,11 @@ internal object AtomicFiles {
         }
     }
 
-    /** Returns the file content, or null when it is missing or unreadable. A leftover temp file is discarded. */
-    fun read(target: File): ByteArray? {
-        File(target.parentFile, target.name + TEMPORARY_SUFFIX).delete()
-        return runCatching { if (target.isFile) target.readBytes() else null }.getOrNull()
-    }
+    /**
+     * Returns the file content, or null when it is missing or unreadable. A leftover temp file is
+     * left alone: [write] truncates it on the next attempt, and deleting it here would break a
+     * write in progress on another thread (the rename would find its source gone).
+     */
+    fun read(target: File): ByteArray? =
+        runCatching { if (target.isFile) target.readBytes() else null }.getOrNull()
 }
