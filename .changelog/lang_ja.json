@@ -21,6 +21,9 @@
       ],
       "dependency": [
         "Readium Kotlin Toolkit 3.4.0 を追加 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)"
+      ],
+      "fix": [
+        "共有ビルドプラグイン 1.8.3 により, AGP 9.1 での SDK XML v4 解析警告と, JVM 単体テストの組み立て時に APK ネイティブライブラリのアラインメント検証が誤って実行される問題"
       ]
     }
   }

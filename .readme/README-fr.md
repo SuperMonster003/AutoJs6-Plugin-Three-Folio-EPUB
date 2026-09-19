@@ -175,6 +175,7 @@ _2026/09/19_
 - `Fonctionnalité` Panneau de préférences de lecture : taille du texte, police, interligne, marges, espacement des paragraphes, alignement, césure, styles de l'éditeur, nombre de colonnes et mise en page paginée ou défilante s'appliquent immédiatement et sont mémorisés pour tous les livres ; thèmes clair, sépia et sombre plus `Suivre l'hôte`, la barre d'outils et les barres système prenant les couleurs du thème
 - `Fonctionnalité` Les livres sont lus sur place à travers le descripteur de fichier accordé, avec des lectures positionnelles ; rien n'est copié ni extrait vers le stockage
 - `Fonctionnalité` Interface, instructions, README et changelog en 10 langues
+- `Correctif` Avertissements de lecture SDK XML v4 avec AGP 9.1 et contrôles d'alignement natif des APK déclenchés par erreur lors de l'assemblage des tests unitaires JVM, avec les plugins de compilation partagés 1.8.3
 - `Dépendance` Ajout de Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 
 ##### Pour plus d'historique des versions

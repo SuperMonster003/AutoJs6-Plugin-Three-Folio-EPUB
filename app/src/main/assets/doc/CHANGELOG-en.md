@@ -16,4 +16,5 @@
 * `Feature` Reading preferences panel: text size, font family, line height, page margins, paragraph spacing, alignment, hyphenation, publisher styles, column count and paged or scrolled layout apply immediately and are remembered across books; light, sepia and dark themes plus `Follow host`, with the toolbar and system bars recoloured to match
 * `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 * `Feature` Interface, instructions, README, and changelog in 10 languages
+* `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 * `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
