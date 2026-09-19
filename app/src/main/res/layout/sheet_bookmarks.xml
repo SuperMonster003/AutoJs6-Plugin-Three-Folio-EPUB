@@ -39,14 +39,15 @@
             app:icon="@drawable/ic_bookmark_border_24"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:iconTint="?attr/colorPrimary" />
+            app:iconTint="@color/section_header" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bookmark_clear"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_bookmark_clear_all" />
+            android:text="@string/text_bookmark_clear_all"
+            android:textColor="@color/bookmark_button" />
     </LinearLayout>
 
     <TextView
