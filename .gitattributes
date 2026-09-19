@@ -1,0 +1,6 @@
+# Generated fixtures and binary artifacts are stored verbatim: no line-ending normalization on checkout.
+*.epub binary
+*.jks binary
+*.png binary
+*.aar binary
+*.jar binary
