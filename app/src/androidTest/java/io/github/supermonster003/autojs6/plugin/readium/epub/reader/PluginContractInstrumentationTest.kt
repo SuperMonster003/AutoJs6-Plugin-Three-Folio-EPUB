@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.LauncherActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsForegroundService
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCapabilityKeys
@@ -21,6 +22,7 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -161,6 +163,16 @@ class PluginContractInstrumentationTest {
             0,
         )
         assertTrue(wake.any { it.activityInfo.name == WakeActivity::class.java.name })
+
+        // The launcher (roadmap P4.1) is the app's own front door: exported without a permission, the only MAIN / LAUNCHER activity.
+        val launcherInfo = packageManager.getActivityInfo(ComponentName(context, LauncherActivity::class.java), 0)
+        assertTrue(launcherInfo.exported)
+        assertNull(launcherInfo.permission)
+        val launchers = packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(context.packageName),
+            0,
+        )
+        assertEquals(listOf(LauncherActivity::class.java.name), launchers.map { it.activityInfo.name })
 
         // The read-aloud service (roadmap P3 / D15) is the only other service: not exported, media playback type.
         val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)

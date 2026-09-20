@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The standalone launcher entry and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The app icon opens a standalone launcher with the recent books and the system document picker. The `ACTION_VIEW` entry for other apps, the settings page and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
 
 ******
 
@@ -65,6 +65,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Gestures, keys and links: tap zones (off, left / right or top / bottom), volume keys, hardware keyboard keys and a text-selection menu with copy, share, web search and text-processing apps; in-book links keep a back stack, notes open in a dialog, external links open after confirmation or directly, and a tapped image opens full screen.
 - Read aloud: `Read aloud` in the overflow menu speaks the book from the current page with the system text-to-speech engine, highlights the sentence being spoken and turns the pages along; a bar under the page and a media notification offer play / pause, previous / next sentence and stop, headset buttons work, speed, pitch, language and voice are adjustable, reading continues with the screen off and stops when the reader closes unless `Continue in the background` is on, and the read-aloud settings add a sleep timer (15 / 30 / 60 minutes or the end of the chapter) and a keep-screen-on switch.
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
+- Standalone launcher: the app icon opens a grid of recent books with cover, title, author, progress and last read time, plus an `Open EPUB` button that picks a book with the system document picker; the reader is the same one the file manager opens.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
 
@@ -78,6 +79,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 2. Open the AutoJs6 plugin center and enable the `Readium EPUB Reader` plugin.
 3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Readium EPUB Reader`.
 4. Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
+5. Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.
 
 > If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
 
@@ -193,6 +195,7 @@ _2026/09/19_
 - `Feature` Read-aloud sleep timer (15 / 30 / 60 minutes or the end of the chapter), a keep-screen-on switch and `Continue in the background` (off by default): with it on, the voice goes on after the reader closes until the book ends or the timer fires, the notification pauses or stops it and reopens the book at the spoken sentence, and reopening the same book picks the voice up where it speaks; the reading position is saved when a background voice stops
 - `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 - `Feature` Interface, instructions, README, and changelog in 10 languages
+- `Feature` Standalone launcher: the app icon opens a grid of recent books (cover, title, author, progress and last read time, up to 100) and an `Open EPUB` button that picks a book with the system document picker; picked books keep a persisted read grant so they reopen from the grid, a book whose file went away is marked unavailable, and a long press removes a book and releases its grant
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 - `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 - `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied

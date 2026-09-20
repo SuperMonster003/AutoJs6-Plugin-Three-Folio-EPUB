@@ -27,7 +27,8 @@
         "Lectura en voz alta: el menú desplegable lee el libro desde la página actual con el motor de texto a voz del sistema, resalta la frase que se está leyendo y pasa las páginas; una barra bajo la página y una notificación multimedia ofrecen reproducir / pausar, frase anterior / siguiente y detener, los botones de los auriculares funcionan, la velocidad, el tono, el idioma y la voz son ajustables, la lectura continúa con la pantalla apagada y se detiene al cerrar el lector",
         "Temporizador de apagado para la lectura en voz alta (15 / 30 / 60 minutos o el final del capítulo), interruptor para mantener la pantalla encendida y `Continuar en segundo plano` (desactivado por defecto): con él activado, la voz continúa tras cerrar el lector hasta el final del libro o del temporizador, la notificación permite pausar, detener o volver a abrir el libro en la frase leída, y al volver a abrir el mismo libro la voz continúa donde va; la posición de lectura se guarda cuando una voz en segundo plano se detiene",
         "Los libros se leen en su lugar a través del descriptor de archivo concedido, con lecturas posicionales; nada se copia ni se extrae al almacenamiento",
-        "Interfaz, instrucciones, README y changelog en 10 idiomas"
+        "Interfaz, instrucciones, README y changelog en 10 idiomas",
+        "Lanzador independiente: el icono de la aplicación abre una cuadrícula de libros recientes (portada, título, autor, progreso y última lectura, hasta 100) y un botón `Abrir EPUB` que elige un libro con el selector de documentos del sistema; los libros elegidos conservan un permiso de lectura persistente y se reabren desde la cuadrícula, un libro cuyo archivo desapareció se marca como no disponible, y una pulsación larga quita un libro y libera su permiso"
       ],
       "dependency": [
         "Se añade Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)",

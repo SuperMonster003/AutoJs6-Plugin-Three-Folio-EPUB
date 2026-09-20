@@ -8,15 +8,33 @@ import org.autojs.plugin.explorer.api.ExplorerActionIntentValues
 import org.autojs.plugin.explorer.api.ExplorerActionPluginActions
 import java.util.Locale
 
-/** One validated Explorer Action v2 request: the book, its parent directory and a display name. */
+/**
+ * Which door a request came through (roadmap P4): the host's Explorer Action envelope, the
+ * plugin's own launcher (a document the user granted through the system picker, roadmap D4), or
+ * another app's `ACTION_VIEW` (roadmap D27). The reader behaves the same behind every door; only
+ * the recent list follows the door (the launcher's books are listed, the others are not).
+ */
+internal enum class ReaderEntry { EXPLORER, LAUNCHER, EXTERNAL }
+
+/** One validated request: the book, its parent directory (Explorer envelope only) and a display name. */
 internal data class EpubReaderRequest(
     val documentUri: Uri,
-    val parentUri: Uri,
+    val parentUri: Uri?,
     val displayName: String,
+    val entry: ReaderEntry = ReaderEntry.EXPLORER,
 )
 
-/** Validates the complete, URI-only Explorer Action v2 envelope before any content is opened. */
+/**
+ * Validates the complete, URI-only Explorer Action v2 envelope before any content is opened, and
+ * the launcher's explicit open request (roadmap P4.1): the plugin's own component, a read grant,
+ * a plain `content://` document and a display name; the launcher only sends documents it lists or
+ * has just been granted, and a grant it no longer holds fails at `startActivity`, not here.
+ */
 internal object EpubReaderIntentPolicy {
+
+    /** The launcher opens a recent or freshly picked book with this explicit action (roadmap P4.1). */
+    const val ACTION_OPEN_RECENT = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.OPEN_RECENT"
+    const val EXTRA_DISPLAY_NAME = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.DISPLAY_NAME"
 
     private const val MAX_DISPLAY_NAME_LENGTH = 255
 
@@ -30,8 +48,13 @@ internal object EpubReaderIntentPolicy {
         "application/pdf",
     )
 
-    fun resolve(intent: Intent): EpubReaderRequest? {
-        if (intent.action != ExplorerActionPluginActions.EXECUTE) return null
+    fun resolve(intent: Intent): EpubReaderRequest? = when (intent.action) {
+        ExplorerActionPluginActions.EXECUTE -> resolveExplorer(intent)
+        ACTION_OPEN_RECENT -> resolveRecent(intent)
+        else -> null
+    }
+
+    private fun resolveExplorer(intent: Intent): EpubReaderRequest? {
         if (intent.getStringExtra(ExplorerActionIntentExtras.ACTION_ID) !in acceptedActionIds) return null
         if (
             intent.getIntExtra(ExplorerActionIntentExtras.PROTOCOL_VERSION, Int.MIN_VALUE) !=
@@ -71,7 +94,21 @@ internal object EpubReaderIntentPolicy {
             ?: return null
         if (!isSupportedEpub(intent.type, displayName)) return null
 
-        return EpubReaderRequest(documentUri, parentUri, displayName)
+        return EpubReaderRequest(documentUri, parentUri, displayName, ReaderEntry.EXPLORER)
+    }
+
+    /** The launcher's request (roadmap P4.1): explicit component, read grant, plain content document, EPUB by name or type. */
+    private fun resolveRecent(intent: Intent): EpubReaderRequest? {
+        if (intent.component?.className != ReadiumEpubReaderPlugin.ACTIVITY_CLASS_NAME) return null
+        if (intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION == 0) return null
+        if (intent.clipData != null) return null
+        val documentUri = intent.data?.takeIf(::isPlainContentUri) ?: return null
+        if (documentUri.lastPathSegment.isNullOrEmpty()) return null
+        val displayName = sanitizeDisplayName(intent.getStringExtra(EXTRA_DISPLAY_NAME))
+            ?: sanitizeDisplayName(documentUri.lastPathSegment)
+            ?: return null
+        if (!isSupportedEpub(intent.type, displayName)) return null
+        return EpubReaderRequest(documentUri, null, displayName, ReaderEntry.LAUNCHER)
     }
 
     /**
@@ -99,14 +136,14 @@ internal object EpubReaderIntentPolicy {
         val leaf = value
             ?.replace('\\', '/')
             ?.substringAfterLast('/')
-            ?.filterNot { it == '\u0000' || it.code < 0x20 || it.code == 0x7f }
+            ?.filterNot { it.code < 0x20 || it.code == 0x7f }
             ?.trim()
             ?.take(MAX_DISPLAY_NAME_LENGTH)
             .orEmpty()
         return leaf.takeIf(String::isNotEmpty)
     }
 
-    private fun isPlainContentUri(uri: Uri): Boolean =
+    fun isPlainContentUri(uri: Uri): Boolean =
         uri.scheme.equals(ContentResolver.SCHEME_CONTENT, ignoreCase = true) &&
             !uri.authority.isNullOrBlank() &&
             uri.query == null &&
@@ -141,5 +178,5 @@ internal object EpubReaderPathPolicy {
         segment.isNotEmpty() &&
             segment != "." &&
             segment != ".." &&
-            segment.none { it == '/' || it == '\\' || it == '\u0000' || it.code < 0x20 || it.code == 0x7f }
+            segment.none { it == '/' || it == '\\' || it.code < 0x20 || it.code == 0x7f }
 }

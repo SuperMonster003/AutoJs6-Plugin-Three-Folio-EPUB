@@ -15,6 +15,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpe
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.CoverExtractor
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.RecentBooksStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
@@ -139,6 +141,14 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     private var delayedPreferencesFlush: Job? = null
 
     private val fontStore = FontStore.forFilesDirectory(application.filesDir)
+
+    /** The launcher's recent list (roadmap P4.1): only entries it already holds are updated from here. */
+    private val recentStore = RecentBooksStore.forFilesDirectory(application.filesDir)
+
+    /** The recent-list entry of the open book, when it came through the launcher; null for the other doors. */
+    @Volatile
+    var recentUri: String? = null
+        private set
     private val fontsMutex = Mutex()
     private val _fonts = MutableStateFlow(fontStore.read())
 
@@ -217,7 +227,11 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     ): OpenState {
         val descriptor = withContext(Dispatchers.IO) {
             runCatching { contentResolver.openFileDescriptor(request.documentUri, "r") }.getOrNull()
-        } ?: return OpenState.Failed(OpenFailure.CannotRead)
+        }
+        if (descriptor == null) {
+            if (request.entry == ReaderEntry.LAUNCHER) markRecentUnavailable(request.documentUri.toString())
+            return OpenState.Failed(OpenFailure.CannotRead)
+        }
 
         val quickKey = withContext(Dispatchers.IO) {
             runCatching { descriptor.withDuplicate { BookFingerprint.quickKey(it.channel) } }.getOrNull()
@@ -264,6 +278,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         if (quickKey != null) {
             viewModelScope.launch(Dispatchers.IO) { migrateToFullFingerprint(descriptor, quickKey) }
         }
+        if (request.entry == ReaderEntry.LAUNCHER) trackRecent(request.documentUri.toString(), publication)
         return OpenState.Ready
     }
 
@@ -288,6 +303,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
                 if (current == fullKey || store.migrate(current, fullKey)) {
                     store.writeAlias(quickKey, fullKey)
                     bookKey = fullKey
+                    recentUri?.let { uri -> runCatching { recentStore.update(uri) { it.copy(key = fullKey) } } }
                     // The full fingerprint may already hold bookmarks this open did not see (its
                     // alias was missing): unite them with the ones in memory, memory first.
                     val onDisk = store.readBookmarks(fullKey)
@@ -340,7 +356,44 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     private fun persist(record: ProgressRecord) {
         persistScope.launch {
             storeMutex.withLock { bookKey?.let { key -> runCatching { store.writeProgress(key, record) } } }
+            recentUri?.let { uri ->
+                runCatching { recentStore.update(uri) { it.copy(progression = record.totalProgression ?: it.progression, lastReadAt = record.updatedAtMillis) } }
+            }
         }
+    }
+
+    // ---- The launcher's recent list (roadmap P4.1) ----
+
+    /**
+     * Fills the recent entry of a book the launcher opened: fingerprint, title, authors and, once,
+     * the cover thumbnail. Entries the list does not hold (a grant that could not be persisted)
+     * are never created here.
+     */
+    private fun trackRecent(uri: String, publication: Publication) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val metadata = publication.metadata
+            val updated = runCatching {
+                recentStore.update(uri) {
+                    it.copy(
+                        key = bookKey ?: it.key,
+                        title = metadata.title?.takeIf(String::isNotBlank) ?: it.title,
+                        author = metadata.authors.joinToString(", ") { author -> author.name }.takeIf(String::isNotBlank) ?: it.author,
+                        available = true,
+                    )
+                }
+            }.getOrNull() ?: return@launch
+            recentUri = uri
+            if (updated.coverFile != null) return@launch
+            val cover = CoverExtractor.extract(publication) ?: return@launch
+            runCatching {
+                val name = recentStore.writeCover(uri, cover)
+                recentStore.update(uri) { it.copy(coverFile = name) }
+            }
+        }
+    }
+
+    private fun markRecentUnavailable(uri: String) {
+        viewModelScope.launch(Dispatchers.IO) { runCatching { recentStore.update(uri) { it.copy(available = false) } } }
     }
 
     // ---- Reading preferences (roadmap P2.1) ----
@@ -524,6 +577,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun release() {
+        recentUri = null
         tts.stop()
         searchSession.detach()
         _bookmarks.value = emptyList()

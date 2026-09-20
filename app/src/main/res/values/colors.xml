@@ -9,4 +9,5 @@
     <color name="toolbar_text">#FFFFFFFF</color>
     <color name="image_caption_scrim">#99000000</color>
     <color name="window_background">#FFFFFFFF</color>
+    <color name="cover_placeholder">#FFE0E0E0</color>
 </resources>

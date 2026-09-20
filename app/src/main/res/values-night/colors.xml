@@ -7,4 +7,5 @@
     <color name="section_header">#4DB6AC</color>
     <color name="toolbar_text">#FFFFFFFF</color>
     <color name="window_background">#FF0D1117</color>
+    <color name="cover_placeholder">#FF2A2F36</color>
 </resources>

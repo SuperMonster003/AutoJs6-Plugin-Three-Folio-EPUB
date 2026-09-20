@@ -73,6 +73,18 @@
             </intent-filter>
         </activity>
 
+        <!-- Standalone entry (roadmap P4.1): the launcher icon opens the recent-books grid; it is
+             exported without a permission because it is the app's own front door and takes no data. -->
+        <activity
+            android:name=".launcher.LauncherActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".EpubReaderActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
