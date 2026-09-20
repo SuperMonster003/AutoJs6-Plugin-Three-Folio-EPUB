@@ -64,7 +64,7 @@ require(hostApiLockFile.isFile) {
     "Missing host API lock: ${hostApiLockFile.relativeTo(rootProject.projectDir)}"
 }
 val hostApiLock = hostApiLockFile.loadUniqueLock()
-val hostApiIds = listOf("common-plugin-api", "explorer-action-api")
+val hostApiIds = listOf("common-plugin-api", "explorer-action-api", "epub-api")
 val expectedHostApiLockKeys = setOf("format") + hostApiIds.flatMap { id -> listOf("$id.file", "$id.sha256") }
 require(hostApiLock.stringPropertyNames() == expectedHostApiLockKeys) {
     "Host API AAR lock must contain exactly these keys: ${expectedHostApiLockKeys.sorted()}"
@@ -96,6 +96,7 @@ fun lockedHostApiAar(id: String): File {
 
 val commonPluginApiAar = lockedHostApiAar("common-plugin-api")
 val explorerActionApiAar = lockedHostApiAar("explorer-action-api")
+val epubApiAar = lockedHostApiAar("epub-api")
 
 // ---------------------------------------------------------------------------------------------
 // Explorer Action audit record (roadmap D9), shared by the catalog, policy, tests and docs.
@@ -269,6 +270,7 @@ dependencies {
 
     implementation(files(commonPluginApiAar))
     implementation(files(explorerActionApiAar))
+    implementation(files(epubApiAar))
 
     // Readium Kotlin Toolkit full stack (roadmap D2): parsing, rendering, TTS.
     implementation(libs.readium.shared)

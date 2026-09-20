@@ -2,6 +2,7 @@
 -keep class io.github.supermonster003.autojs6.plugin.readium.epub.reader.** { *; }
 -keep class org.autojs.plugin.common.api.PluginInfo { *; }
 -keep class org.autojs.plugin.explorer.api.** { *; }
+-keep class org.autojs.plugin.epub.api.** { *; }
 -dontwarn kotlinx.parcelize.Parcelize
 
 # Readium keeps its own consumer rules inside the AARs; nothing extra is required here.

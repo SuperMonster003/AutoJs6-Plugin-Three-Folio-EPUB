@@ -19,6 +19,13 @@ introduces them.
 - SHA-256: `40836c05b1d5fb532b21b916e57211c472225cf17e4cee0e9f5fc7aa48e21b45` (pinned in `locks/host-api-aars.lock` and `gradle/explorer-action-compatibility.properties`)
 - License: Mozilla Public License 2.0
 
+## AutoJs6 EPUB API
+
+- Component: `epub-api.aar` (EPUB Binder contract of roadmap P5: `IEpubPlugin`, `IEpubBook`, `IEpubReaderSession`, `IEpubReaderCallback`, `EpubActions`, `EpubCapabilityKeys`, `EpubContract`, `EpubErrorCodes`, `EpubIds`)
+- Source: <https://github.com/SuperMonster003/AutoJs6> (`plugin-api/epub-api`), release build of host commit `261417e90` (AutoJs6 6.8.0, build 5282; contract version 1)
+- SHA-256: `cabb624968959c46618c891026c328928f8f9ee4ec8cc2b45ee532e41c9ee535` (pinned in `locks/host-api-aars.lock`)
+- License: Mozilla Public License 2.0
+
 ## Readium Kotlin Toolkit
 
 - Component: `org.readium.kotlin-toolkit:readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts` 3.4.0 (EPUB parsing, the WebView-based EPUB navigator with Readium CSS, and text-to-speech navigation)
