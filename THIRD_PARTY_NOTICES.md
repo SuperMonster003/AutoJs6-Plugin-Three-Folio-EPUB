@@ -32,13 +32,19 @@ introduces them.
 - Source: <https://github.com/readium/kotlin-toolkit> (tag `3.4.0`, 2026-09-11)
 - License: BSD 3-Clause License
 - Derived source: `app/src/main/java/io/github/supermonster003/autojs6/plugin/readium/epub/reader/tts/SystemTtsEngine.kt` adapts `AndroidTtsEngine` from `readium-navigator-media-tts` (the engine is bound by explicit package name when the framework's default lookup finds none); the Readium copyright and license notice stay in the file header
-- Notable transitive dependencies (all BSD / Apache / MIT licensed, no native libraries): Jsoup (MIT), kotlinx-coroutines, kotlinx-serialization, kotlinx-datetime (Apache 2.0), Timber (Apache 2.0), AndroidX Media3 (Apache 2.0, `media3-session` is also declared directly, see below), Guava for Android (Apache 2.0), `com.mcxiaoke.koi:core` (Apache 2.0). `media3-exoplayer` also declares `ACCESS_NETWORK_STATE` and `WAKE_LOCK` in its manifest; the plugin removes both (see `AndroidManifest.xml`) because R8 strips the unused player entirely
+- Notable transitive dependencies (all BSD / Apache / MIT licensed, no native libraries): Jsoup (MIT, also declared directly, see below), kotlinx-coroutines, kotlinx-serialization, kotlinx-datetime (Apache 2.0), Timber (Apache 2.0), AndroidX Media3 (Apache 2.0, `media3-session` is also declared directly, see below), Guava for Android (Apache 2.0), `com.mcxiaoke.koi:core` (Apache 2.0). `media3-exoplayer` also declares `ACCESS_NETWORK_STATE` and `WAKE_LOCK` in its manifest; the plugin removes both (see `AndroidManifest.xml`) because R8 strips the unused player entirely
 
 ## AndroidX Media3
 
 - Component: `androidx.media3:media3-session` 1.11.0 (the read-aloud foreground service, its media session, media buttons and notification; `media3-common` and `media3-common-ktx` come with it and with Readium)
 - Source: <https://github.com/androidx/media> (tag `1.11.0`)
 - License: Apache License 2.0
+
+## Jsoup
+
+- Component: `org.jsoup:jsoup` 1.23.2 (the XHTML block walk behind the chapter text of the EPUB service, roadmap P5.2; already on the runtime classpath through `readium-shared`)
+- Source: <https://github.com/jhy/jsoup> (tag `jsoup-1.23.2`)
+- License: MIT License
 
 ## Kotlin standard library and kotlinx
 

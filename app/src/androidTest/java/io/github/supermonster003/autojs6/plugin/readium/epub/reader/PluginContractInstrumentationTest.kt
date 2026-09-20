@@ -12,10 +12,15 @@ import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.LauncherActivity
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReadiumEpubReaderPluginService
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.ReleaseHistoryActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.SettingsActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsForegroundService
 import org.autojs.plugin.common.api.PluginCapabilityKeys
+import org.autojs.plugin.epub.api.EpubActions
+import org.autojs.plugin.epub.api.EpubCapabilityKeys
+import org.autojs.plugin.epub.api.EpubContract
+import org.autojs.plugin.epub.api.EpubIds
 import org.autojs.plugin.explorer.api.ExplorerActionCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCatalogKeys
 import org.autojs.plugin.explorer.api.ExplorerActionPluginActions
@@ -66,6 +71,46 @@ class PluginContractInstrumentationTest {
             info.capabilities?.getInt(ExplorerActionCapabilityKeys.PROTOCOL_VERSION),
         )
         assertEquals(2, ReadiumEpubReaderPlugin.PROTOCOL_VERSION)
+    }
+
+    /** Roadmap P5.2 / D10: the EPUB service shares id, variant and version with the Explorer service; only engine and capabilities differ. */
+    @Test
+    fun epubServiceSharesTheExplorerIdentityWithTheEpubEngine() {
+        val explorer = context.readiumEpubReaderPluginInfo()
+        val epub = context.readiumEpubPluginInfo()
+
+        assertEquals(EpubIds.ENGINE, epub.engine)
+        assertEquals(EpubIds.PLUGIN_ID, epub.id)
+        assertEquals(EpubIds.VARIANT_DEFAULT, epub.variant)
+        assertEquals(EpubIds.DEFAULT_PACKAGE_NAME, context.packageName)
+        assertEquals(explorer.id, epub.id)
+        assertEquals(explorer.variant, epub.variant)
+        assertEquals(explorer.name, epub.name)
+        assertEquals(explorer.description, epub.description)
+        assertEquals(explorer.author, epub.author)
+        assertEquals(explorer.instruction, epub.instruction)
+        assertEquals(explorer.versionName, epub.versionName)
+        assertEquals(explorer.versionCode, epub.versionCode)
+        assertEquals(explorer.versionDate, epub.versionDate)
+        assertArrayEquals(emptyArray<String>(), epub.supportedAbis)
+        assertTrue(explorer.engine != epub.engine)
+
+        val capabilities = epub.capabilities
+        assertNotNull(capabilities)
+        assertEquals(
+            setOf(
+                EpubCapabilityKeys.REQUIRES_HOST_VERSION,
+                EpubCapabilityKeys.CONTRACT_VERSION,
+                EpubCapabilityKeys.FEATURES,
+                EpubCapabilityKeys.READIUM_VERSION,
+            ),
+            capabilities?.keySet(),
+        )
+        assertEquals(EpubIds.REQUIRED_HOST_VERSION_CODE, capabilities?.getLong(EpubCapabilityKeys.REQUIRES_HOST_VERSION))
+        assertEquals(EpubContract.CONTRACT_VERSION, capabilities?.getInt(EpubCapabilityKeys.CONTRACT_VERSION))
+        assertEquals(ReadiumEpubReaderPlugin.EPUB_FEATURES, capabilities?.getStringArray(EpubCapabilityKeys.FEATURES)?.toList())
+        assertEquals(BuildConfig.READIUM_VERSION, capabilities?.getString(EpubCapabilityKeys.READIUM_VERSION))
+        assertEquals(epubCapabilities().keySet(), capabilities?.keySet())
     }
 
     @Test
@@ -125,12 +170,14 @@ class PluginContractInstrumentationTest {
         val packageManager = context.packageManager
         val explorerService = packageManager.getServiceInfo(ComponentName(context, ExplorerActionService::class.java), 0)
         val infoService = packageManager.getServiceInfo(ComponentName(context, PluginInfoService::class.java), 0)
+        val epubService = packageManager.getServiceInfo(ComponentName(context, ReadiumEpubReaderPluginService::class.java), 0)
         val activityInfo = packageManager.getActivityInfo(ComponentName(context, EpubReaderActivity::class.java), 0)
         val wakeInfo = packageManager.getActivityInfo(ComponentName(context, WakeActivity::class.java), 0)
 
         val protectedComponents = listOf(
             explorerService to explorerService.permission,
             infoService to infoService.permission,
+            epubService to epubService.permission,
             activityInfo to activityInfo.permission,
             wakeInfo to wakeInfo.permission,
         )
@@ -150,6 +197,16 @@ class PluginContractInstrumentationTest {
             0,
         )
         assertTrue(info.any { it.serviceInfo.name == PluginInfoService::class.java.name })
+        assertTrue(info.none { it.serviceInfo.name == ReadiumEpubReaderPluginService::class.java.name })
+
+        // The EPUB capability service (roadmap P5.2 / D10) answers the host's action + category query and
+        // nothing else: not the INFO action, not the Explorer Action discovery.
+        val epub = packageManager.queryIntentServices(
+            Intent(EpubActions.SERVICE_ACTION).addCategory(EpubActions.SERVICE_CATEGORY).setPackage(context.packageName),
+            0,
+        )
+        assertEquals(listOf(ReadiumEpubReaderPluginService::class.java.name), epub.map { it.serviceInfo.name })
+        assertTrue(discovery.none { it.serviceInfo.name == ReadiumEpubReaderPluginService::class.java.name })
 
         val execution = packageManager.queryIntentActivities(
             Intent(ExplorerActionPluginActions.EXECUTE)
@@ -198,7 +255,18 @@ class PluginContractInstrumentationTest {
             assertFalse(activity.name, info.exported)
         }
 
-        // The read-aloud service (roadmap P3 / D15) is the only other service: not exported, media playback type.
+        // Four services in the package (roadmap P5.2 audit): the three exported plugin doors above and the
+        // read-aloud service (roadmap P3 / D15), the only one not exported, media playback type.
+        val services = packageManager.getPackageInfo(context.packageName, PackageManager.GET_SERVICES).services.orEmpty()
+        assertEquals(
+            setOf(
+                ExplorerActionService::class.java.name,
+                PluginInfoService::class.java.name,
+                ReadiumEpubReaderPluginService::class.java.name,
+                TtsForegroundService::class.java.name,
+            ),
+            services.map { it.name }.toSet(),
+        )
         val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)
         assertFalse(ttsService.exported)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {

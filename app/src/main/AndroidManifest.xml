@@ -146,6 +146,20 @@
             </intent-filter>
         </service>
 
+        <!-- The EPUB capability service (roadmap P5.2 / D10): the host's IEpubPlugin door, sharing the package
+             identity of the Explorer Action service with engine `epub`. Exported behind the plugin permission
+             and discovered by action + category, like the host's other capability services; CallerGuard
+             additionally limits callers to the AutoJs6 host package. -->
+        <service
+            android:name=".service.ReadiumEpubReaderPluginService"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN">
+            <intent-filter>
+                <action android:name="org.autojs.plugin.EPUB" />
+                <category android:name="epub" />
+            </intent-filter>
+        </service>
+
         <!-- Read-aloud (roadmap P3 / D15): not exported, only the reader binds it; the media3 action lets the
              library connect its own notification controller in-process. Exists only while a voice reads. -->
         <service

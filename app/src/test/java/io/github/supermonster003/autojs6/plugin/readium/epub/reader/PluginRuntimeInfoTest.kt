@@ -1,7 +1,9 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 
+import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.explorer.api.ExplorerActionValues
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -32,6 +34,18 @@ class PluginRuntimeInfoTest {
             "io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity",
             distinctPresentation.single().third,
         )
+    }
+
+    /** Roadmap P5.2: the EPUB service advertises the extraction features; reader sessions and TTS wait for P5.3. */
+    @Test
+    fun theEpubServiceAdvertisesTheExtractionFeaturesOnly() {
+        val features = ReadiumEpubReaderPlugin.EPUB_FEATURES
+
+        assertEquals(listOf("search", "cover", "resource-export", "markdown"), features)
+        assertEquals(features.distinct(), features)
+        assertTrue(EpubContract.FEATURES.containsAll(features))
+        assertFalse(features.contains(EpubContract.FEATURE_READER_SESSION))
+        assertFalse(features.contains(EpubContract.FEATURE_TTS))
     }
 
     @Test

@@ -20,6 +20,10 @@ coroutines = "1.11.0"
 # directly because the read-aloud foreground service subclasses MediaSessionService (roadmap P3).
 media3 = "1.11.0"
 
+# Jsoup version pulled in by readium-shared 3.4.0; declared directly because the EPUB service walks the
+# XHTML DOM itself for chapter text (roadmap P5.2 / D30).
+jsoup = "1.23.2"
+
 # Compatibility of java.time.* for Android API Level < 26 (Android 8.0) [O]; kotlinx-datetime needs it.
 desugar = "2.1.5"
 
@@ -54,6 +58,7 @@ lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", v
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 org-json = { module = "org.json:json", version.ref = "org-json" }
 readium-navigator = { module = "org.readium.kotlin-toolkit:readium-navigator", version.ref = "readium" }
 readium-navigator-media-tts = { module = "org.readium.kotlin-toolkit:readium-navigator-media-tts", version.ref = "readium" }

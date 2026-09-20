@@ -5,6 +5,9 @@ import android.os.Build
 import android.os.Bundle
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.common.api.PluginInfo
+import org.autojs.plugin.epub.api.EpubCapabilityKeys
+import org.autojs.plugin.epub.api.EpubContract
+import org.autojs.plugin.epub.api.EpubIds
 import org.autojs.plugin.explorer.api.ExplorerActionCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCatalogKeys
 import org.autojs.plugin.explorer.api.ExplorerActionPluginIds
@@ -37,6 +40,17 @@ internal object ReadiumEpubReaderPlugin {
 
     val MIME_TYPES = arrayOf(EPUB_MIME_TYPE)
     val EXTENSIONS = arrayOf(EPUB_EXTENSION)
+
+    /**
+     * Features the `org.autojs.plugin.EPUB` service advertises (roadmap P5.2); `reader-session`
+     * and `tts` join the list with roadmap P5.3. Android-free so JUnit can lock the set.
+     */
+    val EPUB_FEATURES: List<String> = listOf(
+        EpubContract.FEATURE_SEARCH,
+        EpubContract.FEATURE_COVER,
+        EpubContract.FEATURE_RESOURCE_EXPORT,
+        EpubContract.FEATURE_MARKDOWN,
+    )
 
     /**
      * The two catalog actions (roadmap P1.1): the primary button and the overflow entry share
@@ -75,7 +89,33 @@ internal data class ExplorerActionSpec(
     val activityClassName: String,
 )
 
-internal fun Context.readiumEpubReaderPluginInfo(): PluginInfo {
+/** The Explorer Action identity: engine `explorer-action`, shown by the host plugin center (roadmap D10). */
+internal fun Context.readiumEpubReaderPluginInfo(): PluginInfo = pluginIdentity(
+    engine = ExplorerActionPluginIds.ENGINE,
+    capabilities = Bundle().apply {
+        putLong(PluginCapabilityKeys.REQUIRES_HOST_VERSION, ReadiumEpubReaderPlugin.REQUIRED_HOST_VERSION)
+        putInt(ExplorerActionCapabilityKeys.PROTOCOL_VERSION, ReadiumEpubReaderPlugin.PROTOCOL_VERSION)
+    },
+)
+
+/**
+ * The EPUB capability identity (roadmap P5.2 / D10): the same id, variant and version fields as
+ * [readiumEpubReaderPluginInfo], engine `epub` and the EPUB capabilities instead.
+ */
+internal fun Context.readiumEpubPluginInfo(): PluginInfo = pluginIdentity(
+    engine = EpubIds.ENGINE,
+    capabilities = epubCapabilities(),
+)
+
+/** `PluginInfo.capabilities` of the EPUB service and the answer of `IEpubPlugin.getCapabilities`. */
+internal fun epubCapabilities(): Bundle = Bundle().apply {
+    putLong(EpubCapabilityKeys.REQUIRES_HOST_VERSION, EpubIds.REQUIRED_HOST_VERSION_CODE)
+    putInt(EpubCapabilityKeys.CONTRACT_VERSION, EpubContract.CONTRACT_VERSION)
+    putStringArray(EpubCapabilityKeys.FEATURES, ReadiumEpubReaderPlugin.EPUB_FEATURES.toTypedArray())
+    putString(EpubCapabilityKeys.READIUM_VERSION, BuildConfig.READIUM_VERSION)
+}
+
+private fun Context.pluginIdentity(engine: String, capabilities: Bundle): PluginInfo {
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
     return PluginInfo().apply {
         name = getString(R.string.app_name)
@@ -94,13 +134,10 @@ internal fun Context.readiumEpubReaderPluginInfo(): PluginInfo {
         }
         versionDate = getString(R.string.plugin_version_date)
         id = ReadiumEpubReaderPlugin.ID
-        engine = ExplorerActionPluginIds.ENGINE
+        this.engine = engine
         variant = ReadiumEpubReaderPlugin.VARIANT
         supportedAbis = emptyArray()
-        capabilities = Bundle().apply {
-            putLong(PluginCapabilityKeys.REQUIRES_HOST_VERSION, ReadiumEpubReaderPlugin.REQUIRED_HOST_VERSION)
-            putInt(ExplorerActionCapabilityKeys.PROTOCOL_VERSION, ReadiumEpubReaderPlugin.PROTOCOL_VERSION)
-        }
+        this.capabilities = capabilities
     }
 }
 

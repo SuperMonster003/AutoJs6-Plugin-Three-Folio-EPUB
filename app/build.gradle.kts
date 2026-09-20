@@ -280,6 +280,9 @@ dependencies {
     // A runtime dependency of readium-navigator-media-tts; the read-aloud foreground service subclasses
     // media3's MediaSessionService, so the plugin declares it directly (roadmap P3).
     implementation(libs.media3.session)
+    // Jsoup is already on the runtime classpath through readium-shared; declared directly for the XHTML
+    // block walk behind the chapter text of the EPUB service (roadmap P5.2 / D30).
+    implementation(libs.jsoup)
 
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
