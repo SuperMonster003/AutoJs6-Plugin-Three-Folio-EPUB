@@ -4,8 +4,10 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.MatrixCursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import android.provider.OpenableColumns
 import androidx.core.net.toUri
 import java.io.File
 import java.io.FileNotFoundException
@@ -37,7 +39,22 @@ class EpubReaderTestContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?,
         sortOrder: String?,
-    ): Cursor? = null
+    ): Cursor? {
+        // Like a document provider: the display name and size of one document, nothing for a missing one.
+        val name = uri.lastPathSegment?.takeIf { it.matches(SAFE_FILE_NAME) } ?: return null
+        val file = fileFor(requireNotNull(context), name)
+        if (!file.isFile) return null
+        val columns = projection ?: arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
+        return MatrixCursor(columns, 1).apply {
+            addRow(columns.map { column ->
+                when (column) {
+                    OpenableColumns.DISPLAY_NAME -> name
+                    OpenableColumns.SIZE -> file.length()
+                    else -> null
+                }
+            })
+        }
+    }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? =
         throw UnsupportedOperationException("The test provider is read-only")

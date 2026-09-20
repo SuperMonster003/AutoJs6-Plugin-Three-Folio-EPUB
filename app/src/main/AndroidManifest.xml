@@ -85,6 +85,23 @@
             </intent-filter>
         </activity>
 
+        <!-- The ACTION_VIEW door (roadmap P4.2 / D27): other apps hand over content:// EPUB documents here.
+             Exported without a permission; the content scheme and the EPUB type only, no octet-stream or
+             path-pattern fallback. The request rules of this door live in EpubRequestPolicy. -->
+        <activity
+            android:name=".ExternalViewerActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="application/epub+zip"
+                    android:scheme="content" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".EpubReaderActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"

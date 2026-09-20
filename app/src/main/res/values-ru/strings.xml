@@ -7,6 +7,8 @@
     <string name="plugin_description">Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</string>
     <string name="release_history">История выпусков</string>
     <string name="release_history_unavailable">История выпусков недоступна</string>
+    <string name="text_add_to_recent">Добавить в недавние книги</string>
+    <string name="text_added_to_recent">Добавлено в недавние книги</string>
     <string name="text_bookmark_add">Добавить закладку</string>
     <string name="text_bookmark_added">Закладка добавлена</string>
     <string name="text_bookmark_clear_all">Очистить все</string>

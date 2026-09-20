@@ -7,6 +7,8 @@
     <string name="plugin_description">Lit les livres EPUB avec navigation, recherche, lecture à voix haute et accès par script</string>
     <string name="release_history">Historique des versions</string>
     <string name="release_history_unavailable">L\'historique des versions est indisponible</string>
+    <string name="text_add_to_recent">Ajouter aux livres récents</string>
+    <string name="text_added_to_recent">Ajouté aux livres récents</string>
     <string name="text_bookmark_add">Ajouter un signet</string>
     <string name="text_bookmark_added">Signet ajouté</string>
     <string name="text_bookmark_clear_all">Tout effacer</string>

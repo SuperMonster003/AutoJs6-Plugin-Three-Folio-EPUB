@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Debug-only: serves fixtures to instrumentation tests through content:// URIs so the
-         reader Activity can be exercised with a real Explorer Action v2 envelope. -->
+         reader Activity can be exercised with a real Explorer Action v2 envelope. Exported (read-only,
+         cache-directory fixtures with safe names) so that `am start` from the shell can grant one of
+         its documents to the ACTION_VIEW door the way another app would (roadmap P4.2). -->
     <application>
+        <!-- Debug-only export; lint ExportedContentProvider is expected here (read-only cache fixtures). -->
         <provider
             android:name=".EpubReaderTestContentProvider"
             android:authorities="io.github.supermonster003.autojs6.plugin.readium.epub.reader.test.documents"
-            android:exported="false"
-            android:grantUriPermissions="true" />
+            android:exported="true"
+            android:grantUriPermissions="true"
+            tools:ignore="ExportedContentProvider" />
     </application>
 
 </manifest>

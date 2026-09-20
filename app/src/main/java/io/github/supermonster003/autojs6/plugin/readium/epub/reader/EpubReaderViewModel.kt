@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.provider.OpenableColumns
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
@@ -16,6 +17,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsCo
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.CoverExtractor
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.RecentBook
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.RecentBooksStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontEntry
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontInspection
@@ -145,9 +147,14 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     /** The launcher's recent list (roadmap P4.1): only entries it already holds are updated from here. */
     private val recentStore = RecentBooksStore.forFilesDirectory(application.filesDir)
 
-    /** The recent-list entry of the open book, when it came through the launcher; null for the other doors. */
+    /** The recent-list entry of the open book, when the list holds it (the launcher's books, or an added one); null otherwise. */
     @Volatile
     var recentUri: String? = null
+        private set
+
+    /** The request the book was opened with (roadmap P4.2: the door decides what the overflow offers). */
+    @Volatile
+    var request: EpubReaderRequest? = null
         private set
     private val fontsMutex = Mutex()
     private val _fonts = MutableStateFlow(fontStore.read())
@@ -215,6 +222,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     fun open(request: EpubReaderRequest, contentResolver: ContentResolver, savedLocator: Locator?) {
         if (_state.value !is OpenState.Idle) return
         _state.value = OpenState.Opening
+        this.request = request
         viewModelScope.launch {
             _state.value = openBook(request, contentResolver, savedLocator)
         }
@@ -229,7 +237,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
             runCatching { contentResolver.openFileDescriptor(request.documentUri, "r") }.getOrNull()
         }
         if (descriptor == null) {
-            if (request.entry == ReaderEntry.LAUNCHER) markRecentUnavailable(request.documentUri.toString())
+            if (request.entry != ReaderEntry.EXPLORER) markRecentUnavailable(request.documentUri.toString())
             return OpenState.Failed(OpenFailure.CannotRead)
         }
 
@@ -278,7 +286,8 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         if (quickKey != null) {
             viewModelScope.launch(Dispatchers.IO) { migrateToFullFingerprint(descriptor, quickKey) }
         }
-        if (request.entry == ReaderEntry.LAUNCHER) trackRecent(request.documentUri.toString(), publication)
+        // The Explorer door never lists (roadmap D4); the others update an entry the list already holds.
+        if (request.entry != ReaderEntry.EXPLORER) trackRecent(request.documentUri.toString(), publication)
         return OpenState.Ready
     }
 
@@ -389,6 +398,23 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
                 val name = recentStore.writeCover(uri, cover)
                 recentStore.update(uri) { it.copy(coverFile = name) }
             }
+        }
+    }
+
+    /**
+     * Roadmap P4.2: lists a book that came through `ACTION_VIEW` after the activity took the
+     * persistable grant; entries evicted by the limit hand their URI to [releaseEvicted].
+     */
+    fun addToRecent(request: EpubReaderRequest, releaseEvicted: (Uri) -> Unit) {
+        val publication = publication ?: return
+        val uri = request.documentUri.toString()
+        viewModelScope.launch(Dispatchers.IO) {
+            val now = System.currentTimeMillis()
+            val update = runCatching {
+                recentStore.upsert(RecentBook(uri, request.displayName, addedAt = now, lastReadAt = now, key = bookKey))
+            }.getOrNull() ?: return@launch
+            update.evicted.forEach { evicted -> releaseEvicted(evicted.uri.toUri()) }
+            trackRecent(uri, publication)
         }
     }
 

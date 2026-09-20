@@ -25,6 +25,9 @@ internal object ReadiumEpubReaderPlugin {
     const val LABEL_FALLBACK = "Readium EPUB Reader"
     const val ACTIVITY_CLASS_NAME =
         "io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity"
+    /** The exported `ACTION_VIEW` door (roadmap P4.2); not part of the Explorer catalog. */
+    const val EXTERNAL_VIEWER_CLASS_NAME =
+        "io.github.supermonster003.autojs6.plugin.readium.epub.reader.ExternalViewerActivity"
 
     const val EPUB_MIME_TYPE = "application/epub+zip"
     const val EPUB_EXTENSION = "epub"

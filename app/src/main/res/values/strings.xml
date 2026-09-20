@@ -7,6 +7,8 @@
     <string name="plugin_description">Reads EPUB e-books with navigation, search, read-aloud and scripting access</string>
     <string name="release_history">Release history</string>
     <string name="release_history_unavailable">Release history is unavailable</string>
+    <string name="text_add_to_recent">Add to recent books</string>
+    <string name="text_added_to_recent">Added to recent books</string>
     <string name="text_bookmark_add">Add bookmark</string>
     <string name="text_bookmark_added">Bookmark added</string>
     <string name="text_bookmark_clear_all">Clear all</string>

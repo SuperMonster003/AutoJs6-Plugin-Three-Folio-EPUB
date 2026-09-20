@@ -7,6 +7,8 @@
     <string name="plugin_description">قراءة كتب EPUB مع التنقل والبحث والقراءة الصوتية والوصول من السكربتات</string>
     <string name="release_history">سجل الإصدارات</string>
     <string name="release_history_unavailable">سجل الإصدارات غير متاح</string>
+    <string name="text_add_to_recent">إضافة إلى الكتب الأخيرة</string>
+    <string name="text_added_to_recent">تمت الإضافة إلى الكتب الأخيرة</string>
     <string name="text_bookmark_add">إضافة إشارة مرجعية</string>
     <string name="text_bookmark_added">تمت إضافة الإشارة المرجعية</string>
     <string name="text_bookmark_clear_all">مسح الكل</string>

@@ -113,7 +113,7 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * bar, sentence highlight and page follow (P3).
  */
 @OptIn(ExperimentalReadiumApi::class)
-class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
+open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
 
     private lateinit var binding: ActivityEpubReaderBinding
     private lateinit var chrome: ReaderChrome
@@ -284,7 +284,7 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         }
 
         val resuming = intent.action == ACTION_RESUME_READ_ALOUD
-        val request = if (resuming) null else EpubReaderIntentPolicy.resolve(intent)
+        val request = if (resuming) null else resolveRequest()
         if (resuming) {
             // Roadmap D26: the read-aloud notification brings back the book the voice is reading.
             if (!model.resumeBackground()) {
@@ -345,6 +345,9 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             }
         }
     }
+
+    /** The door this component opens (roadmap P4.2): the protected reader takes the Explorer envelope and the launcher's action. */
+    internal open fun resolveRequest(): EpubReaderRequest? = EpubReaderIntentPolicy.resolve(intent, RequestReceiver.READER)
 
     private fun describe(failure: OpenFailure): String = when (failure) {
         OpenFailure.CannotRead -> getString(R.string.text_cannot_read_file)
@@ -593,6 +596,8 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             },
         )?.isChecked = true
         menu.findItem(R.id.action_restart_book)?.isVisible = ready
+        // Roadmap P4.2: a book another app handed over can join the recent list; listed books have nothing to add.
+        menu.findItem(R.id.action_add_to_recent)?.isVisible = ready && model.request?.entry == ReaderEntry.EXTERNAL && model.recentUri == null
         chrome.tintToolbarIcons(menu)
         return super.onPrepareOptionsMenu(menu)
     }
@@ -649,6 +654,10 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
         }
         R.id.action_restart_book -> {
             confirmRestart()
+            true
+        }
+        R.id.action_add_to_recent -> {
+            addToRecent()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -970,6 +979,29 @@ class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Liste
             onSelected = ::jumpTo,
             onDismissed = { tableOfContentsDialog = null },
         )
+    }
+
+    /**
+     * Roadmap P4.2 / D4: keeps a book that came through `ACTION_VIEW` only when its sender allowed
+     * the grant to persist; otherwise the book opens this once and the user is told why it is
+     * not listed. Returns whether the book joined the list.
+     */
+    internal fun addToRecent(): Boolean {
+        val request = model.request ?: return false
+        if (request.entry != ReaderEntry.EXTERNAL || model.publication == null) return false
+        val kept = runCatching {
+            contentResolver.takePersistableUriPermission(request.documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }.isSuccess
+        if (!kept) {
+            Toast.makeText(this, R.string.text_launcher_cannot_keep_access, Toast.LENGTH_LONG).show()
+            return false
+        }
+        model.addToRecent(request) { evicted ->
+            runCatching { contentResolver.releasePersistableUriPermission(evicted, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        }
+        Toast.makeText(this, R.string.text_added_to_recent, Toast.LENGTH_SHORT).show()
+        invalidateOptionsMenu()
+        return true
     }
 
     private fun confirmRestart() {

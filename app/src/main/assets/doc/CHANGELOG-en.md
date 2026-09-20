@@ -27,6 +27,7 @@
 * `Feature` Books are read in place through the granted file descriptor with positional reads; nothing is copied or extracted to storage
 * `Feature` Interface, instructions, README, and changelog in 10 languages
 * `Feature` Standalone launcher: the app icon opens a grid of recent books (cover, title, author, progress and last read time, up to 100) and an `Open EPUB` button that picks a book with the system document picker; picked books keep a persisted read grant so they reopen from the grid, a book whose file went away is marked unavailable, and a long press removes a book and releases its grant
+* `Feature` Opening from other apps: file managers, browsers and mail apps can hand a `content://` EPUB to the reader through `ACTION_VIEW`; the book opens like any other but is not listed in the launcher unless `Add to recent books` in the overflow menu succeeds in keeping the sender's access (it refuses when it cannot); `file://` paths, requests without a read grant and directories are rejected
 * `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 * `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 * `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import android.content.pm.ServiceInfo
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.LauncherActivity
@@ -173,6 +174,21 @@ class PluginContractInstrumentationTest {
             0,
         )
         assertEquals(listOf(LauncherActivity::class.java.name), launchers.map { it.activityInfo.name })
+
+        // The ACTION_VIEW door (roadmap P4.2 / D27): exported without a permission, the only activity a
+        // content:// EPUB resolves to, and nothing resolves for the octet-stream / file:// fallbacks.
+        val viewerInfo = packageManager.getActivityInfo(ComponentName(context, ExternalViewerActivity::class.java), 0)
+        assertTrue(viewerInfo.exported)
+        assertNull(viewerInfo.permission)
+        assertEquals(Class.forName(ReadiumEpubReaderPlugin.EXTERNAL_VIEWER_CLASS_NAME), ExternalViewerActivity::class.java)
+        fun viewers(uri: String, type: String?): List<String> = packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_VIEW).setDataAndType(uri.toUri(), type).addCategory(Intent.CATEGORY_DEFAULT).setPackage(context.packageName),
+            0,
+        ).map { it.activityInfo.name }
+        assertEquals(listOf(ExternalViewerActivity::class.java.name), viewers("content://com.example.files/document/1", "application/epub+zip"))
+        assertEquals(emptyList<String>(), viewers("content://com.example.files/document/1", "application/octet-stream"))
+        assertEquals(emptyList<String>(), viewers("file:///sdcard/novel.epub", "application/epub+zip"))
+        assertEquals(emptyList<String>(), viewers("https://example.com/novel.epub", "application/epub+zip"))
 
         // The read-aloud service (roadmap P3 / D15) is the only other service: not exported, media playback type.
         val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)

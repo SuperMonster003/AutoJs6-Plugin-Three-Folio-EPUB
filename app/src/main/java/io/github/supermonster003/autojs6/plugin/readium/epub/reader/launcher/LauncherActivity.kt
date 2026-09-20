@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderIntentPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubRequestPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.HostAppearanceActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
@@ -105,10 +106,10 @@ class LauncherActivity : HostAppearanceActivity() {
             contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }.isSuccess
         val displayName = queryDisplayName(uri)
-            ?: EpubReaderIntentPolicy.sanitizeDisplayName(uri.lastPathSegment)
+            ?: EpubRequestPolicy.sanitizeDisplayName(uri.lastPathSegment)
             ?: FALLBACK_NAME
         val mimeType = runCatching { contentResolver.getType(uri) }.getOrNull()
-        if (!EpubReaderIntentPolicy.isSupportedEpub(mimeType, displayName)) {
+        if (!EpubRequestPolicy.isSupportedEpub(mimeType, displayName)) {
             if (persisted) releaseGrant(uri)
             Toast.makeText(this, R.string.text_launcher_not_epub, Toast.LENGTH_LONG).show()
             return
@@ -210,7 +211,7 @@ class LauncherActivity : HostAppearanceActivity() {
         contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getString(0) else null
         }
-    }.getOrNull()?.let(EpubReaderIntentPolicy::sanitizeDisplayName)
+    }.getOrNull()?.let(EpubRequestPolicy::sanitizeDisplayName)
 
     private fun spanCount(): Int {
         val tileWidth = TILE_WIDTH_DP * resources.displayMetrics.density

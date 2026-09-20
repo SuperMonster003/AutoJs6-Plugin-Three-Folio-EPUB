@@ -7,6 +7,8 @@
     <string name="plugin_description">EPUB 電子書籍を読み, 目次, 検索, 読み上げとスクリプト抽出を提供</string>
     <string name="release_history">リリース履歴</string>
     <string name="release_history_unavailable">リリース履歴を表示できません</string>
+    <string name="text_add_to_recent">最近の本に追加</string>
+    <string name="text_added_to_recent">最近の本に追加しました</string>
     <string name="text_bookmark_add">ブックマークを追加</string>
     <string name="text_bookmark_added">ブックマークを追加しました</string>
     <string name="text_bookmark_clear_all">すべて消去</string>
