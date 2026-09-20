@@ -124,6 +124,11 @@
                 <action android:name="org.autojs.plugin.EXPLORER_ACTION_EXECUTE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <!-- Roadmap P5.3 / D12: the host starts the reader explicitly with a session token; the PLUGIN permission above guards it. -->
+            <intent-filter>
+                <action android:name="org.autojs.plugin.EPUB_READER_OPEN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <service

@@ -26,6 +26,11 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Image
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.LinkHistory
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchSession
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.PreferencePatch
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReaderPreferencesJson
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReaderSession
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReaderSessionRegistry
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.SessionAdopter
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookmarkCodec
@@ -52,9 +57,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.autojs.plugin.epub.api.EpubContract
 import org.json.JSONObject
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.epub.EpubPreferences
+import org.readium.r2.navigator.preferences.ColumnCount
+import org.readium.r2.navigator.preferences.FontFamily
+import org.readium.r2.navigator.preferences.TextAlign
 import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
@@ -106,7 +115,7 @@ internal sealed class OpenState {
  * Intent and the saved locator instead of restoring fragments.
  */
 @OptIn(ExperimentalReadiumApi::class)
-internal class EpubReaderViewModel(application: Application) : AndroidViewModel(application) {
+internal class EpubReaderViewModel(application: Application) : AndroidViewModel(application), SessionAdopter {
 
     private val store = BookDataStore.forFilesDirectory(application.filesDir)
     private val storeMutex = Mutex()
@@ -156,6 +165,15 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     @Volatile
     var request: EpubReaderRequest? = null
         private set
+
+    /** The host reader session this book was adopted from (roadmap P5.3); null for the ordinary doors and once the host let go. */
+    @Volatile
+    var hostSession: ReaderSession? = null
+        private set
+
+    /** The adopted book's own descriptor copy for the fingerprints; closed with the book. */
+    private var adoptedDescriptor: ParcelFileDescriptor? = null
+    private var bookmarkAnnounceJob: Job? = null
     private val fontsMutex = Mutex()
     private val _fonts = MutableStateFlow(fontStore.read())
 
@@ -241,20 +259,11 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
             return OpenState.Failed(OpenFailure.CannotRead)
         }
 
-        val quickKey = withContext(Dispatchers.IO) {
-            runCatching { descriptor.withDuplicate { BookFingerprint.quickKey(it.channel) } }.getOrNull()
-        }
-        // A book opened before is already filed under its full fingerprint; the quick key alias
-        // finds it without hashing the whole file again before the reader shows.
-        val initialKey = quickKey?.let { key ->
-            withContext(Dispatchers.IO) { storeMutex.withLock { store.resolveKey(key) } }
-        }
-        val storedProgress = initialKey?.let { key ->
-            withContext(Dispatchers.IO) { storeMutex.withLock { store.readProgress(key) } }
-        }
-        val storedBookmarks = initialKey?.let { key ->
-            withContext(Dispatchers.IO) { storeMutex.withLock { store.readBookmarks(key) } }
-        }.orEmpty()
+        val stored = loadStored(descriptor)
+        val quickKey = stored.quickKey
+        val initialKey = stored.key
+        val storedProgress = stored.progress
+        val storedBookmarks = stored.bookmarks
 
         val resource = PfdResource(descriptor, request.displayName)
         val opened = withTimeoutOrNull(OPEN_TIMEOUT_MILLIS) {
@@ -289,6 +298,131 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         // The Explorer door never lists (roadmap D4); the others update an entry the list already holds.
         if (request.entry != ReaderEntry.EXPLORER) trackRecent(request.documentUri.toString(), publication)
         return OpenState.Ready
+    }
+
+    private class StoredBook(val quickKey: String?, val key: String?, val progress: ProgressRecord?, val bookmarks: List<Bookmark>)
+
+    /**
+     * What the store holds for the book behind [descriptor]: a book opened before is already
+     * filed under its full fingerprint; the quick key alias finds it without hashing the whole
+     * file again before the reader shows.
+     */
+    private suspend fun loadStored(descriptor: ParcelFileDescriptor): StoredBook {
+        val quickKey = withContext(Dispatchers.IO) {
+            runCatching { descriptor.withDuplicate { BookFingerprint.quickKey(it.channel) } }.getOrNull()
+        }
+        val initialKey = quickKey?.let { key ->
+            withContext(Dispatchers.IO) { storeMutex.withLock { store.resolveKey(key) } }
+        }
+        val storedProgress = initialKey?.let { key ->
+            withContext(Dispatchers.IO) { storeMutex.withLock { store.readProgress(key) } }
+        }
+        val storedBookmarks = initialKey?.let { key ->
+            withContext(Dispatchers.IO) { storeMutex.withLock { store.readBookmarks(key) } }
+        }.orEmpty()
+        return StoredBook(quickKey, initialKey, storedProgress, storedBookmarks)
+    }
+
+    // ---- Host reader session (roadmap P5.3) ----
+
+    /**
+     * Claims the host session behind [token] and adopts its book (the two-step launch of D12);
+     * false when no session waits for that token. Like [open], a later call while opening or
+     * ready is ignored, so a recreated Activity keeps the adopted book.
+     */
+    fun adoptSession(token: String): Boolean {
+        if (_state.value !is OpenState.Idle) return _state.value is OpenState.Ready
+        val session = ReaderSessionRegistry.claim(token) ?: return false
+        _state.value = OpenState.Opening
+        viewModelScope.launch {
+            _state.value = adoptBook(session)
+        }
+        return true
+    }
+
+    private suspend fun adoptBook(session: ReaderSession): OpenState {
+        val handover = session.adopt(this)
+        release()
+        hostSession = session
+        val descriptor = handover.resource.duplicateDescriptor()
+        adoptedDescriptor = descriptor
+        val stored = loadStored(descriptor)
+        val publication = handover.publication
+        resource = handover.resource
+        this.publication = publication
+        _bookmarks.value = stored.bookmarks
+        searchSession.attach(publication)
+        navigatorFactory = EpubNavigatorFactory(publication)
+        bookKey = stored.key
+        // The place the host named wins over the stored position; a target that no longer resolves falls back to it.
+        val start = handover.target?.let { target -> runCatching { session.resolveStart(target) }.getOrNull() }
+        lastLocator = start ?: stored.progress?.let { Locator.fromJSON(it.locator) }
+        viewModelScope.launch {
+            _positionCount.value = runCatching { publication.positions().size }.getOrDefault(0)
+        }
+        stored.quickKey?.let { key ->
+            viewModelScope.launch(Dispatchers.IO) { migrateToFullFingerprint(descriptor, key) }
+        }
+        if (!handover.preferences.isEmpty) applyPreferencePatch(handover.preferences)
+        // The stored bookmarks are the baseline; every later change of the list becomes a bookmark event.
+        bookmarkAnnounceJob = viewModelScope.launch {
+            _bookmarks.collect { session.updateBookmarks(it) }
+        }
+        return OpenState.Ready
+    }
+
+    /** A validated preference patch of the host (`setPreferences` or the `openReader` options); the advanced keys drop the publisher's styles as the panel does. */
+    override fun applyPreferencePatch(patch: PreferencePatch) {
+        if (patch.has(EpubContract.PREFERENCE_THEME)) {
+            setThemeMode(patch.string(EpubContract.PREFERENCE_THEME)?.let { ThemeMode.fromKey(it) } ?: ThemeMode.DEFAULT)
+        }
+        val advanced = ReaderPreferencesJson.ADVANCED_KEYS.any { patch.has(it) && patch.string(it) != null || patch.has(it) && patch.double(it) != null || patch.has(it) && patch.boolean(it) != null }
+        editPreferences { epub ->
+            var next = epub
+            if (patch.has(EpubContract.PREFERENCE_FONT_SIZE)) next = next.copy(fontSize = patch.double(EpubContract.PREFERENCE_FONT_SIZE))
+            if (patch.has(EpubContract.PREFERENCE_FONT_FAMILY)) next = next.copy(fontFamily = patch.string(EpubContract.PREFERENCE_FONT_FAMILY)?.let { FontFamily(it) })
+            if (patch.has(EpubContract.PREFERENCE_LINE_HEIGHT)) next = next.copy(lineHeight = patch.double(EpubContract.PREFERENCE_LINE_HEIGHT))
+            if (patch.has(EpubContract.PREFERENCE_PAGE_MARGINS)) next = next.copy(pageMargins = patch.double(EpubContract.PREFERENCE_PAGE_MARGINS))
+            if (patch.has(EpubContract.PREFERENCE_SCROLL)) next = next.copy(scroll = patch.boolean(EpubContract.PREFERENCE_SCROLL))
+            if (patch.has(EpubContract.PREFERENCE_COLUMN_COUNT)) {
+                next = next.copy(
+                    columnCount = when (patch.string(EpubContract.PREFERENCE_COLUMN_COUNT)) {
+                        "1" -> ColumnCount.ONE
+                        "2" -> ColumnCount.TWO
+                        "auto" -> ColumnCount.AUTO
+                        else -> null
+                    },
+                )
+            }
+            if (patch.has(EpubContract.PREFERENCE_VERTICAL_TEXT)) next = next.copy(verticalText = patch.boolean(EpubContract.PREFERENCE_VERTICAL_TEXT))
+            if (patch.has(EpubContract.PREFERENCE_TEXT_ALIGN)) {
+                next = next.copy(
+                    textAlign = when (patch.string(EpubContract.PREFERENCE_TEXT_ALIGN)) {
+                        "start" -> TextAlign.START
+                        "end" -> TextAlign.END
+                        "left" -> TextAlign.LEFT
+                        "right" -> TextAlign.RIGHT
+                        "justify" -> TextAlign.JUSTIFY
+                        "center" -> TextAlign.CENTER
+                        else -> null
+                    },
+                )
+            }
+            if (patch.has(EpubContract.PREFERENCE_HYPHENS)) next = next.copy(hyphens = patch.boolean(EpubContract.PREFERENCE_HYPHENS))
+            if (patch.has(EpubContract.PREFERENCE_PUBLISHER_STYLES)) {
+                next = next.copy(publisherStyles = patch.boolean(EpubContract.PREFERENCE_PUBLISHER_STYLES))
+            } else if (advanced) {
+                next = next.copy(publisherStyles = false)
+            }
+            next
+        }
+    }
+
+    /** The host closed the session (or its process died): the reader lives on as an ordinary reader (D32). */
+    override fun onSessionClosed() {
+        hostSession = null
+        bookmarkAnnounceJob?.cancel()
+        bookmarkAnnounceJob = null
     }
 
     /**
@@ -614,6 +748,10 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     private fun release() {
         recentUri = null
+        bookmarkAnnounceJob?.cancel()
+        bookmarkAnnounceJob = null
+        adoptedDescriptor?.let { runCatching { it.close() } }
+        adoptedDescriptor = null
         tts.stop()
         searchSession.detach()
         _bookmarks.value = emptyList()
@@ -629,6 +767,8 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     override fun onCleared() {
         flushProgress()
         flushPreferences()
+        // The user left the reader: the host hears `close(user)` before the book goes.
+        hostSession?.close(EpubContract.REASON_USER, finish = false)
         if (ReaderSettings(getApplication()).readAloudInBackground && tts.status.value == TtsStatus.PLAYING) {
             // Roadmap D26: the voice goes on without the reader and takes the book with it.
             val orphan = publication?.let { OrphanBook(it, resource) }

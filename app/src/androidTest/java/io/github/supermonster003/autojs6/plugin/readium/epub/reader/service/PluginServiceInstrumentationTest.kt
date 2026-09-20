@@ -315,7 +315,7 @@ class PluginServiceInstrumentationTest {
         }
         val fatOptions = Bundle().apply { putString("padding", "x".repeat(EpubContract.MAX_OPTIONS_BYTES + 1024)) }
         note("fat options: " + failure<IllegalStateException>(EpubErrorCodes.LIMIT_EXCEEDED) { open(plugin, "minimal-epub3.epub", fatOptions) })
-        note("reader session: " + failure<IllegalStateException>(EpubErrorCodes.INTERNAL) {
+        note("reader session without callback: " + failure<IllegalArgumentException>(EpubErrorCodes.INVALID_ARGUMENT) {
             descriptor("minimal-epub3.epub").use { plugin.openReader(it, Bundle(), null) }
         })
 

@@ -45,6 +45,9 @@ class PfdResource(
 
     override suspend fun properties(): Try<Resource.Properties, ReadError> = Try.success(properties)
 
+    /** A duplicate of the descriptor for the caller to own and close (fingerprints of an adopted book, roadmap P5.3). */
+    internal fun duplicateDescriptor(): ParcelFileDescriptor = descriptor.dup()
+
     override suspend fun length(): Try<Long, ReadError> = withContext(Dispatchers.IO) {
         catching { lengthSync() }
     }

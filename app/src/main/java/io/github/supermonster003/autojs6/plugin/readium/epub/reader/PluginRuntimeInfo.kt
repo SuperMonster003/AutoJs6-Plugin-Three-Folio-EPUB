@@ -42,14 +42,16 @@ internal object ReadiumEpubReaderPlugin {
     val EXTENSIONS = arrayOf(EPUB_EXTENSION)
 
     /**
-     * Features the `org.autojs.plugin.EPUB` service advertises (roadmap P5.2); `reader-session`
-     * and `tts` join the list with roadmap P5.3. Android-free so JUnit can lock the set.
+     * Features the `org.autojs.plugin.EPUB` service advertises (roadmap P5.2, `reader-session`
+     * since P5.3). `tts` stays out: contract version 1 has no read-aloud control surface, so
+     * advertising it would promise nothing a host can call. Android-free so JUnit can lock the set.
      */
     val EPUB_FEATURES: List<String> = listOf(
         EpubContract.FEATURE_SEARCH,
         EpubContract.FEATURE_COVER,
         EpubContract.FEATURE_RESOURCE_EXPORT,
         EpubContract.FEATURE_MARKDOWN,
+        EpubContract.FEATURE_READER_SESSION,
     )
 
     /**

@@ -56,6 +56,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Searc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActionMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActions
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.HostSessionPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReaderSessionController
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
@@ -83,6 +85,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.autojs.plugin.epub.api.EpubActions
+import org.autojs.plugin.epub.api.EpubContract
 import org.readium.navigator.media.tts.android.AndroidTtsEngine
 import org.readium.navigator.media.tts.android.AndroidTtsPreferences
 import org.readium.r2.navigator.Decoration
@@ -114,7 +118,7 @@ import org.readium.r2.shared.util.AbsoluteUrl
  * bar, sentence highlight and page follow (P3).
  */
 @OptIn(ExperimentalReadiumApi::class)
-open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener {
+open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.Listener, ReaderSessionController {
 
     private lateinit var binding: ActivityEpubReaderBinding
     private lateinit var chrome: ReaderChrome
@@ -285,7 +289,8 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         }
 
         val resuming = intent.action == ACTION_RESUME_READ_ALOUD
-        val request = if (resuming) null else resolveRequest()
+        val hosted = intent.action == EpubActions.READER_ACTIVITY_ACTION
+        val request = if (resuming || hosted) null else resolveRequest()
         if (resuming) {
             // Roadmap D26: the read-aloud notification brings back the book the voice is reading.
             if (!model.resumeBackground()) {
@@ -294,6 +299,18 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
                 return
             }
             chrome.setBookTitle(model.publication?.metadata?.title ?: getString(R.string.text_read_aloud))
+        } else if (hosted) {
+            // Roadmap P5.3 / D12: the host opened a session and starts this reader with its token; any other token is an invalid request.
+            val token = HostSessionPolicy.tokenOf(
+                intent.action,
+                intent.component?.className == ReadiumEpubReaderPlugin.ACTIVITY_CLASS_NAME,
+                intent.getStringExtra(EpubActions.EXTRA_SESSION_TOKEN),
+            )
+            if (token == null || !model.adoptSession(token)) {
+                showError(getString(R.string.text_invalid_request))
+                return
+            }
+            chrome.setBookTitle(model.publication?.metadata?.title ?: model.hostSession?.displayName ?: "")
         } else if (request == null) {
             showError(getString(R.string.text_invalid_request))
             return
@@ -304,6 +321,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
 
         val savedLocator = savedInstanceState?.let { BundleCompat.getParcelable(it, STATE_LOCATOR, Locator::class.java) }
         if (request != null) model.open(request, contentResolver, savedLocator)
+        model.hostSession?.attachController(this)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.state.collect { state ->
@@ -421,7 +439,9 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
             )
         }
         val publication = model.publication ?: return
-        chrome.setChapterTitle(locator.title ?: TocSheet.chapterTitle(publication, locator.href.toString()))
+        val chapterTitle = locator.title ?: TocSheet.chapterTitle(publication, locator.href.toString())
+        chrome.setChapterTitle(chapterTitle)
+        model.hostSession?.onLocator(locator, positionCount, chapterTitle)
         chrome.showProgress(
             ReaderProgress.snapshot(locator.locations.position, positionCount, locator.locations.totalProgression, fixedLayout),
         )
@@ -1029,15 +1049,50 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         // Roadmap P4.3: the settings page may have edited the shared preference files meanwhile.
         model.reloadPreferences()
         model.tts.reloadPreferences()
+        model.hostSession?.setVisible(true)
+    }
+
+    override fun onStop() {
+        model.hostSession?.setVisible(false)
+        super.onStop()
     }
 
     override fun onDestroy() {
+        model.hostSession?.detachController(this)
         tableOfContentsDialog?.dismiss()
         tableOfContentsDialog = null
         dismissLinkDialogs()
         ttsDialog?.dismiss()
         ttsDialog = null
         super.onDestroy()
+    }
+
+    // Host reader session (roadmap P5.3): the session posts these on the main thread.
+
+    override fun goTo(locator: Locator) = jumpTo(locator)
+
+    override fun navigate(direction: Int) {
+        when (direction) {
+            EpubContract.DIRECTION_NEXT_PAGE -> perform(PageTurnAction.NEXT)
+            EpubContract.DIRECTION_PREVIOUS_PAGE -> perform(PageTurnAction.PREVIOUS)
+            EpubContract.DIRECTION_NEXT_CHAPTER -> stepChapter(+1)
+            EpubContract.DIRECTION_PREVIOUS_CHAPTER -> stepChapter(-1)
+        }
+    }
+
+    override fun finishReader() = finish()
+
+    /** The reading-order neighbour of the resource on screen; the ends stay put. */
+    private fun stepChapter(delta: Int) {
+        val publication = model.publication ?: return
+        val current = navigator?.takeIf { it.isAdded }?.currentLocator?.value?.href?.toString()
+            ?: model.lastLocator?.href?.toString()
+            ?: return
+        val order = publication.readingOrder
+        val index = order.indexOfFirst { it.href.toString() == current }
+        if (index < 0) return
+        val link = order.getOrNull(index + delta) ?: return
+        jumpTo(link)
     }
 
     // Links (roadmap P2.7)

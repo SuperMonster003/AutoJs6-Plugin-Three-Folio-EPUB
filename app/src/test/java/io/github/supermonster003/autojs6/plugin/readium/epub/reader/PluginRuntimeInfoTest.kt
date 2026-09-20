@@ -38,13 +38,12 @@ class PluginRuntimeInfoTest {
 
     /** Roadmap P5.2: the EPUB service advertises the extraction features; reader sessions and TTS wait for P5.3. */
     @Test
-    fun theEpubServiceAdvertisesTheExtractionFeaturesOnly() {
+    fun theEpubServiceAdvertisesTheExtractionFeaturesAndTheReaderSession() {
         val features = ReadiumEpubReaderPlugin.EPUB_FEATURES
 
-        assertEquals(listOf("search", "cover", "resource-export", "markdown"), features)
+        assertEquals(listOf("search", "cover", "resource-export", "markdown", "reader-session"), features)
         assertEquals(features.distinct(), features)
         assertTrue(EpubContract.FEATURES.containsAll(features))
-        assertFalse(features.contains(EpubContract.FEATURE_READER_SESSION))
         assertFalse(features.contains(EpubContract.FEATURE_TTS))
     }
 
