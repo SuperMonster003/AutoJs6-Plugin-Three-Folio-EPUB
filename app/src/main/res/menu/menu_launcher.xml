@@ -8,4 +8,9 @@
         android:title="@string/text_launcher_open_epub"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/text_settings"
+        app:showAsAction="never" />
+
 </menu>

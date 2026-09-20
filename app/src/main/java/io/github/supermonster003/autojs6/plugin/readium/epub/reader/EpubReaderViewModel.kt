@@ -441,6 +441,16 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         schedulePreferencesFlush()
     }
 
+    /**
+     * Roadmap P4.3: the settings page edits the same file (theme mode, restore). Re-read it when
+     * the reader comes back, unless an edit of this reader is still waiting to be flushed.
+     */
+    fun reloadPreferences() {
+        if (preferencesDirty) return
+        val stored = preferencesStore.read()?.let(ReaderPreferencesState::fromStored) ?: ReaderPreferencesState.DEFAULT
+        if (stored != _preferences.value) _preferences.value = stored
+    }
+
     private fun schedulePreferencesFlush() {
         preferencesDirty = true
         delayedPreferencesFlush?.cancel()

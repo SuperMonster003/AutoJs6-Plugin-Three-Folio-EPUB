@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The app icon opens a standalone launcher with the recent books and the system document picker, and other apps can hand over an EPUB through `ACTION_VIEW`. The settings page and the `epub` scripting API are planned in ROADMAP.md and are not available yet.
+> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The app icon opens a standalone launcher with the recent books and the system document picker, other apps can hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `epub` scripting API is planned in ROADMAP.md and is not available yet.
 
 ******
 
@@ -67,6 +67,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 - External links: tapping an `http` or `https` link shows the full address and opens the system browser only after confirmation.
 - Standalone launcher: the app icon opens a grid of recent books with cover, title, author, progress and last read time, plus an `Open EPUB` button that picks a book with the system document picker; the reader is the same one the file manager opens.
 - Opens from other apps: a file manager, browser or mail app can hand over a `content://` EPUB through `ACTION_VIEW`; `Add to recent books` in the overflow menu keeps it in the launcher when the sender allows lasting access.
+- Settings page with theme, page turning, read-aloud defaults, links and data management, plus the release history and a manual update check that only asks GitHub when you tap it
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
 
@@ -82,6 +83,7 @@ The plugin reads the book directly through the temporary file descriptor granted
 4. Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
 5. Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.
 6. From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.
+7. Open `Settings` from the launcher menu or the reader's overflow menu to set the theme, page turning, read-aloud defaults and links, clear the data the plugin keeps, read the release history or check for updates (the check contacts GitHub only when you tap it).
 
 > If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
 
@@ -115,7 +117,7 @@ Yes. Open the preferences panel from the toolbar to set the text size, the font 
 
 #### Does this plugin upload my books anywhere?
 
-No. The plugin has no server of its own. Network access is only used when a book itself references remote resources, and for the manual update check planned for the standalone settings page.
+No. The plugin has no server of its own. Network access is only used when a book itself references remote resources, and for the manual update check on the settings page, which asks the GitHub Releases API over HTTPS only when you tap it and never downloads anything.
 
 ******
 
@@ -128,6 +130,7 @@ The plugin keeps Readium's default behavior for book content: scripts and remote
 - Least privilege: the plugin only receives the temporary content URI read permission granted by the host, never sees filesystem paths, and never writes the book to storage.
 - Strict envelope: the Explorer Action request must carry exactly one EPUB target, its parent directory, a matching protocol version, a supported host build and both read grants; anything else is rejected before the file is opened.
 - Separate door for other apps: `ACTION_VIEW` is served by its own exported activity that accepts only `content://` documents with a read grant (never `file://`, never a directory), while the Explorer Action activity stays behind the AutoJs6 plugin permission; the sending app's grant is kept only when you choose `Add to recent books`.
+- Update check on demand only: the settings page asks the GitHub Releases API over HTTPS when you tap `Check for updates` (at most once a day, no redirects, a small answer cap), shows what it found and opens the release page in your browser; the plugin never downloads or installs anything by itself.
 - Bounded parsing: a malformed container (not a ZIP, missing `container.xml`, missing package document, path traversal in the manifest) fails with an error message instead of a crash.
 - External links are shown in full and opened in the system browser only after confirmation; schemes other than `http` and `https` are refused.
 - Reading data stays local: positions are keyed by a content fingerprint and no file path or name is written to storage.
@@ -200,6 +203,7 @@ _2026/09/19_
 - `Feature` Interface, instructions, README, and changelog in 10 languages
 - `Feature` Standalone launcher: the app icon opens a grid of recent books (cover, title, author, progress and last read time, up to 100) and an `Open EPUB` button that picks a book with the system document picker; picked books keep a persisted read grant so they reopen from the grid, a book whose file went away is marked unavailable, and a long press removes a book and releases its grant
 - `Feature` Opening from other apps: file managers, browsers and mail apps can hand a `content://` EPUB to the reader through `ACTION_VIEW`; the book opens like any other but is not listed in the launcher unless `Add to recent books` in the overflow menu succeeds in keeping the sender's access (it refuses when it cannot); `file://` paths, requests without a read grant and directories are rejected
+- `Feature` Settings page and release history: the launcher menu and the reader overflow open a settings page for the theme, tap zones, volume keys, read-aloud speed, pitch and default sleep timer, external links and the data the plugin keeps (reading positions, recent books, imported fonts, preferences, each cleared after a confirmation), with an about section, the bundled release history and a manual update check that asks GitHub only when tapped and opens the release page in the browser (no download, `Ignore this version` remembered)
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 - `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 - `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied

@@ -9,6 +9,9 @@
     <string name="text_percent_value" translatable="false">%1$d%%</string>
     <string name="text_progress_percent" translatable="false">%1$d%%</string>
     <string name="text_progress_position_and_percent" translatable="false">%1$d / %2$d (%3$d%%)</string>
+    <string name="text_settings_license_summary" translatable="false">MPL-2.0</string>
+    <string name="text_settings_readium" translatable="false">Readium Kotlin Toolkit</string>
+    <string name="text_settings_source_summary" translatable="false">github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader</string>
     <string name="text_symbol_minus" translatable="false">-</string>
     <string name="text_symbol_plus" translatable="false">+</string>
 </resources>

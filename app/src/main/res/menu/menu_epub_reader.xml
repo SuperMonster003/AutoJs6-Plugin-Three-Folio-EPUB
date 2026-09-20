@@ -86,4 +86,9 @@
         android:title="@string/text_add_to_recent"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/text_settings"
+        app:showAsAction="never" />
+
 </menu>

@@ -12,6 +12,8 @@ import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.launcher.LauncherActivity
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.ReleaseHistoryActivity
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.SettingsActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsForegroundService
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.explorer.api.ExplorerActionCapabilityKeys
@@ -189,6 +191,12 @@ class PluginContractInstrumentationTest {
         assertEquals(emptyList<String>(), viewers("content://com.example.files/document/1", "application/octet-stream"))
         assertEquals(emptyList<String>(), viewers("file:///sdcard/novel.epub", "application/epub+zip"))
         assertEquals(emptyList<String>(), viewers("https://example.com/novel.epub", "application/epub+zip"))
+
+        // The settings page and the release history (roadmap P4.3) are reached from inside the app only.
+        for (activity in listOf(SettingsActivity::class.java, ReleaseHistoryActivity::class.java)) {
+            val info = packageManager.getActivityInfo(ComponentName(context, activity), 0)
+            assertFalse(activity.name, info.exported)
+        }
 
         // The read-aloud service (roadmap P3 / D15) is the only other service: not exported, media playback type.
         val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)

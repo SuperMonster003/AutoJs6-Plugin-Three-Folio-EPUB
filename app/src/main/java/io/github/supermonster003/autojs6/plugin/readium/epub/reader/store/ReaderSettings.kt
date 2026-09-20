@@ -3,6 +3,7 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader.store
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.SleepTimer
 
 /** Where taps turn pages (roadmap P2.7): the left / right thirds, the top / bottom thirds, or nowhere. */
 internal enum class TapZones(val key: String) {
@@ -62,8 +63,41 @@ internal class ReaderSettings(context: Context) {
         get() = preferences.getBoolean(KEY_READ_ALOUD_IN_BACKGROUND, DEFAULT_READ_ALOUD_IN_BACKGROUND)
         set(value) = preferences.edit { putBoolean(KEY_READ_ALOUD_IN_BACKGROUND, value) }
 
+    /** Roadmap P4.3: the sleep timer armed whenever read-aloud starts (off by default). */
+    var readAloudSleepTimer: SleepTimer
+        get() = SleepTimer.fromKey(preferences.getString(KEY_READ_ALOUD_SLEEP_TIMER, null)) ?: SleepTimer.OFF
+        set(value) = preferences.edit { putString(KEY_READ_ALOUD_SLEEP_TIMER, value.key) }
+
+    /** Roadmap D28: the release tag the user chose to skip, or null. */
+    var ignoredUpdateVersion: String?
+        get() = preferences.getString(KEY_IGNORED_UPDATE_VERSION, null)
+        set(value) = preferences.edit {
+            if (value == null) remove(KEY_IGNORED_UPDATE_VERSION) else putString(KEY_IGNORED_UPDATE_VERSION, value)
+        }
+
+    /** When the last manual update check reached the network (epoch millis), or null. */
+    var lastUpdateCheckAt: Long?
+        get() = preferences.getLong(KEY_LAST_UPDATE_CHECK_AT, -1L).takeIf { it >= 0L }
+        set(value) = preferences.edit {
+            if (value == null) remove(KEY_LAST_UPDATE_CHECK_AT) else putLong(KEY_LAST_UPDATE_CHECK_AT, value)
+        }
+
+    /** The last release the check found, in `ReleaseInfoCodec` form, shown again within the daily interval. */
+    var cachedRelease: String?
+        get() = preferences.getString(KEY_CACHED_RELEASE, null)
+        set(value) = preferences.edit {
+            if (value == null) remove(KEY_CACHED_RELEASE) else putString(KEY_CACHED_RELEASE, value)
+        }
+
+    /** Roadmap P4.3 data management: every toggle and update-check memory goes back to its default. */
+    fun clearAll() = preferences.edit { clear() }
+
     companion object {
         internal const val PREFERENCES_NAME = "reader_settings"
+        internal const val KEY_READ_ALOUD_SLEEP_TIMER = "read_aloud_sleep_timer"
+        internal const val KEY_IGNORED_UPDATE_VERSION = "ignored_update_version"
+        internal const val KEY_LAST_UPDATE_CHECK_AT = "last_update_check_at"
+        internal const val KEY_CACHED_RELEASE = "cached_release"
         internal const val KEY_SCROLL_MODE = "scroll_mode"
         internal const val KEY_VOLUME_KEYS_TURN_PAGES = "volume_keys_turn_pages"
         internal const val KEY_TAP_ZONES = "tap_zones"

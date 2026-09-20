@@ -85,6 +85,18 @@
             </intent-filter>
         </activity>
 
+        <!-- Roadmap P4.3: the settings page and the release history are reached from the launcher menu and the
+             reader overflow only; neither takes data, neither is exported. -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".settings.ReleaseHistoryActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
         <!-- The ACTION_VIEW door (roadmap P4.2 / D27): other apps hand over content:// EPUB documents here.
              Exported without a permission; the content scheme and the EPUB type only, no octet-stream or
              path-pattern fallback. The request rules of this door live in EpubRequestPolicy. -->

@@ -59,6 +59,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSh
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchState
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.SettingsActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ReaderSettings
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.TapZones
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.SleepTimer
@@ -660,6 +661,10 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
             addToRecent()
             true
         }
+        R.id.action_settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -1019,6 +1024,13 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         publication.readingOrder.firstOrNull()?.let(::jumpTo)
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Roadmap P4.3: the settings page may have edited the shared preference files meanwhile.
+        model.reloadPreferences()
+        model.tts.reloadPreferences()
+    }
+
     override fun onDestroy() {
         tableOfContentsDialog?.dismiss()
         tableOfContentsDialog = null
@@ -1164,6 +1176,8 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
                 ?: fragment?.currentLocator?.value
                 ?: model.lastLocator
             model.tts.start(publication, model.bookKey, publication.metadata.title, locator)
+            // Roadmap P4.3: the settings page picks the timer every read-aloud session starts with.
+            settings.readAloudSleepTimer.takeIf { it != SleepTimer.OFF }?.let { setSleepTimer(it) }
         }
     }
 

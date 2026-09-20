@@ -142,6 +142,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("int", "EXPLORER_ACTION_PROTOCOL_VERSION", explorerActionProtocolVersion.toString())
+        buildConfigField("String", "READIUM_VERSION", "\"${libs.versions.readium.get()}\"")
         buildConfigField(
             "long",
             "EXPLORER_ACTION_MINIMUM_HOST_VERSION_CODE",

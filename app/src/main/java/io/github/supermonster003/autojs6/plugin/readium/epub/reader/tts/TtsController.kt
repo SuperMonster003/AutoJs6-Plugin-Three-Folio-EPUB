@@ -234,6 +234,14 @@ internal class TtsController(
         persistScope.launch { runCatching { store.write(next) } }
     }
 
+    /** Roadmap P4.3: the settings page edits the same file (speed, pitch); re-read it when the reader comes back. */
+    fun reloadPreferences() {
+        val stored = store.read() ?: AndroidTtsPreferences()
+        if (stored == _preferences.value) return
+        _preferences.value = stored
+        _session.value?.submitPreferences(stored)
+    }
+
     /** Readium's voice selector: the policy's best offline voice for the sentence's language. */
     private fun selectVoice(language: Language?, voices: Set<AndroidTtsEngine.Voice>): AndroidTtsEngine.Voice? {
         val option = TtsVoicePolicy.preferredVoice(language?.code, voices.map { it.toOption() }) ?: return null

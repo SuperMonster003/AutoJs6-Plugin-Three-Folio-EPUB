@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderIntentPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubRequestPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.SettingsActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.HostAppearanceActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
@@ -82,6 +83,10 @@ class LauncherActivity : HostAppearanceActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_open_document -> {
             pickDocument()
+            true
+        }
+        R.id.action_settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
             true
         }
         else -> super.onOptionsItemSelected(item)
