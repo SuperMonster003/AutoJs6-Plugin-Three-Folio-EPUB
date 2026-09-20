@@ -212,6 +212,7 @@ _2026/09/19_
 - `Corrección` Advertencias de lectura de SDK XML v4 con AGP 9.1 y comprobaciones de alineación nativa de APK activadas por error al ensamblar pruebas unitarias JVM, mediante los plugins de compilación compartidos 1.8.3
 - `Corrección` Un fallo al escribir el progreso (carpeta del libro eliminada, almacenamiento no escribible) ya no bloquea el lector; ese registro se pierde y la lectura continúa
 - `Corrección` El lector ya no muere junto con el anfitrión cuando AutoJs6 se detiene o se actualiza mientras se lee su proveedor de ajustes; esa lectura simplemente falla y no se aplican el idioma / modo nocturno del anfitrión
+- `Corrección` Una sesión del anfitrión cuyo intent de inicio llega a un lector que ya está en la cima de su tarea (entrega single-top, por ejemplo después de que un script dejara el lector abierto) se abre ahora en un lector nuevo en lugar de esperar sin reclamar hasta el tiempo límite de 60 s; el lector anterior termina como si fuera reemplazado (hoja de ruta P6.2)
 - `Dependencia` Se añade Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `Dependencia` Se añade `androidx.media3:media3-session` 1.11.0 (ya incluido por `readium-navigator-media-tts`; declarado directamente para el servicio en primer plano de lectura en voz alta)
 - `Dependencia` Se añade `org.jsoup:jsoup` 1.23.2 (ya incluido por `readium-shared`; declarado directamente para la extracción del texto de capítulos del servicio EPUB)

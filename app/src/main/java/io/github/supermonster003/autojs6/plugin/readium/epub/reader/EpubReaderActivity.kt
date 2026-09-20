@@ -1057,6 +1057,20 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         super.onStop()
     }
 
+    /**
+     * Roadmap P6.2: the host launches the reader with `FLAG_ACTIVITY_SINGLE_TOP`, so when this
+     * reader is already on top of its task (for example after a script left it open, D32) the
+     * activity manager delivers the `EPUB_READER_OPEN` launch here instead of creating an instance.
+     * The new session opens in a fresh reader and this one ends like a replaced reader; without
+     * this hook the session would wait unclaimed until its 60 s timeout.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.action != EpubActions.READER_ACTIVITY_ACTION) return
+        finish()
+        startActivity(Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
     override fun onDestroy() {
         model.hostSession?.detachController(this)
         tableOfContentsDialog?.dismiss()

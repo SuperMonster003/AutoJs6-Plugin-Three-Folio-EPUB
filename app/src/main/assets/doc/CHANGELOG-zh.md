@@ -34,6 +34,7 @@
 * `修复` AGP 9.1 构建时的 SDK XML v4 解析警告及 JVM 单元测试组装任务误触发 APK 原生库对齐检查的问题 (共享构建插件 1.8.3)
 * `修复` 阅读进度写入失败 (书籍目录被移除, 存储不可写) 不再让阅读器崩溃, 仅丢失该条记录并继续阅读
 * `修复` 宿主 AutoJs6 在阅读器读取其设置提供器时被停止或更新, 不再连带杀死阅读器; 该次读取只是失败, 不套用宿主的语言 / 夜间模式
+* `修复` 宿主会话的启动 intent 到达已位于任务栈顶的阅读器时 (single-top 投递, 例如脚本把阅读器留在前台后), 现在会在新的阅读器实例中打开, 而不是无人认领地等到 60 秒超时; 原阅读器像被替换时一样结束 (路线图 P6.2)
 * `依赖` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 * `依赖` 附加 `androidx.media3:media3-session` 1.11.0 (`readium-navigator-media-tts` 已间接引入; 为朗读前台服务直接声明)
 * `依赖` 附加 `org.jsoup:jsoup` 1.23.2 (`readium-shared` 已间接引入; 为 EPUB 服务的章节文本提取直接声明)

@@ -357,6 +357,59 @@ class ReaderSessionInstrumentationTest {
         writeNotes("reader-session-lifecycle")
     }
 
+    /**
+     * Roadmap P6.2: a host launch that the activity manager delivers to the reader already on top
+     * of its task (single-top delivery) opens the new session in a fresh reader; the old one ends.
+     */
+    @Test
+    fun hostLaunchOnTopOfAnOpenReaderOpensAFreshInstance() {
+        val plugin = bind()
+        val first = RecordingCallback()
+        val sessionA = openReader(plugin, first)
+        val tokenA = requireNotNull(sessionA.state.requireOk("A").getString(EpubContract.KEY_SESSION_TOKEN))
+        val activityA = launchReader(tokenA)
+        first.await("A open") { it.type == EpubContract.EVENT_OPEN }
+        // The host ends A without finishing the reader (D32): it stays on screen as an ordinary reader.
+        sessionA.close(options { putBoolean(EpubContract.KEY_FINISH, false) })
+        first.await("A closed") { it.type == EpubContract.EVENT_CLOSE }
+        SystemClock.sleep(300)
+        assertFalse(onMain { activityA.isFinishing })
+
+        val second = RecordingCallback()
+        val sessionB = openReader(plugin, second)
+        val tokenB = requireNotNull(sessionB.state.requireOk("B").getString(EpubContract.KEY_SESSION_TOKEN))
+        val launch = Intent(EpubActions.READER_ACTIVITY_ACTION)
+            .setClassName(context.packageName, ReadiumEpubReaderPlugin.ACTIVITY_CLASS_NAME)
+            .putExtra(EpubActions.EXTRA_SESSION_TOKEN, tokenB)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val monitor = instrumentation.addMonitor(EpubReaderActivity::class.java.name, null, false)
+        try {
+            // The host's launch flags: with A on top of its task the activity manager delivers the intent
+            // to A (onNewIntent) instead of creating an instance; A relaunches the session in a fresh one.
+            context.startActivity(launch)
+            // The monitor also fires when A resumes after onNewIntent (Instrumentation matches on resume,
+            // observed on API 28), so wait until a different instance shows up.
+            val deadline = SystemClock.uptimeMillis() + 15_000
+            var activityB: EpubReaderActivity? = null
+            while (activityB == null && SystemClock.uptimeMillis() < deadline) {
+                val candidate = monitor.waitForActivityWithTimeout(deadline - SystemClock.uptimeMillis()) as? EpubReaderActivity
+                if (candidate != null && candidate !== activityA) activityB = candidate
+            }
+            activityB ?: throw AssertionError("no fresh reader instance for B")
+            activities += activityB
+            val open = second.await("B open") { it.type == EpubContract.EVENT_OPEN }
+            assertTrue(open.bundle.getBoolean(EpubContract.KEY_VISIBLE))
+            await("A finished") { onMain { activityA.isFinishing || activityA.isDestroyed } }
+            assertTrue(first.snapshot().count { it.type == EpubContract.EVENT_CLOSE } == 1)
+            note("single-top host launch: A finished, B opened in a fresh instance")
+        } finally {
+            instrumentation.removeMonitor(monitor)
+        }
+        sessionB.close(options { putBoolean(EpubContract.KEY_FINISH, true) })
+        second.await("B closed") { it.type == EpubContract.EVENT_CLOSE }
+        writeNotes("reader-session-single-top")
+    }
+
     @Test
     fun refusalsCarryTheContractCodesAndLeakNothing() {
         val plugin = bind()

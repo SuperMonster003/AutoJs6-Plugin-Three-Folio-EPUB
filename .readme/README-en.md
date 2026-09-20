@@ -212,6 +212,7 @@ _2026/09/19_
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 - `Fix` A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues
 - `Fix` The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied
+- `Fix` A host session whose launch intent reaches a reader already on top of its task (single-top delivery, for example after a script left the reader open) opens in a fresh reader instead of waiting unclaimed until the 60 s timeout; the previous reader ends like a replaced one (roadmap P6.2)
 - `Dependency` Add Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `Dependency` Add `androidx.media3:media3-session` 1.11.0 (already pulled in by `readium-navigator-media-tts`; declared directly for the read-aloud foreground service)
 - `Dependency` Add `org.jsoup:jsoup` 1.23.2 (already pulled in by `readium-shared`; declared directly for the chapter text extraction of the EPUB service)
