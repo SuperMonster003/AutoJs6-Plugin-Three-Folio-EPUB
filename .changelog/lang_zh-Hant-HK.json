@@ -5,6 +5,15 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "依賴",
   "$data": {
+    "v1.1.0": {
+      "released_date": "2026/09/21",
+      "hint": [
+        "1.1.0 開發構建 (路線圖 P9): 高亮, 筆記與匯出正在開發中; 以下條目記錄已落地的部分"
+      ],
+      "dependency": [
+        "附加 `androidx.room:room-runtime` 2.8.1 (高亮與筆記資料庫, 路線圖 D4 / P9); `room-compiler` 僅在構建期經 KSP 執行"
+      ]
+    },
     "v1.0.0": {
       "released_date": "2026/09/21",
       "hint": [

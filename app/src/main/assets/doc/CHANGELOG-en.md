@@ -4,6 +4,13 @@
 
 ******
 
+# v1.1.0
+
+###### 2026/09/21
+
+* `Hint` Development build of 1.1.0 (roadmap P9): highlights, notes and export are under construction; the entries below record what has landed so far
+* `Dependency` Add `androidx.room:room-runtime` 2.8.1 (the highlights and notes database, roadmap D4 / P9); `room-compiler` runs through KSP at build time only
+
 # v1.0.0
 
 ###### 2026/09/21

@@ -5,6 +5,15 @@
   "changelog_label_improvement": "개선",
   "changelog_label_dependency": "의존성",
   "$data": {
+    "v1.1.0": {
+      "released_date": "2026/09/21",
+      "hint": [
+        "1.1.0 개발 빌드 (로드맵 P9): 하이라이트, 메모, 내보내기를 개발 중입니다. 아래 항목은 이미 반영된 부분을 기록합니다"
+      ],
+      "dependency": [
+        "`androidx.room:room-runtime` 2.8.1 추가 (하이라이트와 메모 데이터베이스, 로드맵 D4 / P9). `room-compiler` 는 빌드 시 KSP 를 통해서만 실행됩니다"
+      ]
+    },
     "v1.0.0": {
       "released_date": "2026/09/21",
       "hint": [

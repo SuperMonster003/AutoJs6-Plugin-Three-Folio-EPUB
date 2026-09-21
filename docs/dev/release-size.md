@@ -45,3 +45,14 @@
 ## 5. 预算
 
 原建议 "P0.2 基线 + 20%" (3,299,938 B) 在 P3 引入朗读 (media3-session, ~1 MB dex) 后只差 28,282 B (0.9%) 未达; 本阶段的三项削减是当前依赖集合下没有功能代价的全部选项, 剩下的 (发布历史页的 14 份 changelog 副本约 45 KB 压缩后, Readium 字体) 都有功能代价. 新预算: 3,500,000 B (P7.5 体积 + 5% 余量, 取整); 超出时先重看 §2 的保留项与 Readium 升级带来的差异 (D18), 而不是加 `-dontwarn` 或关闭 `isShrinkResources`.
+
+## 6. 1.1.0 (路线图 P9)
+
+P9.1 (2026-09-21) 附加 Room 2.8.1 (`room-runtime` 为运行时依赖, `room-compiler` 经 KSP 只在构建期运行), 按 AGENTS.md 的规则在同一提交记录 release 体积 (同一构建命令, 主树 `build/p9_commit.py verify 0` 的 `:app:assembleRelease`, R8 无缺失类告警):
+
+| 时点 | 体积 | 说明 |
+|---|---|---|
+| 1.0.0 发布 (`ca3044b`) | 3,340,340 | P8.3 发布门, GitHub Release `v1.0.0` 的资产 |
+| P9.1 (Room) | 3,391,961 | +51,621 B (1.5%); `classes.dex` 2,052,337 + `classes2.dex` 80,707 (压缩后), `assets` 302,465 (含 `v1.1.0` 的 changelog 副本), `resources.arsc` 515,036 不变, `lib/` 仍为空 |
+
+预算 3,500,000 B (§5) 的余量为 108,039 B (3.1%). Room 在 Android 上使用系统 SQLite (`androidx.sqlite` 的 framework 驱动), 不带原生库, §4 与 AGENTS.md 5.4 的零原生库结论不变 (APK 条目列表中无 `lib/`). P9.2 - P9.3 (阅读器交互, 导出) 只增加插件自身的类与资源, 预计仍在余量之内; P9.6 的发布门再记一次实际体积.

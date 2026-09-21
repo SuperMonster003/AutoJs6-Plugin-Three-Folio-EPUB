@@ -4,6 +4,13 @@
 
 ******
 
+# v1.1.0
+
+###### 2026/09/21
+
+* `Aviso` Compilación de desarrollo de 1.1.0 (hoja de ruta P9): los resaltados, las notas y la exportación están en desarrollo; las entradas siguientes registran lo que ya está listo
+* `Dependencia` Se añade `androidx.room:room-runtime` 2.8.1 (la base de datos de resaltados y notas, hoja de ruta D4 / P9); `room-compiler` solo se ejecuta mediante KSP durante la compilación
+
 # v1.0.0
 
 ###### 2026/09/21

@@ -55,6 +55,12 @@ the components themselves embed.
 - Source: <https://github.com/JetBrains/kotlin>, <https://github.com/Kotlin/kotlinx.coroutines>
 - License: Apache License 2.0
 
+## AndroidX Room
+
+- Component: `androidx.room:room-runtime` 2.8.1 (the highlights and notes database of roadmap P9 / D4; `room-common`, `androidx.sqlite:sqlite` and `androidx.sqlite:sqlite-framework` come with it). `androidx.room:room-compiler` is an annotation processor that runs through KSP at build time only and ships nothing in the APK
+- Source: <https://github.com/androidx/androidx> (`room/`, tag `room-2.8.1`)
+- License: Apache License 2.0
+
 ## AndroidX and Material Components
 
 - Component: `androidx.activity:activity-ktx`, `androidx.appcompat:appcompat`, `androidx.constraintlayout:constraintlayout`, `androidx.core:core-ktx`, `androidx.databinding:viewbinding` (the generated view binding classes), `androidx.fragment:fragment-ktx`, `androidx.lifecycle:lifecycle-runtime-ktx`, `androidx.lifecycle:lifecycle-viewmodel-ktx`, `androidx.webkit:webkit`, `com.google.android.material:material`

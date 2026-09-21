@@ -4,6 +4,13 @@
 
 ******
 
+# v1.1.0
+
+###### 2026/09/21
+
+* `Note` Version de développement 1.1.0 (feuille de route P9): les surlignages, les notes et l'export sont en cours; les entrées ci-dessous décrivent ce qui est déjà en place
+* `Dépendance` Ajout de `androidx.room:room-runtime` 2.8.1 (la base de données des surlignages et des notes, feuille de route D4 / P9); `room-compiler` ne s'exécute que via KSP à la compilation
+
 # v1.0.0
 
 ###### 2026/09/21

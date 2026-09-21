@@ -11,6 +11,7 @@ plugins {
     id("org.autojs.build.signs")
     id("org.autojs.build.jvm-convention")
     id("com.android.application")
+    id("com.google.devtools.ksp")
 }
 
 val globalApplicationId = "io.github.supermonster003.autojs6.plugin.readium.epub.reader"
@@ -127,6 +128,11 @@ val explorerActionApiSha256 =
 
 require(explorerActionApiSha256.lowercase() == hostApiLock.requiredValue("explorer-action-api.sha256").lowercase()) {
     "gradle/explorer-action-compatibility.properties and locks/host-api-aars.lock disagree about explorer-action-api.aar"
+}
+
+// Room exports the schema of every database version so a later migration can be checked against it.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 android {
@@ -296,6 +302,9 @@ dependencies {
     // Jsoup is already on the runtime classpath through readium-shared; declared directly for the XHTML
     // block walk behind the chapter text of the EPUB service (roadmap P5.2 / D30).
     implementation(libs.jsoup)
+    // Room keeps the highlights and notes (roadmap P9 / D4): one table keyed by the book fingerprint.
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)

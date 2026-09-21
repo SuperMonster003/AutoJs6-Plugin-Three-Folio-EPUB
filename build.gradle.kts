@@ -8,6 +8,8 @@
 //  ! 它们的 plugins 块只接受字符串字面量, 无法写入运行时计算出的版本.
 plugins {
     id("com.android.application") version System.getProperty("gradle.agp.version") apply false
+    // Room's annotation processor for the highlights database (roadmap P9 / D4); the version comes from the platform plugin like AGP's.
+    id("com.google.devtools.ksp") version System.getProperty("gradle.ksp.version") apply false
 }
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.

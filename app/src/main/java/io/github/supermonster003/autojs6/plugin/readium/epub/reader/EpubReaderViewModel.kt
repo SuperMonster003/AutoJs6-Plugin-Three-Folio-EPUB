@@ -10,6 +10,10 @@ import android.provider.OpenableColumns
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationAddResult
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationDatabase
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpenError
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpener
@@ -47,11 +51,16 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsPrefe
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -120,6 +129,10 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     private val store = BookDataStore.forFilesDirectory(application.filesDir)
     private val storeMutex = Mutex()
+
+    /** The highlights and notes (roadmap P9 / D4): one Room table for every book, observed per key. */
+    private val annotationStore = AnnotationStore(AnnotationDatabase.get(application))
+    private val bookKeyState = MutableStateFlow<String?>(null)
 
     private val preferencesStore = ReaderPreferencesStore.forFilesDirectory(application.filesDir)
     private val preferencesMutex = Mutex()
@@ -200,6 +213,12 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     /** The bookmarks of the open book in creation order (roadmap P2.6). */
     val bookmarks: StateFlow<List<Bookmark>> get() = _bookmarks
 
+    /** The highlights and notes of the open book (roadmap P9), live from the database; empty without a book. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val annotations: StateFlow<List<BookAnnotation>> = bookKeyState
+        .flatMapLatest { key -> if (key == null) flowOf(emptyList()) else annotationStore.observe(key) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     init {
         // The first run after the pre-P2.1 builds adopts the old scroll toggle so an update keeps
         // the user's choice; a corrupt file (exists but unreadable) falls back to the defaults.
@@ -221,10 +240,13 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     var lastLocator: Locator? = null
         private set
 
-    /** The quick key until the full fingerprint replaces it. */
+    /** The quick key until the full fingerprint replaces it; the highlights list follows it (roadmap P9). */
     @Volatile
     var bookKey: String? = null
-        private set
+        private set(value) {
+            field = value
+            bookKeyState.value = value
+        }
 
     /** Evidence for roadmap P1.3: how long the full-file hash took and over how many bytes. */
     @Volatile
@@ -289,6 +311,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         searchSession.attach(publication)
         navigatorFactory = EpubNavigatorFactory(publication)
         bookKey = initialKey
+        pruneEvictedAnnotations(initialKey)
         // Roadmap D26: a voice still reading this book in the background comes back to the reader, which opens where it speaks.
         val speaking = tts.adoptSpeaking(initialKey)
         lastLocator = speaking?.location?.value?.locator ?: savedLocator ?: storedProgress?.let { Locator.fromJSON(it.locator) }
@@ -358,6 +381,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         searchSession.attach(publication)
         navigatorFactory = EpubNavigatorFactory(publication)
         bookKey = stored.key
+        pruneEvictedAnnotations(stored.key)
         // The place the host named wins over the stored position; a target that no longer resolves falls back to it.
         val start = handover.target?.let { target -> runCatching { session.resolveStart(target) }.getOrNull() }
         lastLocator = start ?: stored.progress?.let { Locator.fromJSON(it.locator) }
@@ -451,6 +475,8 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
                     store.writeAlias(quickKey, fullKey)
                     bookKey = fullKey
                     recentUri?.let { uri -> runCatching { recentStore.update(uri) { it.copy(key = fullKey) } } }
+                    // The highlights move with the key (roadmap P9); rows the full key already has win on the same place.
+                    if (current != fullKey) runCatching { annotationStore.migrate(current, fullKey) }
                     // The full fingerprint may already hold bookmarks this open did not see (its
                     // alias was missing): unite them with the ones in memory, memory first.
                     val onDisk = store.readBookmarks(fullKey)
@@ -698,6 +724,41 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         val snapshot = _bookmarks.value
         persistScope.launch {
             storeMutex.withLock { bookKey?.let { key -> runCatching { store.writeBookmarks(key, snapshot) } } }
+        }
+    }
+
+    // ---- Highlights and notes (roadmap P9) ----
+
+    /**
+     * Highlights [locator] (the navigator's selection locator as JSON) in [style] and [color], with
+     * an optional [note]; a place the book already annotated is restyled instead. The store applies
+     * the caps. Taken under the store mutex so the key cannot migrate underneath the insert.
+     */
+    suspend fun addAnnotation(locator: JSONObject, style: String, color: Int, note: String?, chapter: String?): AnnotationAddResult =
+        storeMutex.withLock {
+            val key = bookKey ?: return@withLock AnnotationAddResult.Invalid
+            annotationStore.add(
+                BookAnnotation(bookKey = key, href = "", locator = locator.toString(), style = style, color = color, note = note, chapter = chapter, createdAt = System.currentTimeMillis()),
+            )
+        }
+
+    /** Replaces the style, colour, note and quote of the stored row with [annotation]'s; null when the row is gone. */
+    suspend fun updateAnnotation(annotation: BookAnnotation): BookAnnotation? = annotationStore.update(annotation)
+
+    /** Removes the annotation with [id]; false when there is none. */
+    suspend fun deleteAnnotation(id: Long): Boolean = annotationStore.delete(id)
+
+    /** Removes every highlight and note of the open book; returns how many. */
+    suspend fun clearAnnotations(): Int = storeMutex.withLock { bookKey?.let { annotationStore.clearBook(it) } ?: 0 }
+
+    /**
+     * Books the store evicted (LRU, D13) lose their highlights too. Runs once per open, in the
+     * background; the book opening now is kept whatever the state of its directory.
+     */
+    private fun pruneEvictedAnnotations(current: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val kept = storeMutex.withLock { store.bookKeys() } + listOfNotNull(current)
+            runCatching { annotationStore.retainOnly(kept) }
         }
     }
 

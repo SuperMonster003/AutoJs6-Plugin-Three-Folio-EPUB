@@ -5,6 +5,15 @@
   "changelog_label_improvement": "تحسين",
   "changelog_label_dependency": "تبعية",
   "$data": {
+    "v1.1.0": {
+      "released_date": "2026/09/21",
+      "hint": [
+        "إصدار تطويري 1.1.0 (خارطة الطريق P9): التمييزات والملاحظات والتصدير قيد التطوير; البنود أدناه تسجل ما اكتمل حتى الآن"
+      ],
+      "dependency": [
+        "إضافة `androidx.room:room-runtime` 2.8.1 (قاعدة بيانات التمييزات والملاحظات, خارطة الطريق D4 / P9); يعمل `room-compiler` عبر KSP في وقت البناء فقط"
+      ]
+    },
     "v1.0.0": {
       "released_date": "2026/09/21",
       "hint": [

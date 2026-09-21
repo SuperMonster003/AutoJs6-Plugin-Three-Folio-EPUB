@@ -2,6 +2,8 @@
 
 # Readium Kotlin Toolkit (roadmap D2 / D18). Upgrading requires the full P0.2 checklist again.
 readium = "3.4.0"
+# Room for the highlights and notes database (roadmap P9 / D4); the same version the AutoJs6 host uses.
+room = "2.8.1"
 
 # AndroidX versions match the ones the Readium navigator already pulls in transitively so that
 # Gradle resolution never downgrades a Readium requirement.
@@ -61,6 +63,8 @@ media3-session = { module = "androidx.media3:media3-session", version.ref = "med
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 org-json = { module = "org.json:json", version.ref = "org-json" }
 readium-navigator = { module = "org.readium.kotlin-toolkit:readium-navigator", version.ref = "readium" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 readium-navigator-media-tts = { module = "org.readium.kotlin-toolkit:readium-navigator-media-tts", version.ref = "readium" }
 readium-shared = { module = "org.readium.kotlin-toolkit:readium-shared", version.ref = "readium" }
 readium-streamer = { module = "org.readium.kotlin-toolkit:readium-streamer", version.ref = "readium" }
