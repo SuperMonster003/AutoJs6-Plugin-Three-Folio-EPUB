@@ -39,6 +39,7 @@
 * `수정` `search` 한 페이지는 플러그인 쪽에서 50초로 제한되며, 거대한 책 (50 000개 리소스) 의 뒷부분에서만 일치하는 쿼리에는 `TIMEOUT`을 답합니다. Binder 스레드가 호스트 자체의 60초 호출 타임아웃을 지나서도 바쁜 상태로 남지 않습니다 (로드맵 P7.1)
 * `수정` 리더에서 Readium이 만드는 모든 페이지 WebView는 이제 Readium 자체 설정 위에 경계를 가집니다: 파일 시스템과 콘텐츠 제공자 접근을 막고, file URL의 두 교차 출처 스위치를 끄며, JavaScript는 Readium을 위해 켜진 채로 둡니다 (로드맵 D6). WebView, 컨테이너, 컴포넌트 경계 검토는 `docs/dev/security-boundaries.md`에 기록되어 있습니다 (로드맵 P7.2)
 * `수정` 리더 프로세스가 처리되지 않은 예외로 죽을 때, 시스템 자체의 충돌 처리가 실행되기 전에 현재 읽기 위치를 먼저 동기적으로 디스크에 씁니다. 플러그인 자체는 로그를 쓰지 않고 Timber 트리도 심지 않으므로 책 제목, 경로, 본문이 logcat에 나타나지 않습니다 (로드맵 P7.7)
+* `개선` 릴리스 APK 크기: Readium이 내비게이터 애셋에 함께 넣는 DiViNa 플레이어 (427 KB, EPUB 리더에서는 쓰이지 않음) 를 병합 애셋에서 제외하고 플러그인 패키지 전체 keep 규칙도 없앴으므로 R8이 플러그인 자체 클래스도 줄입니다. 릴리스 APK는 P5 이후 3,922,786 B에서 3,328,220 B가 되었습니다 (로드맵 P7.5, 자세한 내용은 `docs/dev/release-size.md`)
 * `의존성` Readium Kotlin Toolkit 3.4.0 추가 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 * `의존성` `androidx.media3:media3-session` 1.11.0 추가 (`readium-navigator-media-tts`가 이미 간접적으로 가져옴. 읽어 주기 포그라운드 서비스를 위해 직접 선언)
 * `의존성` `org.jsoup:jsoup` 1.23.2 추가 (`readium-shared`가 이미 간접적으로 가져옴. EPUB 서비스의 장 텍스트 추출을 위해 직접 선언)

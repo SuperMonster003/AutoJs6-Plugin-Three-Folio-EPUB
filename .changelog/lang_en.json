@@ -48,6 +48,9 @@
         "One `search` page is bounded to 50 s on the plugin side and answers `TIMEOUT` when the query only matches late in a huge book (50 000 resources), so the Binder thread no longer stays busy past the host's own 60 s call timeout (roadmap P7.1)",
         "Every page WebView Readium creates in the reader now carries a boundary on top of Readium's own settings: no file-system or content-provider access and both file-URL cross-origin switches off, while JavaScript stays on for Readium (roadmap D6); the review of the WebView, container and component boundaries is recorded in `docs/dev/security-boundaries.md` (roadmap P7.2)",
         "If the reader process dies from an uncaught exception, the current reading position is written to disk first, synchronously, before the system's own crash handling runs; the plugin itself writes no logs and plants no Timber tree, so no book title, path or text ever reaches logcat (roadmap P7.7)"
+      ],
+      "improvement": [
+        "Release APK size: the DiViNa player Readium ships in its navigator assets (427 KB, never used by an EPUB reader) is left out of the merged assets and the blanket keep rule for the plugin package is gone, so R8 shrinks the plugin's own classes too; the release APK goes from 3,922,786 B after P5 to 3,328,220 B (roadmap P7.5, details in `docs/dev/release-size.md`)"
       ]
     }
   }

@@ -174,6 +174,19 @@ android {
         abortOnError = true
     }
 
+    androidResources {
+        // Roadmap P7.5: Readium ships its DiViNa player (427 KB) in the navigator assets; the plugin renders
+        // EPUB only, so the merged assets leave that directory out. The other patterns are AGP's own
+        // defaults, repeated because a non-empty list replaces them.
+        ignoreAssetsPatterns.addAll(
+            listOf("!.svn", "!.git", "!.ds_store", "!*.scc", ".*", "<dir>_*", "!CVS", "!thumbs.db", "!picasa.ini", "!*~", "<dir>divina"),
+        )
+        // Roadmap P7.5: the libraries translate their strings into ~85 locales; only the ten the plugin itself
+        // ships (locales_config.xml, plus the zh-rCN spelling the libraries use for Simplified Chinese) stay in
+        // the resource table.
+        localeFilters.addAll(listOf("ar", "en", "es", "fr", "ja", "ko", "ru", "zh", "zh-rCN", "zh-rHK", "zh-rTW"))
+    }
+
     signingConfigs {
         if (signs.isValid) {
             create(buildTypeRelease) {

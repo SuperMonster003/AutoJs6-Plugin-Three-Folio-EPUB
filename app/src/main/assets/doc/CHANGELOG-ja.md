@@ -39,6 +39,7 @@
 * `修正` `search` の 1 ページはプラグイン側で 50 秒に制限され, 巨大な本 (50 000 リソース) の後方でしか一致しないクエリには `TIMEOUT` を返します. Binder スレッドがホスト自身の 60 秒の呼び出しタイムアウトを過ぎても忙しいままになることはなくなりました (ロードマップ P7.1)
 * `修正` リーダーで Readium が作成するすべてのページ WebView は, Readium 自身の設定に加えて境界を持つようになりました: ファイルシステムとコンテンツプロバイダーへのアクセスを禁止し, file URL の 2 つのクロスオリジンスイッチをオフにし, JavaScript は Readium のために有効のままです (ロードマップ D6). WebView, コンテナ, コンポーネントの境界レビューは `docs/dev/security-boundaries.md` に記録されています (ロードマップ P7.2)
 * `修正` リーダーのプロセスが未処理の例外で終了する場合, システム自身のクラッシュ処理が走る前に現在の読書位置を同期的にディスクへ書き込みます. プラグイン自体はログを書かず Timber のツリーも植えないため, 本のタイトル, パス, 本文が logcat に出ることはありません (ロードマップ P7.7)
+* `改善` リリース APK のサイズ: Readium がナビゲーターのアセットに同梱する DiViNa プレイヤー (427 KB, EPUB リーダーでは使われない) をマージ後のアセットから除外し, プラグインパッケージ全体の keep ルールも削除したため, R8 がプラグイン自身のクラスも縮小できるようになりました. リリース APK は P5 後の 3,922,786 B から 3,328,220 B になりました (ロードマップ P7.5, 詳細は `docs/dev/release-size.md`)
 * `依存関係` Readium Kotlin Toolkit 3.4.0 を追加 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 * `依存関係` `androidx.media3:media3-session` 1.11.0 を追加 (`readium-navigator-media-tts` が間接的に導入済み. 読み上げのフォアグラウンドサービスのために直接宣言)
 * `依存関係` `org.jsoup:jsoup` 1.23.2 を追加 (`readium-shared` が間接的に導入済み. EPUB サービスの章テキスト抽出のために直接宣言)
