@@ -8,7 +8,7 @@
     "v1.1.0": {
       "released_date": "2026/09/21",
       "hint": [
-        "Development build of 1.1.0 (roadmap P9): highlights, notes and export are under construction; the entries below record what has landed so far"
+        "1.1.0 closes roadmap P9 (highlights, notes and export): the reader highlights and annotates selected text, lists the highlights in a panel and exports them as Markdown; EPUB contract version 2 lets hosts that carry it read the highlights with `book.annotations()` and hear `highlight` events, while AutoJs6 6.8.0 (build 5282) keeps working with contract version 1"
       ],
       "feature": [
         "Highlights and notes in the reader (roadmap P9.2): the text-selection toolbar highlights the passage with the last chosen colour or opens the note editor (highlight / underline, five colours, note), highlights render in the page and a tap on one reopens its editor, the \"Highlights and notes\" panel lists them by chapter in reading order with jump / edit / delete / clear all, and the settings page shows and clears the stored highlights",

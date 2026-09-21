@@ -83,3 +83,17 @@
 - 朗读只在有引擎的真机验证; AVD 上的朗读用例以 assumption 跳过 (AVD API 24: 引擎存在但不可用, 走新的超时路径; 其它 AVD: 无引擎).
 - 键盘 / 音量键场景要求前台没有其它应用的可聚焦悬浮窗 (宿主的悬浮窗即会拦截); 这是注入按键的测试限制, 真实用户按键由系统按焦点窗口分发, 阅读器在前台且有焦点时行为一致.
 - 整包运行使用的 APK 早于本阶段后续的修复 (缺陷 1 - 3 与测试修正), 失败用例均以修后 APK 单独复跑通过或以 assumption 记录; 未失败的用例没有再跑第二遍.
+
+## 5. 1.1.0 增量运行 (路线图 P9)
+
+P9 只增加阅读器内的高亮 / 笔记 / 导出与契约版本 2 的服务侧路径, 不触及与 API 级别相关的分支, 因此按 §1 设备池中的 API 下限 (AVD API 24) 与一台真机 (Redmi 12C API 33, 装有宿主 6.8.0 build 5282) 跑 P9 的证据类; 其余设备本阶段未复跑 (Sony G8441 与 AVD API 37 被邮件插件会话的矩阵占用, Pad 仍锁屏, 其它 AVD 无 P9 特有路径).
+
+| 阶段 | 用例类 | AVD API 24 | Redmi 12C API 33 |
+|---|---|---|---|
+| P9.1 存储 | `AnnotationStoreInstrumentationTest` | 4 / 4 | 4 / 4 (另 `EpubReaderBookmarksInstrumentationTest` + `EpubReaderProgressInstrumentationTest` 回归 8 / 8) |
+| P9.2 阅读器 | `EpubReaderAnnotationsInstrumentationTest` + `EpubReaderControlsInstrumentationTest` (Redmi 另含 `EpubReaderSettingsInstrumentationTest`) | 5 / 5 | 9 / 9 |
+| P9.3 导出 | `EpubReaderAnnotationExportInstrumentationTest` + `EpubReaderAnnotationsInstrumentationTest` | 3 / 3 | 3 / 3 |
+| P9.4 契约版本 2 | `PluginContractInstrumentationTest`, `service/PluginServiceInstrumentationTest`, `service/HostileInputInstrumentationTest`, `service/ReaderSessionInstrumentationTest` | 22 / 22 | 22 / 22 |
+| P9.4 版本 1 宿主 | `build/p94_legacy_host.py` (宿主 5282 经 `epub` 脚本 API 走提取, 搜索与阅读器会话) | - | 通过 (`book.annotations` 为 undefined, 无 `highlight` 事件, 会话事件照常) |
+
+P9.4 首轮的 4 例失败均为用例期望 (Room 运行时清单把 `androidx.room.MultiInstanceInvalidationService` 加进包内服务集合, 带显示名的打开请求缺版本键, 直接写库的行缺 `quote` 列, 黄色的十六进制值), 修正后两台设备 22 / 22 (`build/p73-evidence-<serial>/p94b-results.txt`). 证据文件 (均不入库): `build/p9-evidence-<serial>/p9-evidence/` (选择工具条 / 面板 / 编辑器截图, `annotations-api<N>.txt`, `annotations-export-api<N>.md`), `build/p2-evidence-<serial>/p2-evidence/service-annotations-api<N>.txt` 与 `reader-session-highlights-api<N>.txt`, `build/p94-legacy-host-bek749scrwv4wo8h/console.log`.

@@ -75,7 +75,7 @@ Readium Kotlin Toolkit `3.4.0` (2026-09-11, BSD-3-Clause, minSdk 24), 平台版�
 
 范围内但在 1.0.0 之后交付:
 
-- 高亮, 笔记与导出 (P9, 目标 1.1.0).
+- 高亮, 笔记与导出 (P9, 1.1.0; 2026-09-21 交付, 见 P9).
 
 非目标 (本 Roadmap 不处理):
 
@@ -506,9 +506,12 @@ P1 验收状态 (2026-09-19): JVM 58 / 58, AVD API 24 instrumentation 23 / 23, �
 
 ## P9: 高亮, 笔记与导出 (1.1.0)
 
-- [ ] (插件) Room 数据库 `annotations` (指纹, locator JSON, 颜色, 笔记文本, 时间), 选择文本后的高亮 / 笔记动作, decorations 渲染, 列表面板 (跳转 / 编辑 / 删除), 导出为 Markdown (经系统分享或保存到用户选择的目录).
-- [ ] (宿主) `EpubReaderSession` 新增 `highlight` 事件与 `book.annotations()` 只读 (契约版本 2, 末尾追加方法).
-- [ ] (测试/文档) JVM + instrumentation + 文档 / d.ts 同步, `v1.1.0` changelog.
+- [x] (插件) Room 数据库 `annotations` (指纹, locator JSON, 颜色, 笔记文本, 时间), 选择文本后的高亮 / 笔记动作, decorations 渲染, 列表面板 (跳转 / 编辑 / 删除), 导出为 Markdown (经系统分享或保存到用户选择的目录). 证据: P9.1 `f5b6429` (build 69): `annotations/` 包 (Room 2.8.1 `AnnotationDatabase` 单表 `annotations`, `AnnotationStore`, `BookAnnotation`, `AnnotationPolicy` 每本书 2000 条与快速别名到完整指纹的迁移合并, `AnnotationJson` 契约 JSON), JVM `AnnotationPolicyTest` 8 / `AnnotationJsonTest` / `BookFingerprintTest` 4; DEVICE `AnnotationStoreInstrumentationTest` 4 用例 (Redmi 12C API 33, AVD API 24), 书签 / 进度回归 8 用例 (Redmi). P9.2 `766f87e` (build 70): 文本选择工具条 `reader/SelectionActions` (高亮 / 下划线, 四色, `AnnotationDialog` 笔记编辑器), decorations 渲染, "高亮与笔记" 面板 `AnnotationSheet` (`AnnotationListing` 按阅读顺序分组, 跳转 / 编辑 / 删除 / 全部清除), 设置页存储条目; DEVICE `EpubReaderAnnotationsInstrumentationTest` + 控制 / 设置回归: Redmi 9 用例, AVD API 24 5 用例 (`build/p9-evidence-<serial>/p9-evidence/selection-*.png`, `annotations-*.png`, `annotations-api<N>.txt`: 添加 106 ms, 重启后保留, 清除后库为空). P9.3 `0a8a760` (build 71): `AnnotationMarkdown` (阅读顺序, 章节为二级标题, 引用 + 笔记 + 时间) 与 `reader/AnnotationExport` (`ACTION_SEND` 分享文本, `ACTION_CREATE_DOCUMENT` 另存为 `.md`); JVM `AnnotationMarkdownTest` 3 / `MarkdownLiteTest` 4 / `AnnotationListingTest` 2; DEVICE `EpubReaderAnnotationExportInstrumentationTest` 3 用例 (Redmi, AVD API 24; `annotations-export-api<N>.md` 215 B, 21 行, 2 个标题, 文件名 `Minimal EPUB 3.md`).
+- [x] (宿主) `EpubReaderSession` 新增 `highlight` 事件与 `book.annotations()` 只读 (契约版本 2, 末尾追加方法). 证据: P9.4 宿主 `603bd4a4f` (`plugin-api/epub-api` 契约版本 2: `IEpubBook.getAnnotations` 末尾追加, `EpubContract` 的注解字段 / `EVENT_HIGHLIGHT` / `CHANGE_UPDATED` / 样式 / 四个上限, `EpubCapabilityKeys.MAX_CONTRACT_VERSION`; 宿主客户端 `EpubPeer` 协商 (基线与最新取最小的公共版本, 写进每个请求), `EpubBookClient.annotations` 分页, `EpubPluginHost.peerOf`; 脚本 `book.annotations()` / `epub.annotations(path)` 及 `Async`, `EpubReaderSession` 的 `highlight` 事件; 模块测试 9, app epub 包 57 用例; 协议文档与集成文档更新; 宿主按约定不推送, 简体中文 changelog 行留给维护者). 插件 `0222363` (build 72): `libs/epub-api.aar` 重锁 (sha256 `20cbec07...6226`, `THIRD_PARTY_NOTICES.md` / `libs/README.md` / 锁文件同步), `service/ContractVersions` (对外基线 1, 最新 2, 按打开请求协商并贯穿书籍 / 会话生命期), `EpubBookBinder.getAnnotations` (阅读顺序, 分页, 字节上限, 版本 1 的书籍答 `INVALID_ARGUMENT`), `ReaderSession.updateAnnotations` 按 id 差分成 `highlight` 事件 (只发给版本 2 宿主), 能力五键; JVM `ContractVersionsTest` 3 / `LimitsTest` 9 / `AnnotationJsonTest` 3 / `PluginRuntimeInfoTest` 4; DEVICE 契约 / 服务 / 敌意输入 / 会话四类 22 用例 (Redmi API 33, AVD API 24; `service-annotations-api<N>.txt`, `reader-session-highlights-api<N>.txt`); 版本 1 宿主 (Redmi 的 6.8.0 build 5282) 经脚本走完提取 / 搜索 / 阅读器会话且 `book.annotations` 为 undefined (`build/p94_legacy_host.py`); release 3,443,123 B (`docs/dev/release-size.md` §6).
+- [x] (测试/文档) JVM + instrumentation + 文档 / d.ts 同步, `v1.1.0` changelog. 证据: JVM 257 用例 (`:app:testDebugUnitTest`), instrumentation 见上两项与 `docs/dev/compatibility-matrix.md` §5; `v1.1.0` changelog 10 语言 (3 条 feature, 2 条 dependency, 发布提示); P9.5 文档同步: Documentation `5c6e1e0` (`api/epub.md` / `epubBookType.md` / `epubReaderSessionType.md` / `epubLocatorType.md` 的 `annotations` 与 `highlight`, 生成物与离线搜索索引) + `b6fd71e` (versionCode 73); Declarations `27804ed` (4.19.0: `annotations` / `annotationsAsync`, `Internal.Epub.Annotation` / `AnnotationStyle` / `HighlightEvent`, smoke 用例经 tsc 通过); 宿主 `cb5c0f2b8` (`tools/ace-completion/autojs6_indices.source.json`); Ace `38cf931` (1.12.0 build 108, 内置声明刷新与索引再生成, 四个校验脚本与补全器测试通过); Offline-Docs `28873bc` (build 53, 来源基线 `5c6e1e0`, `verifyOfflineDocsApks` 与单元测试通过). 关联仓库与宿主均未推送. P9.6 (build 73): README 10 语言 `p_status` / `p_roadmap`, `plugin_instruction.md` 11 份, changelog 发布提示, 兼容矩阵 §5, 发布 gate 见验收结论.
+- [ ] (发布) 1.1.0: GitHub Release `v1.1.0` (签名 APK + 变更摘要) 与 `AutoJs6-Official-Plugins-Index` 准入清单 `<versionCode>.json`; 维护者确认后执行 (流程同 P8.4 / P8.5: `build/p84_release.py`, `build/p85_manifest.py`).
+
+验收: JVM 与 instrumentation 通过; 文档 / d.ts / Ace / 离线文档已同步且版本号已更新; 1.1.0 发布 gate (P8.3 同一清单) 通过, 版本 1 宿主不受影响.
 
 ---
 
@@ -989,3 +992,18 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 - 附带发现 7 (安装静默失败): `adb install -r -t` 覆盖安装 androidTest APK 时若失败只在输出里报一行, 复跑前须核对 `dumpsys package <pkg>.test` 的 `lastUpdateTime`; 首轮 Sony 复跑因此跑的是旧用例.
 - 附带发现 6 (插件中心不可从 shell 启动): 宿主 `PluginCenterActivity` 未导出, `am start` 被拒 (Permission Denial); 验证改为宿主内脚本 `build/p85-center.js` 经 `RunIntentActivity` 启动, 宿主缓存 `files/plugin_center/autojs6_plugin_index_v9.json` 用 `adb exec-out run-as` 读出核对.
 - 下一步: P9 (高亮, 笔记, 导出) 规划; Pad 解锁后补跑界面类; P0.3 外部样本仍待网络许可.
+
+### 2026-09-21 (P9)
+
+- P9.1 (`f5b6429` build 69): Room 2.8.1 `annotations.db` 与 `annotations/` 包, 指纹键与迁移合并, 契约 JSON; 存储用例两台设备通过; release 3,391,961 B.
+- P9.2 (`766f87e` build 70): 选择工具条, 笔记编辑器, decorations, "高亮与笔记" 面板, 设置页存储条目; 阅读器用例 Redmi 9 / AVD API 24 5 通过.
+- P9.3 (`0a8a760` build 71): Markdown 导出 (分享 / 另存为); 导出用例两台设备通过.
+- P9.4 (宿主 `603bd4a4f`; 插件 `0222363` build 72): 契约版本 2 (`getAnnotations`, `highlight`, 协商), AAR 重锁, 能力五键; 四类服务用例 22 / 22 两台设备, 版本 1 宿主脚本检查通过; release 3,443,123 B.
+- P9.5 (Documentation `5c6e1e0` + `b6fd71e`; Declarations `27804ed`; 宿主 `cb5c0f2b8`; Ace `38cf931`; Offline-Docs `28873bc`): 文档 / d.ts / Ace / 离线文档同步, 均未推送.
+- 附带发现 1 (Room 清单服务): `room-runtime` 的清单向包内注入不导出的 `androidx.room.MultiInstanceInvalidationService`, 契约用例的服务集合从四个变为五个, `docs/dev/security-boundaries.md` §4 记录.
+- 附带发现 2 (Rhino 整数): 契约 JSON 里能放进 Int 的整值 (如 `id`) 到脚本是整数而非 double (宿主 `EpubScriptValues.number` 的既有规则), 宿主用例断言据此修正.
+- 附带发现 3 (指纹迁移与事件): 快速别名到完整指纹的迁移把行在两个键之间移动, 若只按当前键过滤 `observeAll` 会产生假的 removed / added; 视图模型以该书历经的全部键 (`announcedBookKeys`) 过滤, 会话按 id 差分并以 bookKey 无关的比较判定 updated.
+- 附带发现 4 (宿主简体中文 changelog): 维护者在 `4a47bf28e` 手工归并了简体中文 changelog 的 v6.8.0 条目, P6.3 锚点不复存在; 本阶段的简体中文行留给维护者, 其余九种语言按 HEAD + 本行单独暂存 (`build/p94_host_stage.py`), 不混入邮件插件会话未提交的行.
+- 附带发现 5 (Ace 导入脚本的副作用): `import-autojs6-dts.mjs` 整目录同步声明仓库, 会把邮件插件会话已提交的 `aj6-int-mail.d.ts` 与声明仓库未提交的 `package.json` 改动一并带入内置目录; 回退这两处后再生成, Ace 提交只含 epub.
+- 附带发现 6 (文档生成物滞后): 文档仓库 `95ee9c8` 只提交了邮件页面的 Markdown, 生成的 HTML / JSON 落后; 本阶段的全量生成一并刷新并入 `5c6e1e0` (已告知邮件插件会话).
+- 附带发现 7 (补丁脚本重入): `build/p94_plugin.py` 的插入型编辑不幂等, 一次中断后的重跑把九个文件的插入重复了一遍 (编译报重复声明); 处理为 `git checkout HEAD -- <被补丁的文件>` 后只跑一次, 文件清单见 `build/p94_patched_files.lf`.

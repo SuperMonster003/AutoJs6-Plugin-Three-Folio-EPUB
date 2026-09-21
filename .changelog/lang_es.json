@@ -8,7 +8,7 @@
     "v1.1.0": {
       "released_date": "2026/09/21",
       "hint": [
-        "Compilación de desarrollo de 1.1.0 (hoja de ruta P9): los resaltados, las notas y la exportación están en desarrollo; las entradas siguientes registran lo que ya está listo"
+        "1.1.0 cierra la hoja de ruta P9 (resaltados, notas y exportación): el lector resalta y anota el texto seleccionado, lista los resaltados en un panel y los exporta como Markdown; la versión 2 del contrato EPUB permite a los anfitriones que la llevan leer los resaltados con `book.annotations()` y recibir eventos `highlight`, mientras que AutoJs6 6.8.0 (compilación 5282) sigue funcionando con la versión 1 del contrato"
       ],
       "feature": [
         "Resaltados y notas en el lector (hoja de ruta P9.2): la barra de selección de texto resalta el pasaje con el último color elegido o abre el editor de notas (resaltado / subrayado, cinco colores, nota); los resaltados se dibujan en la página y un toque vuelve a abrir su editor; el panel \"Resaltados y notas\" los lista por capítulo en orden de lectura con saltar / editar / eliminar / borrar todo; la página de ajustes muestra y borra los resaltados guardados",
