@@ -784,7 +784,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     private fun BookOpenError.toFailure(): OpenFailure = when (this) {
         is BookOpenError.NotAnEpub -> OpenFailure.NotAnEpub
         is BookOpenError.Protected -> OpenFailure.Protected
-        is BookOpenError.Retrieve, is BookOpenError.Open -> OpenFailure.Other(message)
+        is BookOpenError.Retrieve, is BookOpenError.Open, is BookOpenError.Malformed -> OpenFailure.Other(message)
     }
 
     private inline fun <T> ParcelFileDescriptor.withDuplicate(

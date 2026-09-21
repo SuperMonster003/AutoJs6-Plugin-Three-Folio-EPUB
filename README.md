@@ -213,6 +213,8 @@ _2026/09/19_
 - `修复` 阅读进度写入失败 (书籍目录被移除, 存储不可写) 不再让阅读器崩溃, 仅丢失该条记录并继续阅读
 - `修复` 宿主 AutoJs6 在阅读器读取其设置提供器时被停止或更新, 不再连带杀死阅读器; 该次读取只是失败, 不套用宿主的语言 / 夜间模式
 - `修复` 宿主会话的启动 intent 到达已位于任务栈顶的阅读器时 (single-top 投递, 例如脚本把阅读器留在前台后), 现在会在新的阅读器实例中打开, 而不是无人认领地等到 60 秒超时; 原阅读器像被替换时一样结束 (路线图 P6.2)
+- `修复` NCX / OPF 的 XML 被截断或格式错误的书籍现在会失败关闭: 服务回答 `PARSE_FAILED`, 阅读器显示打开失败面板, 而不是 `INTERNAL` 代码或因 Readium XML 解析器抛出的 `AssertionError` 而崩溃 (路线图 P7.1)
+- `修复` 单页 `search` 在插件侧限制为 50 秒, 查询只在超大书籍 (50 000 个资源) 的靠后位置命中时回答 `TIMEOUT`, Binder 线程不再在宿主自身的 60 秒调用超时之后继续忙碌 (路线图 P7.1)
 - `依赖` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `依赖` 附加 `androidx.media3:media3-session` 1.11.0 (`readium-navigator-media-tts` 已间接引入; 为朗读前台服务直接声明)
 - `依赖` 附加 `org.jsoup:jsoup` 1.23.2 (`readium-shared` 已间接引入; 为 EPUB 服务的章节文本提取直接声明)

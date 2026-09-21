@@ -1,6 +1,7 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.book
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.publication.protection.FallbackContentProtection
 import org.readium.r2.shared.publication.services.isRestricted
@@ -8,6 +9,8 @@ import org.readium.r2.shared.publication.services.protectionError
 import org.readium.r2.shared.util.Error
 import org.readium.r2.shared.util.FileExtension
 import org.readium.r2.shared.util.Try
+import org.readium.r2.shared.util.DebugError
+import org.readium.r2.shared.util.ThrowableError
 import org.readium.r2.shared.util.asset.AssetRetriever
 import org.readium.r2.shared.util.data.CompositeContainer
 import org.readium.r2.shared.util.data.Container
@@ -28,6 +31,16 @@ sealed class BookOpenError(val message: String, val cause: Error? = null) {
     class Retrieve(cause: Error) : BookOpenError(cause.message, cause)
 
     class Open(cause: Error) : BookOpenError(cause.message, cause)
+
+    /**
+     * Readium threw instead of answering a `Try` (its XML parser raises an `AssertionError` on a truncated
+     * NCX / OPF, an `Error` that its own catch-`Exception` wrappers let escape): the book fails closed as a
+     * malformed package instead of crashing the reader or the service (roadmap P7.1).
+     */
+    class Malformed(throwable: Throwable) : BookOpenError(
+        "Malformed EPUB package: " + (throwable.message?.takeIf { it.isNotBlank() } ?: throwable.javaClass.simpleName),
+        DebugError("Readium threw while opening the book", ThrowableError(throwable)),
+    )
 
     /** LCP / ADEPT-marked books: the fallback protection opens them as restricted, so they are refused. */
     class Protected(cause: Error?) :
@@ -63,7 +76,16 @@ class BookOpener(context: Context) {
      * [extraResources] (the imported fonts, roadmap P2.2) are composed after the book's own
      * container, so the navigator can fetch them from the publication host without any copy.
      */
-    suspend fun open(resource: Resource, extraResources: Container<Resource>? = null): Try<Publication, BookOpenError> {
+    suspend fun open(resource: Resource, extraResources: Container<Resource>? = null): Try<Publication, BookOpenError> =
+        try {
+            openOrThrow(resource, extraResources)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            Try.failure(BookOpenError.Malformed(e))
+        }
+
+    private suspend fun openOrThrow(resource: Resource, extraResources: Container<Resource>?): Try<Publication, BookOpenError> {
         val asset = assetRetriever.retrieve(resource, epubHints)
             .getOrElse { return Try.failure(BookOpenError.Retrieve(it)) }
         if (!asset.format.conformsTo(Specification.Epub)) {

@@ -173,7 +173,7 @@ class ReadiumEpubReaderPluginService : Service() {
     private fun codeOf(error: BookOpenError): String = when (error) {
         is BookOpenError.NotAnEpub, is BookOpenError.Retrieve -> EpubErrorCodes.NOT_EPUB
         is BookOpenError.Protected -> EpubErrorCodes.ENCRYPTED
-        is BookOpenError.Open -> EpubErrorCodes.PARSE_FAILED
+        is BookOpenError.Open, is BookOpenError.Malformed -> EpubErrorCodes.PARSE_FAILED
     }
 
     private companion object {

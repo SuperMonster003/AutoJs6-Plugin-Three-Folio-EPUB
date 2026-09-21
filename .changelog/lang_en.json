@@ -43,7 +43,9 @@
         "SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3",
         "A failed progress write (the book directory removed underneath the reader, storage not writable) no longer crashes the reader; that record is lost and reading continues",
         "The reader no longer dies together with the host when AutoJs6 is stopped or updated while its settings provider is being read; that read just fails and the host's language / night mode are not applied",
-        "A host session whose launch intent reaches a reader already on top of its task (single-top delivery, for example after a script left the reader open) opens in a fresh reader instead of waiting unclaimed until the 60 s timeout; the previous reader ends like a replaced one (roadmap P6.2)"
+        "A host session whose launch intent reaches a reader already on top of its task (single-top delivery, for example after a script left the reader open) opens in a fresh reader instead of waiting unclaimed until the 60 s timeout; the previous reader ends like a replaced one (roadmap P6.2)",
+        "A book whose NCX / OPF XML is truncated or otherwise malformed now fails closed: the service answers `PARSE_FAILED` and the reader shows its open-failed panel, instead of the `INTERNAL` code or a crash from the `AssertionError` that Readium's XML parser throws (roadmap P7.1)",
+        "One `search` page is bounded to 50 s on the plugin side and answers `TIMEOUT` when the query only matches late in a huge book (50 000 resources), so the Binder thread no longer stays busy past the host's own 60 s call timeout (roadmap P7.1)"
       ]
     }
   }

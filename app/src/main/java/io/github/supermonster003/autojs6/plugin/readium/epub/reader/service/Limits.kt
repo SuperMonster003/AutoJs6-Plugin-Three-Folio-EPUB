@@ -22,6 +22,12 @@ internal data class SearchRequest(val query: String, val offset: Int, val limit:
  */
 internal object Limits {
 
+    /**
+     * Time one `search` page may take on the plugin side; below the host's `CALL_TIMEOUT_MS` so the
+     * `TIMEOUT` answer reaches the host before it gives up on the Binder call (roadmap P7.1).
+     */
+    const val SEARCH_BUDGET_MS = EpubContract.CALL_TIMEOUT_MS - 10_000L
+
     fun href(raw: String?): String {
         val href = raw?.trim().orEmpty()
         if (href.isEmpty()) throw ContractViolation(EpubErrorCodes.INVALID_ARGUMENT, "href is missing")

@@ -12,6 +12,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.TocFlat
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchResultPager
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.search.SearchSource
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.autojs.plugin.epub.api.EpubContract
@@ -135,8 +136,11 @@ internal class EpubBookBinder(
             ?: throw ContractViolation(EpubErrorCodes.INTERNAL, "the publication is not searchable")
         val wanted = search.offset + search.limit
         val pager = SearchResultPager(ReadiumSearchSource(iterator), batchSize = wanted, limit = wanted)
+        // Readium scans the reading order resource by resource until the page is full; a query that matches
+        // late in a huge book must still answer before the host's own CALL_TIMEOUT_MS (roadmap P7.1).
         val hits = try {
-            pager.loadMore()
+            withTimeoutOrNull(Limits.SEARCH_BUDGET_MS) { pager.loadMore() }
+                ?: throw ContractViolation(EpubErrorCodes.TIMEOUT, "the search page took longer than ${Limits.SEARCH_BUDGET_MS} ms")
         } finally {
             pager.close()
         }

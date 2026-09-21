@@ -21,11 +21,22 @@ instrumentation tests read these files by name.
 | `malformed-many-entries.epub` | 2000 extra manifest and spine entries | Opens slowly but within limits; used for the P7 limit tests |
 | `malformed-high-ratio.epub` | One 64 MiB zero-filled resource (deflates to a few KiB) | Opens; reading the blob must stay bounded (P7 resource limits) |
 | `malformed-encrypted-lcp.epub` | `META-INF/encryption.xml` and `license.lcpl` declaring an LCP-protected chapter | Fails with a clear "protected" error (fallback content protection), never renders garbage |
+| `malformed-empty-zip.epub` | A valid ZIP archive with no entries (roadmap P7.1 hostile matrix) | Fails with a format error, no crash |
+| `malformed-missing-mimetype.epub` | EPUB 3 container without the `mimetype` entry | Opens (Readium sniffs `container.xml`) or fails gracefully; no crash |
+| `malformed-bad-opf.epub` | Package document cut in the middle of a tag | Fails with a parse error, no crash |
+| `malformed-xxe.epub` | OPF and chapter 1 declare external entities (a `file://` canary under the plugin's files directory, a loopback `http://` entity) and an internal entity | Opens or fails gracefully; the canary content never appears in the title, text or search results (external entities are not resolved) |
+| `malformed-traversal-encoded.epub` | Spine hrefs `%2e%2e/%2e%2e/escaped.txt`, `../../escaped.txt`, `/etc/hosts`, `file:///etc/hosts`, `..\..\escaped.txt`; ZIP entries `/abs/escaped.txt`, `..\escaped-win.txt`, `OEBPS/../escaped-dot.txt`, `escaped.txt` | Opens or fails gracefully; no href resolves outside the container, nothing is written to disk |
+| `malformed-long-names.epub` | One spine resource with a 3000-character name | Opens; the contract refuses the href with `LIMIT_EXCEEDED` (2048-character ceiling) |
+| `malformed-duplicate-entries.epub` | `OEBPS/chapter1.xhtml` stored twice with different text; manifest item and spine itemref repeated | Opens or fails gracefully; one copy is served deterministically |
+| `malformed-lcp-license-only.epub` | `META-INF/license.lcpl` without `encryption.xml` | Fails with the "protected" error (LCP marker) |
+| `malformed-encrypted-adept.epub` | `META-INF/encryption.xml` with an Adobe ADEPT resource key | Fails with the "protected" error (ADEPT marker) |
 | `vertical-ja.epub` | EPUB 3, `dc:language` `ja`, spine `page-progression-direction="rtl"`, publisher CSS `writing-mode: vertical-rl`, Japanese text | Opens; reads right to left (`ReadingProgression.RTL`, tap zones mirrored); vertical text through Readium's `cjk-vertical` layout, which forces scrolling; forcing horizontal text leaves it vertical, because Readium's `cjk-horizontal` layout never overrides a publisher's writing mode |
 | `vertical-zh.epub` | EPUB 3, `dc:language` `zh-Hant`, spine `page-progression-direction="rtl"`, no writing mode in the CSS, traditional Chinese text | Opens; vertical from the metadata alone (`zh-Hant` counts as right-to-left for Readium and CJK + RTL turns `verticalText` on); forcing horizontal text yields `horizontal-tb` |
 | `rtl-ar.epub` | EPUB 3, `dc:language` `ar`, `dir="rtl"` on every document, spine `page-progression-direction="rtl"`, Arabic text | Opens; reads right to left with horizontal text and a computed `direction: rtl`; the reader's chrome keeps the interface direction of the AutoJs6 language |
 | `fixed-layout.epub` | EPUB 3 pre-paginated (`rendition:layout`), 6 plates with a `600x800` viewport, spine `page-spread-center` / `-left` / `-right` properties, `rendition:spread auto`, one colour per plate | Opens as a fixed layout (`Layout.FIXED`, 6 positions); the reader shows `Page x of 6`, hides the text preferences and offers the spread choice; automatic spreads show two plates side by side in landscape (Readium 3.4.0 pairs the cover alone, then 2-3, 4-5, 6, ignoring the spine properties, and fits every page to its width, so the lower part of a plate lies below the view in a landscape spread); pinch zoom is Readium's own |
 
-Large performance samples (20 MB / 200 MB) are synthesized on demand by the P7 tools and are not
-committed. Externally sourced samples (IDPF `epub3-samples`, W3C `epub-tests`) are not part of the
+Large performance samples (`py .python/generate_fixtures.py --perf`: `perf-images-20mb.epub`,
+`perf-images-200mb.epub`, `perf-chapters-5000.epub` under `build/perf-fixtures/`, roadmap P7) are
+synthesized on demand and are not committed; the 50 000-entry and 1 GiB hostile samples are generated on the device by
+`HostileInputInstrumentationTest`. Externally sourced samples (IDPF `epub3-samples`, W3C `epub-tests`) are not part of the
 repository yet; when one is added it must be listed here with its source URL, license and SHA-256.

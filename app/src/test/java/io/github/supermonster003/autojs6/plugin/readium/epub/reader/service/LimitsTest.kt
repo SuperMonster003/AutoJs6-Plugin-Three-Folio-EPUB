@@ -72,6 +72,11 @@ class LimitsTest {
     }
 
     @Test
+    fun theSearchBudgetEndsBeforeTheHostGivesUp() {
+        assertTrue(Limits.SEARCH_BUDGET_MS in 30_000L until EpubContract.CALL_TIMEOUT_MS)
+    }
+
+    @Test
     fun readingOrderIndexesMustExist() {
         assertEquals(0, Limits.readingOrderIndex(0, 3))
         assertEquals(2, Limits.readingOrderIndex(2, 3))

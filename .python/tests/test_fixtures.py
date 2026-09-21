@@ -75,6 +75,40 @@ class FixtureGeneratorTest(unittest.TestCase):
                 self.assertIn('<meta name="viewport" content="width=600, height=800"/>', page)
                 self.assertIn(f'<p class="number">{number}</p>', page)
 
+    def test_hostile_fixtures_carry_their_markers(self):
+        generated = self.generated
+        self.assertEqual(22, len(generated["malformed-empty-zip.epub"]))
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-missing-mimetype.epub"])) as archive:
+            self.assertNotIn("mimetype", archive.namelist())
+            self.assertIn("META-INF/container.xml", archive.namelist())
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-bad-opf.epub"])) as archive:
+            self.assertFalse(archive.read("OEBPS/content.opf").decode("utf-8").rstrip().endswith("</package>"))
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-xxe.epub"])) as archive:
+            opf = archive.read("OEBPS/content.opf").decode("utf-8")
+            self.assertIn('<!ENTITY canary SYSTEM "file:///data/data/', opf)
+            self.assertIn("<dc:title>XXE &canary;</dc:title>", opf)
+            chapter = archive.read("OEBPS/chapter1.xhtml").decode("utf-8")
+            self.assertEqual(1, chapter.count("<!DOCTYPE"))
+            self.assertIn("<p>canary: &canary;</p>", chapter)
+        traversal = generated["malformed-traversal-encoded.epub"]
+        # zipfile rewrites os.sep to "/" when it reads names back on Windows, so the entry names are checked raw.
+        for name in ("/abs/escaped.txt", "..\\escaped-win.txt", "OEBPS/../escaped-dot.txt", "escaped.txt"):
+            self.assertIn(name.encode("ascii"), traversal)
+        with zipfile.ZipFile(io.BytesIO(traversal)) as archive:
+            opf = archive.read("OEBPS/content.opf").decode("utf-8")
+            for href in ("%2e%2e/%2e%2e/escaped.txt", "../../escaped.txt", "/etc/hosts", "file:///etc/hosts", "..\\..\\escaped.txt"):
+                self.assertIn(f'href="{href}"', opf)
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-long-names.epub"])) as archive:
+            self.assertEqual(1, len([name for name in archive.namelist() if len(name) > 2048]))
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-duplicate-entries.epub"])) as archive:
+            self.assertEqual(2, archive.namelist().count("OEBPS/chapter1.xhtml"))
+            self.assertEqual(2, archive.read("OEBPS/content.opf").decode("utf-8").count('<itemref idref="chapter1"/>'))
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-lcp-license-only.epub"])) as archive:
+            self.assertIn("META-INF/license.lcpl", archive.namelist())
+            self.assertNotIn("META-INF/encryption.xml", archive.namelist())
+        with zipfile.ZipFile(io.BytesIO(generated["malformed-encrypted-adept.epub"])) as archive:
+            self.assertIn("http://ns.adobe.com/adept", archive.read("META-INF/encryption.xml").decode("utf-8"))
+
     def test_epub_containers_start_with_the_stored_mimetype_entry(self):
         for name in ("minimal-epub2.epub", "minimal-epub3.epub"):
             data = self.generated[name]

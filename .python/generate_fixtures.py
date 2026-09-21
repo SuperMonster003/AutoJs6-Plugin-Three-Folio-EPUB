@@ -16,19 +16,33 @@ Fixtures:
   malformed-many-entries.epub        2000 tiny entries in the manifest and spine
   malformed-high-ratio.epub          one 64 MiB zero-filled resource (deflates to a few KiB)
   malformed-encrypted-lcp.epub       META-INF/encryption.xml declaring an LCP-protected resource
+  malformed-empty-zip.epub           a valid ZIP archive with no entries at all (P7 hostile matrix)
+  malformed-missing-mimetype.epub    EPUB 3 container without the mimetype entry
+  malformed-bad-opf.epub             package document cut in the middle of a tag (not well-formed XML)
+  malformed-xxe.epub                 OPF and chapter 1 declare external entities (file:// canary, loopback http://) that must never resolve
+  malformed-traversal-encoded.epub   percent-encoded, absolute, file:// and backslash hrefs; ZIP entry names that escape the container
+  malformed-long-names.epub          one spine resource whose name is 3000 characters long (above the contract's 2048-character href ceiling)
+  malformed-duplicate-entries.epub   chapter 1 stored twice in the ZIP with different text; manifest item and spine itemref repeated
+  malformed-lcp-license-only.epub    META-INF/license.lcpl without encryption.xml (LCP marker)
+  malformed-encrypted-adept.epub     META-INF/encryption.xml with an Adobe ADEPT resource key (ADEPT marker)
   vertical-ja.epub                   EPUB 3, Japanese, page-progression-direction rtl, publisher vertical-rl CSS
   vertical-zh.epub                   EPUB 3, traditional Chinese, page-progression-direction rtl, no writing mode
   rtl-ar.epub                        EPUB 3, Arabic, dir="rtl", page-progression-direction rtl
   fixed-layout.epub                  EPUB 3 pre-paginated, 6 plates of 600x800 CSS px, spread properties
 
-Usage: py .python/generate_fixtures.py
+Usage: py .python/generate_fixtures.py          (the committed set above)
+       py .python/generate_fixtures.py --perf   (roadmap P7 performance samples into build/perf-fixtures, not committed:
+                                                perf-images-20mb.epub, perf-images-200mb.epub, perf-chapters-5000.epub)
 """
 
 from __future__ import annotations
 
 import hashlib
 import io
+import random
 import struct
+import sys
+import warnings
 import zipfile
 import zlib
 from pathlib import Path
@@ -36,6 +50,7 @@ from typing import NamedTuple
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "fixtures"
+PERF_OUT = ROOT / "build" / "perf-fixtures"
 FIXED_TIME = (2026, 9, 19, 0, 0, 0)
 
 CONTAINER_XML = """<?xml version="1.0" encoding="UTF-8"?>
@@ -380,8 +395,13 @@ def build_zip(entries: list[tuple[str, bytes]], mimetype_first: bool = True) -> 
             archive.writestr(info, b"application/epub+zip")
         for name, data in entries:
             info = zipfile.ZipInfo(name, FIXED_TIME)
+            # Hostile names (backslashes, leading slashes, "..") stay verbatim on every OS, and a name
+            # stored twice is a deliberate fixture, not a mistake to warn about.
+            info.filename = name
             info.compress_type = zipfile.ZIP_DEFLATED
-            archive.writestr(info, data)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", UserWarning)
+                archive.writestr(info, data)
     return buffer.getvalue()
 
 
@@ -401,6 +421,84 @@ def epub_entries(epub3: bool, title: str, *, ncx_well_formed: bool = True, opf_n
         entries.append(("OEBPS/toc.ncx", ncx(title, ncx_well_formed).encode()))
     entries.extend(extra_files)
     return entries
+
+
+# The canary the XXE fixture points at: a file the instrumentation test writes under the plugin's own
+# files directory; its content must never surface through the parsed book.
+XXE_CANARY_PATH = "/data/data/io.github.supermonster003.autojs6.plugin.readium.epub.reader/files/xxe-canary.txt"
+
+
+def xxe_doctype(root: str) -> str:
+    return (
+        f"<!DOCTYPE {root} [\n"
+        f'  <!ENTITY canary SYSTEM "file://{XXE_CANARY_PATH}">\n'
+        '  <!ENTITY loopback SYSTEM "http://127.0.0.1:9/xxe">\n'
+        '  <!ENTITY internal "internal-entity-expanded">\n'
+        "]>"
+    )
+
+
+def xxe_entries() -> list[tuple[str, bytes]]:
+    """The package document and chapter 1 reference external entities; a resolver would leak the canary."""
+    result = []
+    for name, data in epub_entries(True, "XXE &canary;"):
+        if name == "OEBPS/content.opf":
+            text = data.decode("utf-8")
+            text = text.replace("<package ", xxe_doctype("package") + "\n<package ", 1)
+            text = text.replace("<dc:creator>", "<dc:creator>&internal; &loopback; ", 1)
+            data = text.encode("utf-8")
+        elif name == "OEBPS/chapter1.xhtml":
+            text = data.decode("utf-8")
+            text = text.replace("<!DOCTYPE html>", xxe_doctype("html"), 1)
+            text = text.replace(
+                "<body>\n",
+                "<body>\n<p>canary: &canary;</p>\n<p>loopback: &loopback;</p>\n<p>internal: &internal;</p>\n",
+                1,
+            )
+            data = text.encode("utf-8")
+        result.append((name, data))
+    return result
+
+
+def duplicate_entries() -> list[tuple[str, bytes]]:
+    """Chapter 1 is stored twice with different text; the manifest item and the spine itemref repeat too."""
+    result = []
+    for name, data in epub_entries(True, "Duplicate entries"):
+        if name == "OEBPS/content.opf":
+            text = data.decode("utf-8")
+            item = '    <item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>\n'
+            text = text.replace(item, item * 2, 1)
+            text = text.replace('    <itemref idref="chapter1"/>\n', '    <itemref idref="chapter1"/>\n' * 2, 1)
+            data = text.encode("utf-8")
+        result.append((name, data))
+        if name == "OEBPS/chapter1.xhtml":
+            second = xhtml("Duplicate chapter", "<h1>Duplicate chapter</h1>\n<p>DUPLICATE-SECOND-COPY</p>\n", True)
+            result.append((name, second.encode("utf-8")))
+    return result
+
+
+def adept_encryption_xml() -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<encryption xmlns="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:enc="http://www.w3.org/2001/04/xmlenc#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">\n'
+        "  <enc:EncryptedData>\n"
+        '    <enc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>\n'
+        '    <ds:KeyInfo><resource xmlns="http://ns.adobe.com/adept">urn:uuid:autojs6-readium-fixture-adept</resource></ds:KeyInfo>\n'
+        '    <enc:CipherData><enc:CipherReference URI="OEBPS/chapter1.xhtml"/></enc:CipherData>\n'
+        "  </enc:EncryptedData>\n"
+        "</encryption>\n"
+    )
+
+
+TRAVERSAL_HREFS = [
+    ("esc-encoded", "%2e%2e/%2e%2e/escaped.txt"),
+    ("esc-dotdot", "../../escaped.txt"),
+    ("esc-absolute", "/etc/hosts"),
+    ("esc-file-url", "file:///etc/hosts"),
+    ("esc-backslash", "..\\..\\escaped.txt"),
+]
+
+LONG_NAME = "long/" + "x" * 3000 + ".xhtml"
 
 
 def fixtures() -> dict[str, bytes]:
@@ -470,10 +568,149 @@ def fixtures() -> dict[str, bytes]:
             extra_files=[("META-INF/encryption.xml", encryption_xml.encode()), ("META-INF/license.lcpl", license_json.encode())],
         )
     )
+    # ---- Roadmap P7.1 hostile inputs (the P0.3 set above plus these) ----
+    result["malformed-empty-zip.epub"] = build_zip([], mimetype_first=False)
+    result["malformed-missing-mimetype.epub"] = build_zip(epub_entries(True, "Missing mimetype"), mimetype_first=False)
+    truncated_opf = opf("Bad OPF", True).split("<manifest>")[0] + '<manifest>\n    <item id="chapter1" href="chapter1.xhtml"\n'
+    result["malformed-bad-opf.epub"] = build_zip(
+        [(name, truncated_opf.encode() if name == "OEBPS/content.opf" else data) for name, data in epub_entries(True, "Bad OPF")]
+    )
+    result["malformed-xxe.epub"] = build_zip(xxe_entries())
+    result["malformed-traversal-encoded.epub"] = build_zip(
+        epub_entries(
+            True,
+            "Encoded traversal",
+            manifest_extra=[(item_id, href, "application/xhtml+xml", "") for item_id, href in TRAVERSAL_HREFS],
+            spine_extra=[item_id for item_id, _ in TRAVERSAL_HREFS],
+            extra_files=[
+                ("/abs/escaped.txt", b"absolute zip entry name\n"),
+                ("..\\escaped-win.txt", b"backslash traversal entry name\n"),
+                ("OEBPS/../escaped-dot.txt", b"dot-dot inside an entry name\n"),
+                ("escaped.txt", b"a file at the container root\n"),
+            ],
+        )
+    )
+    result["malformed-long-names.epub"] = build_zip(
+        epub_entries(
+            True,
+            "Long names",
+            manifest_extra=[("long", LONG_NAME, "application/xhtml+xml", "")],
+            spine_extra=["long"],
+            extra_files=[("OEBPS/" + LONG_NAME, xhtml("Long name", "<p>A resource with a 3000-character name.</p>\n", True).encode())],
+        )
+    )
+    result["malformed-duplicate-entries.epub"] = build_zip(duplicate_entries())
+    result["malformed-lcp-license-only.epub"] = build_zip(
+        epub_entries(True, "LCP license only", extra_files=[("META-INF/license.lcpl", license_json.encode())])
+    )
+    result["malformed-encrypted-adept.epub"] = build_zip(
+        epub_entries(True, "ADEPT marker", extra_files=[("META-INF/encryption.xml", adept_encryption_xml().encode())])
+    )
     return result
 
 
+# ---- Roadmap P7 performance samples (generated on demand, never committed) ----
+
+PERF_IMAGE_SIDE = 256  # 256x256 RGB noise deflates to nothing, so every image costs its raw ~197 KB
+
+
+def noise_png(seed: int, side: int = PERF_IMAGE_SIDE) -> bytes:
+    """An incompressible RGB PNG: random pixels stored through zlib level 0 (still a valid image)."""
+    rng = random.Random(seed)
+    raw = b"".join(b"\x00" + rng.randbytes(side * 3) for _ in range(side))
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", side, side, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(raw, 0))
+        + chunk(b"IEND", b"")
+    )
+
+
+def perf_paragraphs(chapter: int, count: int = 12) -> str:
+    rng = random.Random(chapter)
+    words = ["lighthouse", "keeper", "reef", "fog", "lamp", "brass", "salt", "tide", "stair", "log", "horizon", "boat",
+             "bread", "stories", "door", "wind", "cloud", "wool", "victory", "hull", "ship", "morning", "relief", "seen"]
+    paragraphs = []
+    for p in range(count):
+        sentence = " ".join(rng.choice(words) for _ in range(18)).capitalize() + "."
+        paragraphs.append(f"<p>Chapter {chapter}, paragraph {p + 1}: {sentence} {sentence}</p>")
+    return "\n".join(paragraphs)
+
+
+def perf_book(title: str, identifier: str, chapters: int, image_bytes: int = 0) -> bytes:
+    """`chapters` XHTML documents in the spine, each with a paragraph block and, when `image_bytes` is set, its own
+    noise PNG (stored, not deflated, so the archive costs what the images weigh)."""
+    items = []
+    spine = []
+    entries: list[tuple[str, bytes, bool]] = [("META-INF/container.xml", CONTAINER_XML.format(opf="OEBPS/content.opf").encode(), True)]
+    nav_items = []
+    for n in range(1, chapters + 1):
+        items.append(f'    <item id="c{n}" href="c/{n}.xhtml" media-type="application/xhtml+xml"/>')
+        spine.append(f'    <itemref idref="c{n}"/>')
+        nav_items.append(f'<li><a href="c/{n}.xhtml">Chapter {n}</a></li>')
+        image = f'<p><img src="../img/{n}.png" alt="noise {n}"/></p>\n' if image_bytes else ""
+        body = f"<h1>Chapter {n}</h1>\n{image}{perf_paragraphs(n)}\n"
+        entries.append((f"OEBPS/c/{n}.xhtml", xhtml(f"Chapter {n}", body, True).encode(), True))
+        if image_bytes:
+            items.append(f'    <item id="i{n}" href="img/{n}.png" media-type="image/png"/>')
+            entries.append((f"OEBPS/img/{n}.png", noise_png(n), False))
+    items.append('    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>')
+    nav = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>Contents</title></head>'
+        '<body><nav epub:type="toc"><h1>Contents</h1><ol>' + "".join(nav_items) + "</ol></nav></body></html>\n"
+    )
+    entries.append(("OEBPS/nav.xhtml", nav.encode(), True))
+    package = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid">\n'
+        '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
+        f'    <dc:identifier id="uid">urn:uuid:autojs6-readium-perf-{identifier}</dc:identifier>\n'
+        f"    <dc:title>{title}</dc:title>\n    <dc:language>en</dc:language>\n"
+        '    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>\n'
+        '    <meta property="dcterms:modified">2026-09-21T00:00:00Z</meta>\n  </metadata>\n'
+        "  <manifest>\n" + "\n".join(items) + "\n  </manifest>\n  <spine>\n" + "\n".join(spine) + "\n  </spine>\n</package>\n"
+    )
+    entries.insert(1, ("OEBPS/content.opf", package.encode(), True))
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        info = zipfile.ZipInfo("mimetype", FIXED_TIME)
+        info.compress_type = zipfile.ZIP_STORED
+        archive.writestr(info, b"application/epub+zip")
+        for name, data, deflate in entries:
+            info = zipfile.ZipInfo(name, FIXED_TIME)
+            info.compress_type = zipfile.ZIP_DEFLATED if deflate else zipfile.ZIP_STORED
+            archive.writestr(info, data)
+    return buffer.getvalue()
+
+
+PERF_FIXTURES = {
+    "perf-images-20mb.epub": lambda: perf_book("Perf images 20 MB", "images-20mb", chapters=100, image_bytes=1),
+    "perf-images-200mb.epub": lambda: perf_book("Perf images 200 MB", "images-200mb", chapters=1000, image_bytes=1),
+    "perf-chapters-5000.epub": lambda: perf_book("Perf 5000 chapters", "chapters-5000", chapters=5000),
+}
+
+
+def main_perf() -> None:
+    PERF_OUT.mkdir(parents=True, exist_ok=True)
+    for name, build in PERF_FIXTURES.items():
+        path = PERF_OUT / name
+        if path.exists():
+            print(f"Kept {path.relative_to(ROOT).as_posix()} ({path.stat().st_size} bytes)")
+            continue
+        data = build()
+        path.write_bytes(data)
+        print(f"Generated {path.relative_to(ROOT).as_posix()} ({len(data)} bytes) sha256={hashlib.sha256(data).hexdigest()}")
+
+
 def main() -> None:
+    if "--perf" in sys.argv[1:]:
+        main_perf()
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     sums = []
     for name, data in fixtures().items():
