@@ -56,6 +56,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.Searc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActionMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.SelectionActions
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.TocSheet
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.WebViewBoundary
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.HostSessionPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReaderSessionController
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
@@ -252,6 +253,8 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         get() = navigator?.overflow?.value?.readingProgression == ReadingProgression.RTL
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Roadmap P7.2: every page WebView Readium creates below this Activity gets the plugin's boundary.
+        WebViewBoundary.install(supportFragmentManager)
         val restoredFactory = model.navigatorFactory
         if (restoredFactory != null) {
             supportFragmentManager.fragmentFactory = fragmentFactory(restoredFactory)

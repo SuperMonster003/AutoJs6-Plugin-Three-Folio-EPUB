@@ -215,6 +215,7 @@ _2026/09/19_
 - `수정` 호스트 세션의 실행 인텐트가 태스크 최상단에 이미 있는 리더에 도착하면 (single-top 전달, 예를 들어 스크립트가 리더를 열어 둔 뒤) 이제 60초 타임아웃까지 미인수 상태로 기다리는 대신 새 리더 인스턴스에서 열립니다. 이전 리더는 교체될 때와 같이 종료됩니다 (로드맵 P6.2)
 - `수정` NCX / OPF XML이 잘렸거나 형식이 잘못된 책은 이제 안전하게 실패합니다: 서비스는 `PARSE_FAILED`를 답하고 리더는 열기 실패 패널을 표시합니다. 이전에는 `INTERNAL` 코드이거나 Readium XML 파서가 던지는 `AssertionError`로 인한 충돌이었습니다 (로드맵 P7.1)
 - `수정` `search` 한 페이지는 플러그인 쪽에서 50초로 제한되며, 거대한 책 (50 000개 리소스) 의 뒷부분에서만 일치하는 쿼리에는 `TIMEOUT`을 답합니다. Binder 스레드가 호스트 자체의 60초 호출 타임아웃을 지나서도 바쁜 상태로 남지 않습니다 (로드맵 P7.1)
+- `수정` 리더에서 Readium이 만드는 모든 페이지 WebView는 이제 Readium 자체 설정 위에 경계를 가집니다: 파일 시스템과 콘텐츠 제공자 접근을 막고, file URL의 두 교차 출처 스위치를 끄며, JavaScript는 Readium을 위해 켜진 채로 둡니다 (로드맵 D6). WebView, 컨테이너, 컴포넌트 경계 검토는 `docs/dev/security-boundaries.md`에 기록되어 있습니다 (로드맵 P7.2)
 - `의존성` Readium Kotlin Toolkit 3.4.0 추가 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `의존성` `androidx.media3:media3-session` 1.11.0 추가 (`readium-navigator-media-tts`가 이미 간접적으로 가져옴. 읽어 주기 포그라운드 서비스를 위해 직접 선언)
 - `의존성` `org.jsoup:jsoup` 1.23.2 추가 (`readium-shared`가 이미 간접적으로 가져옴. EPUB 서비스의 장 텍스트 추출을 위해 직접 선언)
