@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.BuildConfig
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.HostAppearanceActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationDatabase
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivitySettingsBinding
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.DialogRateBinding
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ItemSettingHeaderBinding
@@ -63,6 +64,9 @@ internal class SettingsActivity : HostAppearanceActivity() {
     private val bookDataStore by lazy { BookDataStore.forFilesDirectory(filesDir) }
     private val recentBooksStore by lazy { RecentBooksStore.forFilesDirectory(filesDir) }
     private val fontStore by lazy { FontStore.forFilesDirectory(filesDir) }
+    private val annotationDatabase by lazy { AnnotationDatabase.get(this) }
+    private var annotationsRow: ItemSettingRowBinding? = null
+    private var annotationUsage: String? = null
     private val refreshers = ArrayList<() -> Unit>()
     private var dialog: AlertDialog? = null
 
@@ -130,6 +134,9 @@ internal class SettingsActivity : HostAppearanceActivity() {
         }) {
             confirm(R.string.text_settings_clear_progress, R.string.text_settings_clear_progress_message) { clearProgress() }
         }
+        annotationsRow = row(R.string.text_settings_clear_annotations, summary = { annotationUsage }) {
+            confirm(R.string.text_settings_clear_annotations, R.string.text_settings_clear_annotations_message) { clearAnnotations() }
+        }
         row(R.string.text_settings_clear_recent, summary = {
             usage(recentBooksStore.read().size, recentBooksStore.usageBytes(), R.string.text_settings_usage_books)
         }) {
@@ -187,6 +194,21 @@ internal class SettingsActivity : HostAppearanceActivity() {
     private fun refresh() {
         if (isFinishing || isDestroyed) return
         refreshers.forEach { it() }
+        refreshAnnotationUsage()
+    }
+
+    /** The highlights live in Room (roadmap P9), so their summary arrives a moment after the others. */
+    private fun refreshAnnotationUsage() {
+        lifecycleScope.launch {
+            val text = withContext(Dispatchers.IO) {
+                usage(annotationDatabase.annotations().countAll(), AnnotationDatabase.sizeOnDisk(this@SettingsActivity), R.string.text_settings_usage_annotations)
+            }
+            annotationUsage = text
+            annotationsRow?.rowSummary?.apply {
+                this.text = text
+                isVisible = text.isNotEmpty()
+            }
+        }
     }
 
     // ---- reading ----
@@ -262,6 +284,9 @@ internal class SettingsActivity : HostAppearanceActivity() {
     // ---- data ----
 
     internal fun clearProgress() = io(cleared = true) { bookDataStore.clearAll() }
+
+    /** Every highlight and note of every book (roadmap P9); the reader's live list follows through Room. */
+    internal fun clearAnnotations() = io(cleared = true) { annotationDatabase.annotations().deleteEverything() }
 
     /** Forgets the list and the covers, and gives the persistable grants back (roadmap D4). */
     internal fun clearRecentBooks() = io(cleared = true) {
@@ -352,7 +377,7 @@ internal class SettingsActivity : HostAppearanceActivity() {
     }
 
     /** Runs the store work off the main thread, then refreshes the summaries (and says so when [cleared]). */
-    private fun io(cleared: Boolean = false, block: () -> Unit) {
+    private fun io(cleared: Boolean = false, block: suspend () -> Unit) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { block() }
             if (cleared) toast(R.string.text_settings_cleared)

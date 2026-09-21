@@ -31,6 +31,10 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationAddResult
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStyle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivityEpubReaderBinding
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontCatalog
@@ -40,6 +44,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.fonts.FontLi
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ChromeColors
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.AnnotationDialog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.AnnotationSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.ExternalLink
@@ -88,8 +94,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.autojs.plugin.epub.api.EpubActions
 import org.autojs.plugin.epub.api.EpubContract
+import org.json.JSONObject
 import org.readium.navigator.media.tts.android.AndroidTtsEngine
 import org.readium.navigator.media.tts.android.AndroidTtsPreferences
+import org.readium.r2.navigator.DecorableNavigator
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
 import org.readium.r2.navigator.HyperlinkNavigator
@@ -224,6 +232,12 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
     internal val bookmarkSheet: BookmarkSheet?
         get() = supportFragmentManager.findFragmentByTag(BookmarkSheet.TAG) as? BookmarkSheet
 
+    internal val annotationSheet: AnnotationSheet?
+        get() = supportFragmentManager.findFragmentByTag(AnnotationSheet.TAG) as? AnnotationSheet
+
+    internal val annotationDialog: AnnotationDialog?
+        get() = supportFragmentManager.findFragmentByTag(AnnotationDialog.TAG) as? AnnotationDialog
+
     /** The page on screen as the bookmark rules see it; null until the navigator reports one. */
     private var currentPage: PageLocation? = null
 
@@ -232,8 +246,14 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
     /** The bookmark of the page on screen, or null: drives the toolbar icon and the panel's add button. */
     internal val currentBookmark: StateFlow<Bookmark?> get() = _currentBookmark
 
-    /** Search decorations are applied one batch at a time: Readium diffs against the last batch it got. */
+    /** Decorations are applied one batch at a time per group: Readium diffs against the last batch it got. */
     private val decorationMutex = Mutex()
+
+    /** Roadmap P9.2: a tap on a highlight opens its editor. */
+    private val annotationListener = object : DecorableNavigator.Listener {
+        override fun onDecorationActivated(event: DecorableNavigator.OnActivatedEvent): Boolean =
+            onAnnotationDecorationActivated(event.decoration.id)
+    }
 
     private val inputListener = object : InputListener {
         override fun onTap(event: TapEvent): Boolean {
@@ -353,6 +373,11 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.annotations.collect { applyAnnotationDecorations(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.tts.status.collect { onTtsStatus(it) }
             }
         }
@@ -416,6 +441,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
             navigatorReady = false
             updateCurrentPage(null)
             fragment.addInputListener(inputListener)
+            fragment.addDecorationListener(ANNOTATION_DECORATIONS, annotationListener)
             // A retained navigator keeps the preferences it last received; the host's night mode
             // may have changed since, so hand it the current effective set once.
             fragment.submitPreferences(effectivePreferences(model.preferences.value))
@@ -426,9 +452,10 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
                         .collect { (locator, count) -> onLocator(locator, count) }
                 }
             }
-            // A rebuilt navigator starts without decorations: hand it the current search hits and the spoken sentence.
+            // A rebuilt navigator starts without decorations: hand it the current search hits, the spoken sentence and the highlights.
             applySearchDecorations(model.search.value)
             applyTtsDecoration(model.tts.location.value?.locator)
+            applyAnnotationDecorations(model.annotations.value)
         }
         invalidateOptionsMenu()
     }
@@ -596,6 +623,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
             setTitle(if (bookmarked) R.string.text_bookmark_remove else R.string.text_bookmark_add)
         }
         menu.findItem(R.id.action_bookmarks)?.isVisible = ready
+        menu.findItem(R.id.action_annotations)?.isVisible = ready
         menu.findItem(R.id.action_read_aloud)?.isVisible = ready && !model.tts.isActive
         menu.findItem(R.id.action_table_of_contents)?.isVisible = ready
         menu.findItem(R.id.action_preferences)?.isVisible = ready
@@ -637,6 +665,10 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         }
         R.id.action_bookmarks -> {
             showBookmarks()
+            true
+        }
+        R.id.action_annotations -> {
+            showAnnotations()
             true
         }
         R.id.action_table_of_contents -> {
@@ -805,20 +837,41 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
     internal var rememberedSelection: String? = null
         private set
 
+    /** The place of [rememberedSelection] (roadmap P9.2: a highlight needs the locator, not just the text). */
+    private var rememberedSelectionLocator: Locator? = null
+
     internal fun rememberSelection() {
         val fragment = navigator ?: return
-        lifecycleScope.launch { selectedText(fragment)?.let { rememberedSelection = it } }
+        lifecycleScope.launch {
+            selectedLocator(fragment)?.let {
+                rememberedSelection = it.text.highlight
+                rememberedSelectionLocator = it
+            }
+        }
     }
 
-    private suspend fun selectedText(fragment: EpubNavigatorFragment): String? =
-        runCatching { fragment.currentSelection()?.locator?.text?.highlight }.getOrNull()?.takeIf { it.isNotBlank() }
+    /** The current selection's locator when it has text: the page's locator plus the selected text and its context. */
+    private suspend fun selectedLocator(fragment: EpubNavigatorFragment): Locator? =
+        runCatching { fragment.currentSelection()?.locator }.getOrNull()?.takeIf { !it.text.highlight.isNullOrBlank() }
 
-    /** Copies, shares or web-searches the selection; false when [itemId] is not one of the selection items. */
+    /**
+     * Copies, shares, web-searches, highlights or annotates the selection; false when [itemId] is
+     * not one of the selection items.
+     */
     internal fun performSelectionAction(itemId: Int): Boolean {
         when (itemId) {
             R.id.selection_copy -> withSelection(::copyToClipboard)
             R.id.selection_share -> withSelection { launchOrToast(SelectionActions.shareIntent(it)) }
             R.id.selection_web_search -> withSelection { launchOrToast(SelectionActions.webSearchIntent(it)) }
+            // The selection handles would cover the new highlight (or the editor's page): drop them once the locator is taken.
+            R.id.selection_highlight -> withSelectionLocator {
+                addAnnotation(it, settings.annotationStyle, settings.annotationColor, note = null)
+                navigator?.clearSelection()
+            }
+            R.id.selection_note -> withSelectionLocator {
+                AnnotationDialog.showNew(supportFragmentManager, it, settings.annotationStyle, settings.annotationColor)
+                navigator?.clearSelection()
+            }
             else -> return false
         }
         return true
@@ -831,16 +884,18 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         return true
     }
 
+    private fun withSelection(action: (String) -> Unit) = withSelectionLocator { locator -> locator.text.highlight?.let(action) }
+
     /**
-     * Runs [action] with the live selection when the page still has one, else with the text
+     * Runs [action] with the live selection when the page still has one, else with the one
      * remembered while the toolbar was up. `Main.immediate` issues the page query before the
      * navigator's own post-click clearing runs.
      */
-    private fun withSelection(action: (String) -> Unit) {
+    private fun withSelectionLocator(action: (Locator) -> Unit) {
         val fragment = navigator
         lifecycleScope.launch(Dispatchers.Main.immediate) {
-            val text = (if (fragment != null) selectedText(fragment) else null) ?: rememberedSelection ?: return@launch
-            action(text)
+            val locator = (if (fragment != null) selectedLocator(fragment) else null) ?: rememberedSelectionLocator ?: return@launch
+            action(locator)
         }
     }
 
@@ -928,6 +983,98 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
     internal fun showBookmarks() {
         if (model.publication == null) return
         BookmarkSheet.show(supportFragmentManager)
+    }
+
+    // Highlights and notes (roadmap P9.2)
+
+    internal val annotations: StateFlow<List<BookAnnotation>> get() = model.annotations
+
+    /** The reading order's hrefs, for the panel's chapter grouping. */
+    internal val readingOrderHrefs: List<String>
+        get() = model.publication?.readingOrder?.map { it.href.toString() }.orEmpty()
+
+    /**
+     * Highlights [locator] (a selection) with [style] and [color], optionally with a [note];
+     * highlighting the same place again restyles the existing highlight. The choice becomes the
+     * default of the next quick highlight.
+     */
+    internal fun addAnnotation(locator: Locator, style: String, color: Int, note: String?) {
+        val publication = model.publication ?: return
+        val chapter = locator.title?.takeIf { it.isNotBlank() } ?: TocSheet.chapterTitle(publication, locator.href.toString())
+        rememberAnnotationChoice(style, color)
+        lifecycleScope.launch {
+            when (val result = model.addAnnotation(locator.toJSON(), style, color, note, chapter)) {
+                is AnnotationAddResult.Added -> Toast.makeText(this@EpubReaderActivity, R.string.text_annotation_added, Toast.LENGTH_SHORT).show()
+                is AnnotationAddResult.Restyled -> Toast.makeText(this@EpubReaderActivity, R.string.text_annotation_restyled, Toast.LENGTH_SHORT).show()
+                is AnnotationAddResult.Full -> Toast.makeText(this@EpubReaderActivity, getString(R.string.text_annotation_full, result.limit), Toast.LENGTH_SHORT).show()
+                AnnotationAddResult.Invalid -> Toast.makeText(this@EpubReaderActivity, R.string.text_annotation_invalid, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    /** Stores the editor's changes to the highlight with [id]; a row deleted meanwhile is left alone. */
+    internal fun saveAnnotation(id: Long, style: String, color: Int, note: String?) {
+        rememberAnnotationChoice(style, color)
+        val current = model.annotations.value.firstOrNull { it.id == id } ?: return
+        lifecycleScope.launch { model.updateAnnotation(current.copy(style = style, color = color, note = note)) }
+    }
+
+    private fun rememberAnnotationChoice(style: String, color: Int) {
+        settings.annotationStyle = style
+        settings.annotationColor = color
+    }
+
+    internal fun deleteAnnotation(id: Long) {
+        lifecycleScope.launch {
+            if (model.deleteAnnotation(id)) Toast.makeText(this@EpubReaderActivity, R.string.text_annotation_deleted, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    internal fun clearAnnotations() {
+        lifecycleScope.launch { model.clearAnnotations() }
+    }
+
+    internal fun openAnnotation(annotation: BookAnnotation) {
+        locatorOf(annotation)?.let { jumpTo(it) }
+    }
+
+    internal fun editAnnotation(annotation: BookAnnotation) {
+        AnnotationDialog.showEdit(supportFragmentManager, annotation)
+    }
+
+    internal fun showAnnotations() {
+        if (model.publication == null) return
+        AnnotationSheet.show(supportFragmentManager)
+    }
+
+    /** A tap on the decoration [decorationId] of the highlights group opens the editor of its highlight. */
+    internal fun onAnnotationDecorationActivated(decorationId: String): Boolean {
+        val id = decorationId.removePrefix("$ANNOTATION_DECORATIONS-").toLongOrNull() ?: return false
+        val annotation = model.annotations.value.firstOrNull { it.id == id } ?: return false
+        editAnnotation(annotation)
+        return true
+    }
+
+    private fun locatorOf(annotation: BookAnnotation): Locator? =
+        runCatching { Locator.fromJSON(JSONObject(annotation.locator)) }.getOrNull()
+
+    /** Every highlight of the book as one decoration group; Readium diffs against the last batch. */
+    private fun applyAnnotationDecorations(annotations: List<BookAnnotation>) {
+        val fragment = navigator?.takeIf { it.isAdded && it.view != null } ?: return
+        val decorations = annotations.mapNotNull { annotation ->
+            val locator = locatorOf(annotation) ?: return@mapNotNull null
+            val tint = AnnotationColors.normalize(annotation.color)
+            Decoration(
+                id = "$ANNOTATION_DECORATIONS-${annotation.id}",
+                locator = locator,
+                style = if (annotation.style == AnnotationStyle.UNDERLINE) Decoration.Style.Underline(tint) else Decoration.Style.Highlight(tint),
+            )
+        }
+        lifecycleScope.launch {
+            decorationMutex.withLock {
+                if (fragment.isAdded && fragment.view != null) fragment.applyDecorations(decorations, ANNOTATION_DECORATIONS)
+            }
+        }
     }
 
     // Full-text search (roadmap P2.5)
@@ -1413,6 +1560,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         internal const val NAVIGATOR_TAG = "readium-epub-navigator"
         internal const val SEARCH_DECORATIONS = "search"
         internal const val TTS_DECORATIONS = "tts"
+        internal const val ANNOTATION_DECORATIONS = "annotations"
 
         /** Roadmap D26: the read-aloud notification reopens the reader on the book the parked voice reads. */
         internal const val ACTION_RESUME_READ_ALOUD = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.RESUME_READ_ALOUD"

@@ -10,6 +10,9 @@
       "hint": [
         "Version de développement 1.1.0 (feuille de route P9): les surlignages, les notes et l'export sont en cours; les entrées ci-dessous décrivent ce qui est déjà en place"
       ],
+      "feature": [
+        "Surlignages et notes dans le lecteur (feuille de route P9.2): la barre de sélection de texte surligne le passage avec la dernière couleur choisie ou ouvre l'éditeur de note (surlignage / soulignement, cinq couleurs, note); les surlignages s'affichent dans la page et un appui rouvre leur éditeur; le panneau \"Surlignages et notes\" les liste par chapitre dans l'ordre de lecture avec aller à / modifier / supprimer / tout effacer; la page des réglages affiche et efface les surlignages enregistrés"
+      ],
       "dependency": [
         "Ajout de `androidx.room:room-runtime` 2.8.1 (la base de données des surlignages et des notes, feuille de route D4 / P9); `room-compiler` ne s'exécute que via KSP à la compilation"
       ]

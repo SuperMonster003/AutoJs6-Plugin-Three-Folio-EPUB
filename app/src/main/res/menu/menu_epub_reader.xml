@@ -38,6 +38,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_annotations"
+        android:title="@string/text_annotations"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_scroll_mode"
         android:checkable="true"
         android:title="@string/text_scroll_mode"

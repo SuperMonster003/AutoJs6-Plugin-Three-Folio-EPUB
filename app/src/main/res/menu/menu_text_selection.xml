@@ -19,6 +19,18 @@
         android:title="@string/text_selection_share" />
 
     <item
+        android:id="@+id/selection_highlight"
+        android:icon="@drawable/ic_highlight_24"
+        android:showAsAction="always"
+        android:title="@string/text_annotation_highlight" />
+
+    <item
+        android:id="@+id/selection_note"
+        android:icon="@drawable/ic_note_24"
+        android:showAsAction="ifRoom"
+        android:title="@string/text_annotation_note" />
+
+    <item
         android:id="@+id/selection_web_search"
         android:icon="@drawable/ic_web_search_24"
         android:showAsAction="ifRoom"

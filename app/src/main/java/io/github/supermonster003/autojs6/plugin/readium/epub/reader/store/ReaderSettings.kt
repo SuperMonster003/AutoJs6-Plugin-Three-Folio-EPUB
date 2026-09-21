@@ -3,6 +3,8 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader.store
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStyle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.SleepTimer
 
 /** Where taps turn pages (roadmap P2.7): the left / right thirds, the top / bottom thirds, or nowhere. */
@@ -47,6 +49,16 @@ internal class ReaderSettings(context: Context) {
     var externalLinksDirect: Boolean
         get() = preferences.getBoolean(KEY_EXTERNAL_LINKS_DIRECT, DEFAULT_EXTERNAL_LINKS_DIRECT)
         set(value) = preferences.edit { putBoolean(KEY_EXTERNAL_LINKS_DIRECT, value) }
+
+    /** Roadmap P9.2: the colour the next highlight gets (the last one chosen; the palette's first by default). */
+    var annotationColor: Int
+        get() = AnnotationColors.normalize(preferences.getInt(KEY_ANNOTATION_COLOR, AnnotationColors.DEFAULT))
+        set(value) = preferences.edit { putInt(KEY_ANNOTATION_COLOR, AnnotationColors.normalize(value)) }
+
+    /** Roadmap P9.2: highlight or underline, the last one chosen. */
+    var annotationStyle: String
+        get() = AnnotationStyle.normalize(preferences.getString(KEY_ANNOTATION_STYLE, null))
+        set(value) = preferences.edit { putString(KEY_ANNOTATION_STYLE, AnnotationStyle.normalize(value)) }
 
     /** Roadmap D15: Android 13+ asks for `POST_NOTIFICATIONS` once, before the first read-aloud. */
     var readAloudNotificationAsked: Boolean
@@ -102,6 +114,8 @@ internal class ReaderSettings(context: Context) {
         internal const val KEY_VOLUME_KEYS_TURN_PAGES = "volume_keys_turn_pages"
         internal const val KEY_TAP_ZONES = "tap_zones"
         internal const val KEY_EXTERNAL_LINKS_DIRECT = "external_links_direct"
+        internal const val KEY_ANNOTATION_COLOR = "annotation_color"
+        internal const val KEY_ANNOTATION_STYLE = "annotation_style"
         internal const val KEY_READ_ALOUD_NOTIFICATION_ASKED = "read_aloud_notification_asked"
         internal const val KEY_READ_ALOUD_KEEP_SCREEN_ON = "read_aloud_keep_screen_on"
         internal const val KEY_READ_ALOUD_IN_BACKGROUND = "read_aloud_in_background"
