@@ -281,7 +281,7 @@ P0 ──> P1 ──> P2 ──> P3 ──┐
 
 - [x] (插件) `.python/generate_fixtures.py`: 生成最小 EPUB 2 (NCX, 3 章), 最小 EPUB 3 (NAV, 3 章, 内链 / 脚注 / 图片), 损坏样本 (非 zip, 缺 `container.xml`, 缺 OPF, 坏 NCX, 路径穿越 href, 超多条目, 高压缩比单资源), 加密标记样本 (`META-INF/encryption.xml` 声明 LCP); 输出 `docs/fixtures/*.epub` 与 SHA-256 清单; 单元测试覆盖生成器. 证据: `b6e65de`; 10 个样本 + `SHA256SUMS.txt` + `docs/fixtures/README.md`; `.python/tests/test_fixtures.py` 校验确定性, 校验和, 文档覆盖与总体积.
 - [ ] (插件) 引入外部样本并记录来源 / 许可 / SHA-256 到 `docs/fixtures/README.md`: IDPF `epub3-samples` 的公有领域可重排样本 (如 `moby-dick`), FXL 样本 (`page-blanche` 类 CC0 / 公有领域), 日文竖排样本 (`kusamakura` 系列, CC BY-SA, 注明署名), 阿拉伯语 RTL 样本 (`regime-anticancer-arabic` 系列, 核实许可后再入库), W3C `epub-tests` 若干用例; 任何许可不明的样本不入库. 未做 (2026-09-19): 需要逐个核实许可证并下载, 当前网络易触发 502 / 429, 留待 P2 (FXL / 竖排 / RTL 落地前) 一并引入.
-- [ ] (插件) 性能样本生成参数 (20 MB 图片书, 200 MB 图片书, 5000 章文字书) 写入 `make_fixtures.py --perf`, 产物不入库 (`.gitignore`). 未做 (2026-09-19): 留待 P7 性能条目.
+- [x] (插件) 性能样本生成参数 (20 MB 图片书, 200 MB 图片书, 5000 章文字书) 写入 `make_fixtures.py --perf`, 产物不入库 (`.gitignore`). 未做 (2026-09-19): 留待 P7 性能条目. 补做 (2026-09-21, P7.1 `a3daffc`): `.python/generate_fixtures.py --perf` 生成 1 MB / 20 MB / 200 MB / 5000 章样本, 产物不入库; 性能用例在设备上按同一形状现场生成.
 
 验收: `docs/fixtures/README.md` 每个文件都有来源, 许可, SHA-256; 生成器测试通过; 仓库内样本总体积不超过 15 MB.
 
@@ -479,15 +479,15 @@ P1 验收状态 (2026-09-19): JVM 58 / 58, AVD API 24 instrumentation 23 / 23, �
 
 ## P7: 健壮性, 安全, 兼容矩阵, 性能, 体积, 无障碍
 
-- [ ] (插件/测试) 敌意输入矩阵 (P0.3 的损坏样本 + 新增): 非 zip, 空 zip, 缺 `mimetype` / `container.xml` / OPF, 坏 XML (含外部实体声明, 断言不解析外部实体), 路径穿越 href (`../`, 绝对路径, URL 编码), 超多条目 (50 000), 高压缩比单资源 (1 GiB 零字节), 超长文件名, 重复条目, 加密 (`encryption.xml` / LCP `license.lcpl`) -> 明确错误码与本地化提示, 不崩溃, 不写磁盘, 打开耗时有上限 (30 s 取消).
-- [ ] (插件) WebView 边界复核 (D6 全部允许下的底线): `allowFileAccess=false`, `allowContentAccess=false`, 无自定义 `addJavascriptInterface`, Readium 本地服务域之外不响应 `file://`; `usesCleartextTraffic=true` (D31); 结论写入 `docs/dev/security-boundaries.md`.
-- [ ] (测试) 兼容矩阵: AVD API 24, Sony G8441 API 28, Sony XQ-AT72 API 31, Redmi 22120RN86C API 33, Xiaomi 23046RP50C API 35, AVD API 36 / 37: 打开三种样本, 翻页, 搜索, 朗读 (真机), 进度恢复, 大字体, 夜间, 横屏, 分屏, 进程重建; WebView 版本记录; ColorOS 激活实测若无设备则明确记录 "未执行真实设备激活验证".
-- [ ] (测试) 性能: 冷 / 热打开耗时 (1 MB / 20 MB / 200 MB / 5000 章样本), 首屏时间, 翻页帧率 (`dumpsys gfxinfo`), 搜索耗时, 位置计算耗时 (大书应在后台且不阻塞阅读), 内存峰值 (`dumpsys meminfo`), 朗读 30 分钟内存不增长; 结果表写入 `docs/dev/performance-baseline.md`, 与正确性测试分开.
-- [ ] (插件) 体积: R8 规则最小化, 移除未用的 media3 解码路径 (`media3-exoplayer` 仅因 Readium 传递引入, 确认 R8 后不残留), 资源压缩 (`isShrinkResources`), 记录 release universal APK 体积并设预算 (Q-附录 D 由 P0.2 基线决定, 建议不超过基线 + 20%; P3 后 3,721,374 B, P4 后 3,841,934 B, P5 后 3,922,786 B, 超出该预算, 候选削减项见 2026-09-20 会话记录 (P3)); `verifyNativePageAlignment` 零原生库; 16 KB 设备 (Xiaomi Pad) 安装运行一次.
-- [ ] (插件) 无障碍与输入: TalkBack 标签 (工具栏 / 面板 / 列表), 键盘与遥控导航 (Tab 焦点顺序, 方向键翻页), 大字体 UI 不裁切, RTL UI, 触摸目标不小于 48 dp (Previewer 修复过同类问题).
-- [ ] (插件) 错误与日志: Timber 在 release 不植树或只记录 WARN 以上且不含书名 / 路径 / 正文; 崩溃前保存进度.
+- [x] (插件/测试) 敌意输入矩阵 (P0.3 的损坏样本 + 新增): 非 zip, 空 zip, 缺 `mimetype` / `container.xml` / OPF, 坏 XML (含外部实体声明, 断言不解析外部实体), 路径穿越 href (`../`, 绝对路径, URL 编码), 超多条目 (50 000), 高压缩比单资源 (1 GiB 零字节), 超长文件名, 重复条目, 加密 (`encryption.xml` / LCP `license.lcpl`) -> 明确错误码与本地化提示, 不崩溃, 不写磁盘, 打开耗时有上限 (30 s 取消). 证据: `a3daffc` (build 53); `.python/generate_fixtures.py` 新增 9 个敌意夹具 (非 zip, 空 zip, 缺 `mimetype` / `container.xml` / OPF, 坏 XML 含外部实体声明, 路径穿越 href, 50 000 条目, 1 GiB 零字节单资源, 超长文件名, 重复条目, `encryption.xml` / LCP), 夹具共 23 个入库 (`docs/fixtures/SHA256SUMS`); 服务侧 `HostileInputInstrumentationTest` 在 7 台设备, 阅读器侧 `EpubReaderHostileInputInstrumentationTest` 在 6 台 (Pad 锁屏) 通过: 每个样本以明确错误码闭合 (`docs/dev/security-boundaries.md` §2), 50 000 条目打开 3.7 - 18.2 s, 位置 5.1 - 21.3 s, 搜索在 `Limits.SEARCH_BUDGET_MS` (50 s) 处以 `TIMEOUT` 答复, 1 GiB 资源以 `LIMIT_EXCEEDED` 拒绝, 存储快照前后一致. 修复: Readium 对坏 NCX 抛出的 `AssertionError` (不是 `Exception`) 经 `BookOpener.open` 捕获 `Throwable` 成 `BookOpenError.Malformed` -> `PARSE_FAILED` (此前 `INTERNAL`).
+- [x] (插件) WebView 边界复核 (D6 全部允许下的底线): `allowFileAccess=false`, `allowContentAccess=false`, 无自定义 `addJavascriptInterface`, Readium 本地服务域之外不响应 `file://`; `usesCleartextTraffic=true` (D31); 结论写入 `docs/dev/security-boundaries.md`. 证据: `65b1b5e` (build 54); `reader/WebViewBoundary.kt` 经 `FragmentLifecycleCallbacks` 给 Readium 创建的每个页面 WebView 关掉 file / content 访问与两个 file URL 跨源开关 (JavaScript 为 Readium 保持开启), `EpubReaderWebViewBoundaryInstrumentationTest` 在 6 台设备验证 (每本书 2 个页面 WebView, `fetch(location.href)` 200 而 content:// 与 file:// 抓取失败, 测试 provider 打开计数不变); 插件无自定义 `addJavascriptInterface` (Readium 自身注册 `Android` 接口); `usesCleartextTraffic=true` 维持 (D31); `docs/dev/security-boundaries.md` 记录威胁模型, 容器 / 解析层, WebView 层, 组件暴露, 存储与日志, 设备证据与保留项.
+- [x] (测试) 兼容矩阵: AVD API 24, Sony G8441 API 28, Sony XQ-AT72 API 31, Redmi 22120RN86C API 33, Xiaomi 23046RP50C API 35, AVD API 36 / 37: 打开三种样本, 翻页, 搜索, 朗读 (真机), 进度恢复, 大字体, 夜间, 横屏, 分屏, 进程重建; WebView 版本记录; ColorOS 激活实测若无设备则明确记录 "未执行真实设备激活验证". 证据: `ef8b2df`; `docs/dev/compatibility-matrix.md`: 7 台设备 (AVD API 24 / 33 / 36 / 37, Sony G8441 API 28, Redmi 12C API 33, Xiaomi Pad 6 API 35) x 场景表, 整包运行每台 81 - 86 用例, 首轮失败 12 次归为 6 项 (3 个插件缺陷: `.ttc` / `.otc` 字体集只报 "不是字体", 朗读引擎初始化无超时, 大字体下工具栏裁掉章节副标题; 3 个测试修正), 修后复跑通过或以 assumption 记录; 进程重建经 `am kill` 后同一 intent 重开验证; WebView 提供器与版本记录在设备表. 偏差: Sony XQ-AT72 未接入本机 (未执行), ColorOS 无设备 (明确记录未执行真实设备激活验证), Pad 锁屏只跑非界面类, 分屏未自动化 (`--windowingMode 6` 在 AVD 上仍全屏).
+- [x] (测试) 性能: 冷 / 热打开耗时 (1 MB / 20 MB / 200 MB / 5000 章样本), 首屏时间, 翻页帧率 (`dumpsys gfxinfo`), 搜索耗时, 位置计算耗时 (大书应在后台且不阻塞阅读), 内存峰值 (`dumpsys meminfo`), 朗读 30 分钟内存不增长; 结果表写入 `docs/dev/performance-baseline.md`, 与正确性测试分开. 证据: `f20e70e`; `EpubReaderPerformanceInstrumentationTest` 在 Sony API 28, Redmi API 33 与 AVD API 37 上以现场生成的 1 MB / 20 MB / 200 MB / 5000 章样本 测冷 / 热首屏, 位置, 指纹, 20 次翻页帧 (`FrameMetrics`), PSS 峰值, Binder 打开 / 元数据 / 搜索; 朗读 30 分钟在 Sony 上 PSS 175 - 200 MB 波动, 第 5 分钟后增长 7 MB (断言 < 128 MB); 结果与阈值在 `docs/dev/performance-baseline.md` (真机 200 MB 内首屏 1.1 - 2.5 s, 阈值 <= 3 s; 翻页 jank 4 - 7%, p90 约 15 ms; PSS 155 - 300 MB; 位置与指纹在首屏前完成; 5000 章样本打开 12 - 20 s 记为 Readium 解析随章节数超线性增长的观察项, 留到 D18 升级时复测). 偏差: 翻页帧用 `Window.OnFrameMetricsAvailableListener` (与 `dumpsys gfxinfo` 同源, 进程内可读), 内存用 `Debug.getPss()` 采样而非 `dumpsys meminfo`; P0 的 `--perf` 生成参数由本阶段补齐 (`.python/generate_fixtures.py --perf`).
+- [x] (插件) 体积: R8 规则最小化, 移除未用的 media3 解码路径 (`media3-exoplayer` 仅因 Readium 传递引入, 确认 R8 后不残留), 资源压缩 (`isShrinkResources`), 记录 release universal APK 体积并设预算 (Q-附录 D 由 P0.2 基线决定, 建议不超过基线 + 20%; P3 后 3,721,374 B, P4 后 3,841,934 B, P5 后 3,922,786 B, 超出该预算, 候选削减项见 2026-09-20 会话记录 (P3)); `verifyNativePageAlignment` 零原生库; 16 KB 设备 (Xiaomi Pad) 安装运行一次. 证据: `fcdbeb1` (build 56); DiViNa 资源剔除 (`ignoreAssetsPatterns`), 插件包整体 keep 移除 (mapping 中插件类 576 -> 328), 资源表按 11 种语言过滤: release APK 3,922,786 -> 3,328,220 B; `media3-exoplayer` 经 R8 后无残留 (mapping 无 `androidx.media3.exoplayer` 类); `isShrinkResources` 保持; `verifyNativePageAlignment` 通过 (零原生库); release 冒烟 (AVD API 37, 16 KB 页): 宿主脚本样本 s1 - s3 错误行 0, 三个界面 resumed, FATAL 0; 预算重设为 3,500,000 B, 构成与保留项在 `docs/dev/release-size.md`.
+- [x] (插件) 无障碍与输入: TalkBack 标签 (工具栏 / 面板 / 列表), 键盘与遥控导航 (Tab 焦点顺序, 方向键翻页), 大字体 UI 不裁切, RTL UI, 触摸目标不小于 48 dp (Previewer 修复过同类问题). 证据: `d1714b8`; `EpubReaderAccessibilityInstrumentationTest` 审计阅读器 chrome, 目录对话框, 书签 / 偏好 / 搜索面板, 搜索栏 / 朗读栏, 启动器与设置页: 每个控件有可朗读标签, 触摸目标 >= 48 dp, 文本不裁切, Tab 焦点链, 方向键翻页, 横屏; 四种模式 (默认, `font_scale 1.3`, 系统夜间, 强制 RTL) 在 AVD API 37 各 0 问题, AVD API 36 大字体 0 问题; 修复: 偏好面板 4 个滑块加 `contentDescription`, 工具栏由固定高度改为最小高度 (P2 记录的 Sony 横屏副标题裁切同源, 附带发现 4). 偏差: TalkBack 未真机实测 (以视图树的标签 / 可聚焦性替代), 遥控导航以键盘方向键与 Tab 等价.
+- [x] (插件) 错误与日志: Timber 在 release 不植树或只记录 WARN 以上且不含书名 / 路径 / 正文; 崩溃前保存进度. 证据: `65f29e0` (build 55); `store/CrashFlush` 注册默认未捕获异常处理器, 在异常终止进程前同步写入当前 locator (`EpubReaderCrashFlushInstrumentationTest` 6 台设备: 4 - 14 ms), 插件不植 Timber 树 (treeCount 0), 不记录书名 / 路径 / 正文 (`docs/dev/security-boundaries.md` §5).
 
-验收: 矩阵表 (设备 x 场景) 全部通过或有明确记录; 敌意样本全部失败闭合; 性能表与体积数值入库.
+验收: 矩阵表 (设备 x 场景) 全部通过或有明确记录; 敌意样本全部失败闭合; 性能表与体积数值入库. 验收结论 (2026-09-21): 矩阵表 `docs/dev/compatibility-matrix.md` 每格通过或有记录 (XQ-AT72 / ColorOS / Pad 界面类 / 分屏为明确的未执行); 9 个敌意样本全部以明确错误闭合 (`docs/dev/security-boundaries.md` §2); 性能表 `docs/dev/performance-baseline.md` 与体积 3,328,220 B (`docs/dev/release-size.md`, 预算 3,500,000 B) 入库.
 
 ---
 
@@ -954,3 +954,21 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 - 附带发现 4 (JUnit 浮点): 改为原始 `Double` 后 `assertEquals(double, double)` 需要 delta.
 - 附带发现 5 (Ace 再生成): 宿主 `tools/ace-completion` 目录被 `.gitignore` 忽略但 `autojs6_indices.source.json` 已跟踪, 需 `git add -f`; 再生成在 `AutoJs6/build/ace-regen/` (指向 Ace 插件 editor 目录的 junction) 运行; Offline-Docs 的 Gradle 门禁在 Git Bash 下用 `./gradlew` 而非 `cmd //c gradlew.bat`.
 - 下一步: P7 (敌意输入矩阵, 兼容矩阵, 性能, 体积预算 3.3 MB 已超出, 无障碍); Pad 解锁后补跑 P3-P6; P0.3 外部样本仍待网络许可.
+
+### 2026-09-21 (P7)
+
+- P7.1 (`a3daffc` build 53): 9 个敌意夹具 + 服务侧 / 阅读器侧矩阵在 7 / 6 台设备通过; Readium `AssertionError` 归入 `Malformed` -> `PARSE_FAILED`; `Limits.SEARCH_BUDGET_MS` 50 s.
+- P7.2 (`65b1b5e` build 54): `WebViewBoundary` 给每个 Readium 页面 WebView 加边界, 6 台设备探针; `docs/dev/security-boundaries.md`.
+- P7.7 (`65f29e0` build 55): `CrashFlush` 崩溃前同步落盘; Timber 无树.
+- P7.5 (`fcdbeb1` build 56): release APK 3,922,786 -> 3,328,220 B, 预算 3,500,000 B; `docs/dev/release-size.md`.
+- P7.3 (`ef8b2df`): 六台整包 + Pad 非界面类; 3 个插件缺陷 (`.ttc` 提示, 朗读引擎 20 s 超时, 大字体工具栏) 与 3 个测试修正; `docs/dev/compatibility-matrix.md`.
+- P7.6 (`d1714b8`): 无障碍审计四种模式 0 问题; 滑块标签与工具栏最小高度.
+- P7.4 (`f20e70e`): 性能基线三台设备 + 朗读 30 分钟; `docs/dev/performance-baseline.md`.
+- 附带发现 1 (输入焦点): 宿主 AutoJs6 的悬浮窗 (`TYPE_APPLICATION_OVERLAY`, 可聚焦) 在 AVD API 33 上持有焦点时, instrumentation 注入的按键到不了阅读器, 键盘 / 音量键用例失败; 矩阵运行前须没有其它应用的可聚焦悬浮窗.
+- 附带发现 2 (per-app locale): AVD API 36 上进程内 `AppCompatDelegate.setApplicationLocales` 设下的语言 10 s 内不送达正在运行的进程 (`cmd locale set-app-locales` 则正常), 用例改为 assumption 跳过; API 33 / 37 正常.
+- 附带发现 3 (章节数): Readium 打开 5000 章的书 12 - 20 s, 1000 章图片书 1 - 2 s, 2003 章敌意样本 3.4 s: 解析随 spine 项数超线性; 插件侧无按章节循环; 留到 D18 升级时复测.
+- 附带发现 4 (ART): 安装后首次启动 ART 会写 `files/profileInstalled`, 敌意输入的存储快照要排除它.
+- 附带发现 5 (Readium `assert`): `XmlParser.parse` 的 `assert(stack.size == 1)` 抛 `AssertionError` (`Error` 而非 `Exception`), Readium 自己的 `catch (Exception)` 包装放它逃逸; 插件在 `BookOpener.open` 处兜底.
+- 附带发现 6 (Google TTS 无语音数据): AVD API 24 的 Google TTS 引擎存在但初始化永不回应, 此前朗读停在 STARTING; 现在 20 s 超时报 `NoEngine`.
+- 附带发现 7 (工具栏固定高度): `ReaderChrome` 为 edge-to-edge 把工具栏高度固定为 `actionBarSize + 状态栏`, 布局上的 `wrap_content` 被覆盖; 大字体与 Sony 横屏的副标题裁切都源于此.
+- 下一步: P8 (README 10 语言, `plugin_instruction.md`, 第三方声明核对, 发布 gate, Release, 索引条目); Pad 解锁后补跑 P3 - P7 界面类; P0.3 外部样本仍待网络许可; 5000 章打开耗时在 D18 升级时复测.
