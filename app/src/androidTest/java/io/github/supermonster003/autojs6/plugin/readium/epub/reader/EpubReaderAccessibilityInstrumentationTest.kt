@@ -243,6 +243,11 @@ class EpubReaderAccessibilityInstrumentationTest {
         main { navigator(activity).go(requireNotNull(activity.readerModel.publication).readingOrder[0], animated = false) }
         awaitOrNot(10_000) { locator(activity)?.contains("chapter1.xhtml") == true }
         SystemClock.sleep(1_000)
+        if (!readerHasFocus(activity)) {
+            // Injected keys go to the focused window (roadmap P7 finding 1): without focus the key paths cannot be exercised here.
+            note("keyboard: skipped, the reader window does not hold input focus")
+            return
+        }
         val before = locator(activity)
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
         val turned = awaitOrNot(10_000) { locator(activity) != before }
@@ -255,6 +260,16 @@ class EpubReaderAccessibilityInstrumentationTest {
             trail += onMain { activity.currentFocus?.let { name(activity, it) } ?: "none" }
         }
         note("keyboard: Tab focus trail " + trail.joinToString(" > "))
+    }
+
+    private fun readerHasFocus(activity: EpubReaderActivity): Boolean {
+        val deadline = SystemClock.uptimeMillis() + 5_000
+        var focused = false
+        while (!focused && SystemClock.uptimeMillis() < deadline) {
+            instrumentation.runOnMainSync { focused = activity.hasWindowFocus() }
+            if (!focused) SystemClock.sleep(200)
+        }
+        return focused
     }
 
     /** The reader handles orientation itself (configChanges): the page and the chrome must survive a turn to landscape. */

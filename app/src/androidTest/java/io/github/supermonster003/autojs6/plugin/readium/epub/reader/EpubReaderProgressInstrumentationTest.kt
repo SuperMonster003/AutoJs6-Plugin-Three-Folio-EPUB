@@ -25,6 +25,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.readium.r2.navigator.epub.EpubNavigatorFragment
@@ -151,6 +152,7 @@ class EpubReaderProgressInstrumentationTest {
         try {
             await("chapter 1") { activity.navigatorReady && currentHref(activity)?.endsWith("chapter1.xhtml") == true }
             SystemClock.sleep(500)
+            assumeReaderHasFocus(activity)
             var presses = 0
             while (currentHref(activity)?.endsWith("chapter1.xhtml") == true && presses < 6) {
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN)
@@ -247,6 +249,24 @@ class EpubReaderProgressInstrumentationTest {
 
     private fun record(name: String, lines: List<String>) {
         File(context.filesDir, "p1-evidence").apply { mkdirs() }.resolve(name).writeText(lines.joinToString("\n") + "\n")
+    }
+
+    /**
+     * Injected keys go to the focused window. When another window holds it (a focusable overlay, the shell of a
+     * CI emulator; roadmap P7 finding 1) the key paths cannot be exercised, so the check is skipped rather than failed.
+     */
+    private fun assumeReaderHasFocus(activity: EpubReaderActivity) {
+        assumeTrue("the reader window does not hold input focus, injected keys would go elsewhere", readerHasFocus(activity))
+    }
+
+    private fun readerHasFocus(activity: EpubReaderActivity): Boolean {
+        val deadline = SystemClock.uptimeMillis() + 5_000
+        var focused = false
+        while (!focused && SystemClock.uptimeMillis() < deadline) {
+            instrumentation.runOnMainSync { focused = activity.hasWindowFocus() }
+            if (!focused) SystemClock.sleep(200)
+        }
+        return focused
     }
 
     private fun await(message: String, condition: () -> Boolean) {

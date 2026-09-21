@@ -387,8 +387,10 @@ class HostileInputInstrumentationTest {
         return roots.flatMap { root ->
             root.walkTopDown().filter { it.isFile }.map { root.name + "/" + it.relativeTo(root).path.replace('\\', '/') + ":" + it.length() }.toList()
         }.filterNot {
-            // ART writes files/profileInstalled on the first launch after an install; it is not the book's doing.
-            it.contains("hostile-fixtures/") || it.contains("p2-evidence/") || it.endsWith("xxe-canary.txt") || it.startsWith("files/profileInstalled:")
+            // ART writes files/profileInstalled on the first launch after an install, and the system WebView keeps writing its
+            // HTTP and code caches for the reader tests that ran earlier in this process; neither is the book's doing.
+            it.contains("hostile-fixtures/") || it.contains("p2-evidence/") || it.endsWith("xxe-canary.txt") || it.startsWith("files/profileInstalled:") ||
+                it.startsWith("cache/WebView/")
         }
             .sorted()
     }

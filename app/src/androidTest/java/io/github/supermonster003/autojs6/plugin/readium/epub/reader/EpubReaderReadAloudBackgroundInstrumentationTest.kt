@@ -165,7 +165,7 @@ class EpubReaderReadAloudBackgroundInstrumentationTest {
         // Reopening the same book adopts the voice and opens where it speaks.
         val second = instrumentation.startActivitySync(request(MANY)) as EpubReaderActivity
         try {
-            await("adopted") { second.ttsSession === session }
+            await("adopted", 60000) { second.ttsSession === session } // the GitHub-hosted API 24 emulator needs more than 30 s here
             assertNull(TtsForegroundService.parked)
             await("reader ready") { second.navigatorReady }
             val spoken = onMain { second.ttsLocation.value?.href }

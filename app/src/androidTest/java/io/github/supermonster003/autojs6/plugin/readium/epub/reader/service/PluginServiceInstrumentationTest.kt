@@ -359,7 +359,8 @@ class PluginServiceInstrumentationTest {
             books.forEach { it.metadata.requireOk("open book") }
 
             serviceRule.unbindService()
-            val deadline = SystemClock.elapsedRealtime() + 10_000
+            // The GitHub-hosted API 35 emulator needs more than 10 s to deliver the unbind (CI run 35558551373).
+            val deadline = SystemClock.elapsedRealtime() + 30_000
             while (books.any { it.metadata.errorCode() != EpubErrorCodes.SESSION_CLOSED } && SystemClock.elapsedRealtime() < deadline) {
                 SystemClock.sleep(100)
             }
