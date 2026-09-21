@@ -168,7 +168,8 @@ class EpubReaderSearchInstrumentationTest {
     fun largeBooksPageAndCapAndCancel() {
         val activity = instrumentation.startActivitySync(request(MANY)) as EpubReaderActivity
         try {
-            awaitHref(activity, "chapter1.xhtml")
+            // 50 000 container entries: the API 24 emulator needs well over 30 s to show the first page.
+            awaitHref(activity, "chapter1.xhtml", 120000)
             val sheet = openSheet(activity)
             val started = SystemClock.uptimeMillis()
             main { sheet.submit("filler") }
@@ -375,8 +376,8 @@ class EpubReaderSearchInstrumentationTest {
             ?.currentLocator?.value?.href?.toString()
     }
 
-    private fun awaitHref(activity: EpubReaderActivity, suffix: String) {
-        await("href $suffix") { activity.navigatorReady && currentHref(activity)?.endsWith(suffix) == true }
+    private fun awaitHref(activity: EpubReaderActivity, suffix: String, timeoutMillis: Long = 30000) {
+        await("href $suffix", timeoutMillis) { activity.navigatorReady && currentHref(activity)?.endsWith(suffix) == true }
     }
 
     private fun await(message: String, timeoutMillis: Long = 30000, condition: () -> Boolean) {

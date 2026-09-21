@@ -11,12 +11,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.readium.navigator.media.tts.TtsNavigatorFactory
 import org.readium.navigator.media.tts.android.AndroidTtsEngine
 import org.readium.navigator.media.tts.android.AndroidTtsPreferences
@@ -26,6 +28,9 @@ import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.util.Language
 import org.readium.r2.shared.util.getOrElse
 import kotlin.coroutines.coroutineContext
+
+/** How long the speech engine may take to answer its initialization before read-aloud reports that no engine is usable. */
+private const val ENGINE_START_TIMEOUT_MS = 20_000L
 
 /**
  * Read-aloud for the reader (roadmap P3, `TtsController`): starts a [TtsSession] from a locator,
@@ -105,7 +110,21 @@ internal class TtsController(
                 fail(TtsEvent.NoContent)
                 return@launch
             }
-            val session = TtsSession.open(factory, bookKey, title, initialLocator, _preferences.value).getOrElse { error ->
+            val opening = async {
+                TtsSession.open(factory, bookKey, title, initialLocator, _preferences.value).also { result ->
+                    // Stopped while the engine was still initializing: nobody will adopt this session.
+                    if (!isActive) result.getOrNull()?.close()
+                }
+            }
+            val opened = withTimeoutOrNull(ENGINE_START_TIMEOUT_MS) { opening.await() }
+            if (opened == null) {
+                // The engine never answered (an engine without voice data can sit in initialization for good):
+                // give up now, and close the session should it still arrive.
+                launch { runCatching { opening.await() }.getOrNull()?.getOrNull()?.close() }
+                fail(TtsEvent.NoEngine)
+                return@launch
+            }
+            val session = opened.getOrElse { error ->
                 fail(if (error is TtsNavigatorFactory.Error.EngineInitialization) TtsEvent.NoEngine else TtsEvent.NoContent)
                 return@launch
             }

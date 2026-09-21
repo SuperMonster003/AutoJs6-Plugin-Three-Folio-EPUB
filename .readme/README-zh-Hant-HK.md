@@ -217,6 +217,8 @@ _2026/09/19_
 - `修復` 單頁 `search` 在插件側限制為 50 秒, 查詢只在超大書籍 (50 000 個資源) 的靠後位置命中時回答 `TIMEOUT`, Binder 線程不再在宿主自身的 60 秒呼叫逾時之後繼續忙碌 (路線圖 P7.1)
 - `修復` 閱讀器中 Readium 建立的每個頁面 WebView 現在都在 Readium 自身設定之上帶有邊界: 不允許存取檔案系統與內容提供器, 兩個 file URL 跨源開關關閉, JavaScript 為 Readium 保持開啟 (路線圖 D6); WebView, 容器與組件邊界的複核記錄在 `docs/dev/security-boundaries.md` (路線圖 P7.2)
 - `修復` 閱讀器進程因未捕獲異常死亡時, 先同步把當前閱讀位置寫入磁碟, 再交給系統自身的崩潰處理; 插件本身不寫日誌也不為 Timber 種樹, 書名, 路徑與正文不會進入 logcat (路線圖 P7.7)
+- `修復` 選擇 TrueType / OpenType 字型集 (`.ttc` / `.otc`) 作為閱讀字型時, 現在會提示不支援字型集, 而不是把檔案當作非字型檔案; 由 `docs/dev/compatibility-matrix.md` 記錄的裝置 x 場景相容矩陣執行時發現 (路線圖 P7.3)
+- `修復` 朗讀不再無限等待一個始終無法完成初始化的語音引擎 (API 24 模擬器上沒有語音資料的 Google TTS 正是如此): 20 秒後閱讀器提示沒有可用引擎並回到閒置狀態, 之後才到來的工作階段會被關閉 (路線圖 P7.3)
 - `優化` Release APK 體積: Readium 隨導航器資源附帶的 DiViNa 播放器 (427 KB, EPUB 閱讀器從不使用) 不再進入合併後的資源, 插件包的整體 keep 規則也已移除, R8 因此也能壓縮插件自身的類; release APK 從 P5 後的 3,922,786 B 降到 3,328,220 B (路線圖 P7.5, 細節見 `docs/dev/release-size.md`)
 - `依賴` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `依賴` 附加 `androidx.media3:media3-session` 1.11.0 (`readium-navigator-media-tts` 已間接引入; 為朗讀前台服務直接宣告)

@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.lifecycleScope
@@ -275,9 +276,9 @@ class EpubReaderTtsInstrumentationTest {
 
     @Test
     fun readAloudPausesOnAudioFocusLossAndResumes() {
+        assumeTrue("audio focus requests need API 26", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         val activity = instrumentation.startActivitySync(request(FIXTURE)) as EpubReaderActivity
-        val audioManager = context.getSystemService<AudioManager>()!!
-        var request: AudioFocusRequest? = null
+        val focus = AudioFocus(context.getSystemService<AudioManager>()!!)
         try {
             awaitHref(activity, "chapter1.xhtml")
             SystemClock.sleep(500)
@@ -286,21 +287,18 @@ class EpubReaderTtsInstrumentationTest {
             awaitSpeaking(activity)
 
             // A transient interruption (a ringtone, a navigation prompt): Readium keeps speaking through it.
-            request = focusRequest(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-            assertEquals(AudioManager.AUDIOFOCUS_REQUEST_GRANTED, audioManager.requestAudioFocus(request))
+            assertEquals(AudioManager.AUDIOFOCUS_REQUEST_GRANTED, focus.request(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT))
             SystemClock.sleep(2500)
             notes += "transient-loss-status=${onMain { activity.ttsStatus.value }}"
-            audioManager.abandonAudioFocusRequest(request)
+            focus.abandon()
             SystemClock.sleep(1500)
             notes += "transient-regain-status=${onMain { activity.ttsStatus.value }}"
 
             // Another app takes the audio for good (music, a video): read-aloud pauses and stays paused.
-            request = focusRequest(AudioManager.AUDIOFOCUS_GAIN)
-            assertEquals(AudioManager.AUDIOFOCUS_REQUEST_GRANTED, audioManager.requestAudioFocus(request))
+            assertEquals(AudioManager.AUDIOFOCUS_REQUEST_GRANTED, focus.request(AudioManager.AUDIOFOCUS_GAIN))
             await("paused by the audio focus loss") { activity.ttsStatus.value == TtsStatus.PAUSED }
             val pausedAt = onMain { activity.ttsLocation.value?.utterance }
-            audioManager.abandonAudioFocusRequest(request)
-            request = null
+            focus.abandon()
             SystemClock.sleep(2500)
             assertEquals(TtsStatus.PAUSED, onMain { activity.ttsStatus.value })
             assertEquals(pausedAt, onMain { activity.ttsLocation.value?.utterance })
@@ -315,8 +313,33 @@ class EpubReaderTtsInstrumentationTest {
             await("idle") { activity.ttsStatus.value == TtsStatus.IDLE }
             record("tts-audio-focus-api${Build.VERSION.SDK_INT}.txt", notes)
         } finally {
-            request?.let { audioManager.abandonAudioFocusRequest(it) }
+            focus.abandon()
             finish(activity)
+        }
+    }
+
+    /**
+     * Holds the API 26 focus request behind a nested class: the JUnit runner reflects over this test
+     * class's methods on every device, and a signature mentioning [AudioFocusRequest] would fail to
+     * load on API 24 / 25 before the assumption above can skip the test.
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    private class AudioFocus(private val audioManager: AudioManager) {
+        private var request: AudioFocusRequest? = null
+
+        fun request(gain: Int): Int {
+            abandon()
+            val built = AudioFocusRequest.Builder(gain)
+                .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                .setOnAudioFocusChangeListener {}
+                .build()
+            request = built
+            return audioManager.requestAudioFocus(built)
+        }
+
+        fun abandon() {
+            request?.let { audioManager.abandonAudioFocusRequest(it) }
+            request = null
         }
     }
 
@@ -411,12 +434,6 @@ class EpubReaderTtsInstrumentationTest {
         }
         fail("No notification action titled $title among ${notificationActions().map { it.title }}")
     }
-
-    private fun focusRequest(gain: Int): AudioFocusRequest =
-        AudioFocusRequest.Builder(gain)
-            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
-            .setOnAudioFocusChangeListener {}
-            .build()
 
     private fun shell(command: String): String =
         instrumentation.uiAutomation.executeShellCommand(command).use { descriptor ->

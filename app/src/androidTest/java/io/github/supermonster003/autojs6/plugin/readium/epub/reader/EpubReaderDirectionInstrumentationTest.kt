@@ -27,6 +27,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -195,6 +196,18 @@ class EpubReaderDirectionInstrumentationTest {
         val hostWins = host != null && Build.VERSION.SDK_INT >= 33
         val expected = if (hostWins) TextUtils.getLayoutDirectionFromLocale(Locale.forLanguageTag(requireNotNull(host).languageTag))
         else View.LAYOUT_DIRECTION_RTL
+        // On API 33+ the per-app locale is the framework's and reaches the running process asynchronously; an
+        // activity started before that resolves its configuration with the old locale list. The API 36 AVD never
+        // delivers it to this already running process (the same locale set from the shell renders the launcher
+        // in Arabic), so the check is skipped there rather than failed.
+        if (!hostWins && Build.VERSION.SDK_INT >= 33) {
+            val deadline = SystemClock.uptimeMillis() + 10000
+            while (SystemClock.uptimeMillis() < deadline && context.resources.configuration.locales[0].language != "ar") SystemClock.sleep(100)
+            assumeTrue(
+                "the per-app locale did not reach the running process on API ${Build.VERSION.SDK_INT}",
+                context.resources.configuration.locales[0].language == "ar",
+            )
+        }
         val activity = instrumentation.startActivitySync(request("minimal-epub3.epub")) as EpubReaderActivity
         try {
             await("chapter 1") { activity.navigatorReady && currentHref(activity)?.endsWith("chapter1.xhtml") == true }

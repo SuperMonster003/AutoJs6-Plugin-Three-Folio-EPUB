@@ -814,6 +814,10 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         const val PREFERENCES_FLUSH_DELAY_MILLIS = 400L
 
         /** A picked document with another extension is refused before it is read. */
-        private val FONT_EXTENSIONS = setOf("ttf", "otf")
+        /**
+         * Extensions the picker may hand over. Collections (`ttc` / `otc`) pass this gate so that the
+         * header check can name the real reason for refusing them instead of "not a font".
+         */
+        private val FONT_EXTENSIONS = setOf("ttf", "otf", "ttc", "otc")
     }
 }
