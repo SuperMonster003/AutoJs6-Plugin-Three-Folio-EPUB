@@ -304,7 +304,9 @@ class HostileInputInstrumentationTest {
     private fun IEpubBook.remote(): IEpubBook = IEpubBook.Stub.asInterface(RemoteOnlyBinder(asBinder()))
 
     private fun tryOpen(plugin: IEpubPlugin, file: File): Outcome = try {
-        val book = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { plugin.openBook(it, Bundle()).remote() }
+        val book = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use {
+            plugin.openBook(it, Bundle().apply { putInt(EpubContract.KEY_CONTRACT_VERSION, EpubContract.CONTRACT_VERSION) }).remote()
+        }
         Outcome.Opened(book)
     } catch (e: RuntimeException) {
         val decoded = EpubErrorCodes.decode(e.message.orEmpty())

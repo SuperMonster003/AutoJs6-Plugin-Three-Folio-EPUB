@@ -11,7 +11,9 @@
 * `Hint` Development build of 1.1.0 (roadmap P9): highlights, notes and export are under construction; the entries below record what has landed so far
 * `Feature` Highlights and notes in the reader (roadmap P9.2): the text-selection toolbar highlights the passage with the last chosen colour or opens the note editor (highlight / underline, five colours, note), highlights render in the page and a tap on one reopens its editor, the "Highlights and notes" panel lists them by chapter in reading order with jump / edit / delete / clear all, and the settings page shows and clears the stored highlights
 * `Feature` Export of a book's highlights and notes as Markdown (roadmap P9.3): the panel's export button shares the text through the system share sheet or saves a `.md` file to a place chosen in the document picker; the document lists the title, the authors and the chapters in reading order with each passage, its note and the time
+* `Feature` EPUB contract version 2 for hosts (roadmap P9.4): `IEpubBook.getAnnotations` lists the highlights and notes of a book in reading order, page by page, and a reader session sends a `highlight` event when one is added, edited or removed; the plugin keeps contract version 1 as its advertised baseline, names version 2 in `epubMaxContractVersion`, answers every book and session with the version the host's open request carried, and hosts of version 1 (AutoJs6 6.8.0 build 5282) see no change
 * `Dependency` Add `androidx.room:room-runtime` 2.8.1 (the highlights and notes database, roadmap D4 / P9); `room-compiler` runs through KSP at build time only
+* `Dependency` Upgrade `epub-api.aar` to the release build of EPUB contract version 2 (host module `plugin-api/epub-api`; the source host commit and digest are recorded in `libs/README.md` and `locks/host-api-aars.lock`)
 
 # v1.0.0
 

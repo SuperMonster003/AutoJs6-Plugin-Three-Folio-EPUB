@@ -54,5 +54,6 @@ P9.1 (2026-09-21) 附加 Room 2.8.1 (`room-runtime` 为运行时依赖, `room-co
 |---|---|---|
 | 1.0.0 发布 (`ca3044b`) | 3,340,340 | P8.3 发布门, GitHub Release `v1.0.0` 的资产 |
 | P9.1 (Room) | 3,391,961 | +51,621 B (1.5%); `classes.dex` 2,052,337 + `classes2.dex` 80,707 (压缩后), `assets` 302,465 (含 `v1.1.0` 的 changelog 副本), `resources.arsc` 515,036 不变, `lib/` 仍为空 |
+| P9.4 (契约版本 2 的 `epub-api.aar`, 含 P9.2 / P9.3 的阅读器高亮, 面板与导出) | 3,443,123 | 较 P9.1 +51,162 B (1.5%); `classes.dex` 2,071,076 + `classes2.dex` 80,705 (压缩后), `assets` 310,219 (v1.1.0 changelog 五条), `resources.arsc` 533,948 (P9.2 的选择工具条, 面板与编辑器布局及字符串), `lib/` 仍为空; 来源 `build/p9_commit.py verify 3` 的 `:app:assembleRelease` (build 72, 日志 `build/gradle-p9-commit3.log`, R8 无缺失类告警) |
 
-预算 3,500,000 B (§5) 的余量为 108,039 B (3.1%). Room 在 Android 上使用系统 SQLite (`androidx.sqlite` 的 framework 驱动), 不带原生库, §4 与 AGENTS.md 5.4 的零原生库结论不变 (APK 条目列表中无 `lib/`). P9.2 - P9.3 (阅读器交互, 导出) 只增加插件自身的类与资源, 预计仍在余量之内; P9.6 的发布门再记一次实际体积.
+P9.1 时预算 3,500,000 B (§5) 的余量为 108,039 B (3.1%); P9.4 时余量收窄到 56,877 B (1.6%), 其中契约版本 2 的 AAR 本身只多几个常量与一个 AIDL 方法, 增量几乎全部来自 P9.2 / P9.3 的阅读器类与资源 (`resources.arsc` +18,912). Room 在 Android 上使用系统 SQLite (`androidx.sqlite` 的 framework 驱动), 不带原生库, §4 与 AGENTS.md 5.4 的零原生库结论不变 (APK 条目列表中无 `lib/`). P9.5 (文档) 不改 APK; P9.6 的发布门再记一次实际体积, 若逼近预算则先考虑 §2 的削减项而不是放宽预算.

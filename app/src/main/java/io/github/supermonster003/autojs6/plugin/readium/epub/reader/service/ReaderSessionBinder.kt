@@ -18,7 +18,7 @@ internal class ReaderSessionBinder(
 
     override fun getState(): Bundle {
         guard.check()
-        if (session.closed) return Answers.error(EpubErrorCodes.SESSION_CLOSED, CLOSED_DETAIL)
+        if (session.closed) return Answers.error(session.contractVersion, EpubErrorCodes.SESSION_CLOSED, CLOSED_DETAIL)
         return session.stateBundle()
     }
 
@@ -58,7 +58,7 @@ internal class ReaderSessionBinder(
 
     override fun getBookmarks(): Bundle {
         guard.check()
-        if (session.closed) return Answers.error(EpubErrorCodes.SESSION_CLOSED, CLOSED_DETAIL)
+        if (session.closed) return Answers.error(session.contractVersion, EpubErrorCodes.SESSION_CLOSED, CLOSED_DETAIL)
         return session.bookmarksBundle()
     }
 

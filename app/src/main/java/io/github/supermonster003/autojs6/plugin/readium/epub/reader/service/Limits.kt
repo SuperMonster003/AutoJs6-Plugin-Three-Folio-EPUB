@@ -15,6 +15,9 @@ internal data class TextRequest(val offset: Int, val maxChars: Int, val markdown
 
 internal data class SearchRequest(val query: String, val offset: Int, val limit: Int)
 
+/** A validated `getAnnotations` page request (contract version 2): the resolved page size, never 0. */
+internal data class AnnotationsRequest(val offset: Int, val limit: Int)
+
 /**
  * Bounds of every Binder input (roadmap P5.2, appendix B.2 / B.5), Android-free so JUnit can
  * cover the edges. Missing integers arrive as 0 from a Bundle, so 0 selects the default where a
@@ -80,6 +83,19 @@ internal object Limits {
         if (current >= EpubContract.MAX_OPEN_BOOKS) {
             throw ContractViolation(EpubErrorCodes.LIMIT_EXCEEDED, "at most ${EpubContract.MAX_OPEN_BOOKS} books may be open")
         }
+    }
+
+    /**
+     * Contract version 2: `offset` and `limit` of a `getAnnotations` page; a `limit` of 0 means
+     * `DEFAULT_ANNOTATIONS_LIMIT`, above `MAX_ANNOTATIONS_PAGE` is `LIMIT_EXCEEDED`.
+     */
+    fun annotationsRequest(offset: Int, limit: Int): AnnotationsRequest {
+        if (offset < 0) throw ContractViolation(EpubErrorCodes.INVALID_ARGUMENT, "offset must not be negative")
+        if (limit < 0) throw ContractViolation(EpubErrorCodes.INVALID_ARGUMENT, "limit must not be negative")
+        if (limit > EpubContract.MAX_ANNOTATIONS_PAGE) {
+            throw ContractViolation(EpubErrorCodes.LIMIT_EXCEEDED, "limit exceeds ${EpubContract.MAX_ANNOTATIONS_PAGE}")
+        }
+        return AnnotationsRequest(offset, if (limit == 0) EpubContract.DEFAULT_ANNOTATIONS_LIMIT else limit)
     }
 
     fun optionsBytes(size: Int) {

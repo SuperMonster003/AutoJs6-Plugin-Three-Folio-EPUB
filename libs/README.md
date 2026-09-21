@@ -7,7 +7,7 @@ Before any Gradle configuration, stage the audited **release** artifacts named e
 
 - `common-plugin-api.aar` (host module `plugin-api/common-plugin-api`: `PluginInfo`, `IPluginInfoProvider`, `PluginActions`, `PluginCapabilityKeys`)
 - `explorer-action-api.aar` (host module `plugin-api/explorer-action-api`, frozen at the Explorer Action v1 descriptor that protocol v2 reuses unchanged; see `docs/explorer-action-compatibility.md`)
-- `epub-api.aar` (host module `plugin-api/epub-api`, the EPUB Binder contract of roadmap P5.1, contract version 1; release build of host commit `261417e90`)
+- `epub-api.aar` (host module `plugin-api/epub-api`, the EPUB Binder contract of roadmap P5.1, contract version 2 with baseline 1 since roadmap P9.4; release build of host commit `603bd4a4f`)
 
 Record the lowercase SHA-256 of every staged artifact in `../locks/host-api-aars.lock`.
 `app/build.gradle.kts` rejects missing files, debug artifacts, placeholder hashes, extra lock

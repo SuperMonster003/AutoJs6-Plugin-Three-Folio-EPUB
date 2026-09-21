@@ -13,6 +13,9 @@ internal interface AnnotationDao {
     @Query("SELECT * FROM annotations WHERE bookKey = :bookKey ORDER BY id")
     fun observe(bookKey: String): Flow<List<BookAnnotation>>
 
+    @Query("SELECT * FROM annotations ORDER BY id")
+    fun observeAll(): Flow<List<BookAnnotation>>
+
     @Query("SELECT * FROM annotations WHERE bookKey = :bookKey ORDER BY id")
     suspend fun list(bookKey: String): List<BookAnnotation>
 

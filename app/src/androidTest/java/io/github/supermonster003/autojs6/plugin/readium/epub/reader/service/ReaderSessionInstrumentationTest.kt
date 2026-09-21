@@ -12,11 +12,18 @@ import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationAddResult
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationDatabase
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStyle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
 import java.util.concurrent.TimeUnit
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import kotlinx.coroutines.runBlocking
 import org.autojs.plugin.epub.api.EpubActions
 import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.epub.api.EpubErrorCodes
@@ -24,6 +31,7 @@ import org.autojs.plugin.epub.api.IEpubPlugin
 import org.autojs.plugin.epub.api.IEpubReaderCallback
 import org.autojs.plugin.epub.api.IEpubReaderSession
 import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -42,7 +50,8 @@ import java.io.File
  * stream (`open`, `progress`, `bookmark`, `error`, `close` with one generation and a strictly
  * increasing `seq`), `goTo` / `navigate` / `setPreferences` / `getBookmarks` / `getState`,
  * replacement, the claim timeout, a wrong token, and the contract codes of every refusal.
- * Notes land in `files/p2-evidence/reader-session-api<N>.txt`.
+ * Roadmap P9.4 adds the `highlight` events of contract version 2 and the silence of a version 1
+ * session. Notes land in `files/p2-evidence/reader-session-api<N>.txt`.
  */
 @RunWith(AndroidJUnit4::class)
 class ReaderSessionInstrumentationTest {
@@ -122,14 +131,14 @@ class ReaderSessionInstrumentationTest {
 
     private fun Bundle.errorCode(): String? = getString(EpubContract.KEY_ERROR_CODE)
 
-    private fun Bundle.requireOk(what: String): Bundle {
-        assertEquals(EpubContract.CONTRACT_VERSION, getInt(EpubContract.KEY_CONTRACT_VERSION))
+    private fun Bundle.requireOk(what: String, version: Int = EpubContract.CONTRACT_VERSION): Bundle {
+        assertEquals(what, version, getInt(EpubContract.KEY_CONTRACT_VERSION))
         assertNull("$what: ${getString(EpubContract.KEY_ERROR_MESSAGE)}", errorCode())
         return this
     }
 
-    private fun Bundle.requireError(what: String, code: String): Bundle {
-        assertEquals(EpubContract.CONTRACT_VERSION, getInt(EpubContract.KEY_CONTRACT_VERSION))
+    private fun Bundle.requireError(what: String, code: String, version: Int = EpubContract.CONTRACT_VERSION): Bundle {
+        assertEquals(what, version, getInt(EpubContract.KEY_CONTRACT_VERSION))
         assertEquals(what, code, errorCode())
         return this
     }
@@ -197,6 +206,105 @@ class ReaderSessionInstrumentationTest {
     }
 
     // ---- Tests ----
+
+    /**
+     * Roadmap P9.4 (contract version 2): the highlights stored before the claim are the baseline
+     * (no event), highlights added, edited and removed in the reader reach a version 2 host as
+     * `highlight` events carrying the annotation document, and a session opened by a version 1
+     * host (no version key) answers with version 1 and never hears `highlight`.
+     */
+    @Test
+    fun highlightsReachAVersionTwoHostOnly() {
+        note("device api=${Build.VERSION.SDK_INT}")
+        val plugin = bind()
+        val dao = AnnotationDatabase.get(context).annotations()
+        runBlocking { dao.deleteEverything() }
+        val fullKey = fixture(FIXTURE).inputStream().use { BookFingerprint.fullKey(it.channel) }
+        fun locator(href: String, progression: Double, quote: String) = JSONObject()
+            .put(EpubContract.FIELD_HREF, href)
+            .put(EpubContract.FIELD_TYPE, "application/xhtml+xml")
+            .put(EpubContract.FIELD_LOCATIONS, JSONObject().put(EpubContract.FIELD_PROGRESSION, progression))
+            .put(EpubContract.FIELD_TEXT, JSONObject().put(EpubContract.FIELD_HIGHLIGHT, quote))
+        fun RecordingCallback.highlights() = snapshot().filter { it.type == EpubContract.EVENT_HIGHLIGHT }
+        try {
+            // Stored before the session: the baseline.
+            runBlocking { dao.insert(BookAnnotation(bookKey = fullKey, href = CHAPTER3, locator = locator(CHAPTER3, 0.5, "baseline").toString(), chapter = "Chapter 3", createdAt = 1_000L)) }
+
+            // A version 2 host.
+            val callback = RecordingCallback()
+            val session = openReader(plugin, callback, options { putString(EpubContract.KEY_HREF, CHAPTER1) })
+            val token = requireNotNull(session.state.requireOk("state").getString(EpubContract.KEY_SESSION_TOKEN))
+            val activity = launchReader(token)
+            val open = callback.await("open event") { it.type == EpubContract.EVENT_OPEN }
+            await("navigator ready") { activity.navigatorReady }
+            await("baseline highlight visible to the reader") { activity.annotations.value.size == 1 }
+            SystemClock.sleep(EpubContract.PROGRESS_THROTTLE_MS * 2)
+            assertTrue("no highlight event for the baseline: ${callback.highlights()}", callback.highlights().isEmpty())
+
+            val added = runBlocking { activity.readerModel.addAnnotation(locator(CHAPTER2, 0.3, "the lantern"), AnnotationStyle.HIGHLIGHT, AnnotationColors.YELLOW, null, "Chapter 2") }
+            val row = (added as AnnotationAddResult.Added).annotation
+            val addedEvent = callback.await("highlight added", callback.indexOf(open)) { it.type == EpubContract.EVENT_HIGHLIGHT }
+            assertEquals(EpubContract.CHANGE_ADDED, addedEvent.bundle.getString(EpubContract.KEY_CHANGE))
+            val addedRows = JSONArray(addedEvent.bundle.getString(EpubContract.KEY_ANNOTATIONS))
+            assertEquals(1, addedRows.length())
+            val addedJson = addedRows.getJSONObject(0)
+            assertEquals(row.id, addedJson.getLong(EpubContract.FIELD_ID))
+            assertEquals(EpubContract.STYLE_HIGHLIGHT, addedJson.getString(EpubContract.FIELD_STYLE))
+            assertEquals("#FFD54F", addedJson.getString(EpubContract.FIELD_COLOR)) // AnnotationColors.YELLOW
+            assertEquals("the lantern", addedJson.getString(EpubContract.FIELD_QUOTE))
+            assertEquals("Chapter 2", addedJson.getString(EpubContract.FIELD_TITLE))
+            assertEquals(CHAPTER2, addedJson.getJSONObject(EpubContract.FIELD_LOCATOR).getString(EpubContract.FIELD_HREF))
+            assertFalse(addedJson.has(EpubContract.FIELD_NOTE))
+            assertEquals(row.createdAt, addedJson.getLong(EpubContract.FIELD_CREATED_AT))
+            note("highlight added: $addedRows")
+
+            val edited = runBlocking { activity.readerModel.updateAnnotation(row.copy(style = AnnotationStyle.UNDERLINE, color = AnnotationColors.BLUE, note = "edited")) }
+            assertNotNull(edited)
+            val updatedEvent = callback.await("highlight updated", callback.indexOf(addedEvent)) { it.type == EpubContract.EVENT_HIGHLIGHT }
+            assertEquals(EpubContract.CHANGE_UPDATED, updatedEvent.bundle.getString(EpubContract.KEY_CHANGE))
+            val updatedJson = JSONArray(updatedEvent.bundle.getString(EpubContract.KEY_ANNOTATIONS)).getJSONObject(0)
+            assertEquals(row.id, updatedJson.getLong(EpubContract.FIELD_ID))
+            assertEquals(EpubContract.STYLE_UNDERLINE, updatedJson.getString(EpubContract.FIELD_STYLE))
+            assertEquals("#64B5F6", updatedJson.getString(EpubContract.FIELD_COLOR))
+            assertEquals("edited", updatedJson.getString(EpubContract.FIELD_NOTE))
+            assertTrue(updatedJson.getLong(EpubContract.FIELD_UPDATED_AT) >= updatedJson.getLong(EpubContract.FIELD_CREATED_AT))
+            note("highlight updated: ${updatedEvent.bundle.getString(EpubContract.KEY_ANNOTATIONS)}")
+
+            assertTrue(runBlocking { activity.readerModel.deleteAnnotation(row.id) })
+            val removedEvent = callback.await("highlight removed", callback.indexOf(updatedEvent)) { it.type == EpubContract.EVENT_HIGHLIGHT }
+            assertEquals(EpubContract.CHANGE_REMOVED, removedEvent.bundle.getString(EpubContract.KEY_CHANGE))
+            assertEquals(row.id, JSONArray(removedEvent.bundle.getString(EpubContract.KEY_ANNOTATIONS)).getJSONObject(0).getLong(EpubContract.FIELD_ID))
+            assertEquals(3, callback.highlights().size)
+            note("highlight removed: ${removedEvent.bundle.getString(EpubContract.KEY_ANNOTATIONS)}")
+
+            session.close(options { putBoolean(EpubContract.KEY_FINISH, true) })
+            callback.await("close event", callback.indexOf(removedEvent)) { it.type == EpubContract.EVENT_CLOSE }
+            await("reader finished") { activity.isFinishing || activity.isDestroyed }
+
+            // A version 1 host: no version key in the options.
+            val legacyCallback = RecordingCallback()
+            val legacy = openReader(plugin, legacyCallback, Bundle().apply { putString(EpubContract.KEY_HREF, CHAPTER1) })
+            val legacyToken = requireNotNull(legacy.state.requireOk("legacy state", version = 1).getString(EpubContract.KEY_SESSION_TOKEN))
+            val legacyActivity = launchReader(legacyToken)
+            val legacyOpen = legacyCallback.await("legacy open event") { it.type == EpubContract.EVENT_OPEN }
+            assertEquals(1, legacyOpen.bundle.getInt(EpubContract.KEY_CONTRACT_VERSION))
+            await("legacy navigator ready") { legacyActivity.navigatorReady }
+            val legacyAdded = runBlocking { legacyActivity.readerModel.addAnnotation(locator(CHAPTER1, 0.1, "unheard"), AnnotationStyle.HIGHLIGHT, AnnotationColors.YELLOW, "quiet", "Chapter 1") }
+            assertTrue("$legacyAdded", legacyAdded is AnnotationAddResult.Added)
+            await("legacy reader shows two highlights") { legacyActivity.annotations.value.size == 2 }
+            SystemClock.sleep(EpubContract.PROGRESS_THROTTLE_MS * 2)
+            assertTrue("version 1 host must not hear highlight: ${legacyCallback.highlights()}", legacyCallback.highlights().isEmpty())
+            assertEquals(0, JSONArray(legacy.bookmarks.requireOk("legacy bookmarks", version = 1).getString(EpubContract.KEY_BOOKMARKS)).length())
+            legacyCallback.snapshot().forEach { assertEquals("$it", 1, it.bundle.getInt(EpubContract.KEY_CONTRACT_VERSION)) }
+            note("version 1 session: ${legacyCallback.snapshot().size} events, all stamped 1, no highlight")
+            legacy.close(options { putBoolean(EpubContract.KEY_FINISH, true) })
+            legacyCallback.await("legacy close event", legacyCallback.indexOf(legacyOpen)) { it.type == EpubContract.EVENT_CLOSE }
+            await("legacy reader finished") { legacyActivity.isFinishing || legacyActivity.isDestroyed }
+        } finally {
+            runBlocking { dao.deleteEverything() }
+            writeNotes("reader-session-highlights")
+        }
+    }
 
     @Test
     fun sessionRoundTripThroughTheReader() {

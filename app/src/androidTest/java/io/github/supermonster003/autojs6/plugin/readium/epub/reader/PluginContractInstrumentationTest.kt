@@ -35,6 +35,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** Declared by the room-runtime manifest since roadmap P9.1; never exported, never bound by this plugin. */
+private const val ROOM_INVALIDATION_SERVICE = "androidx.room.MultiInstanceInvalidationService"
+
 @RunWith(AndroidJUnit4::class)
 class PluginContractInstrumentationTest {
 
@@ -101,13 +104,17 @@ class PluginContractInstrumentationTest {
             setOf(
                 EpubCapabilityKeys.REQUIRES_HOST_VERSION,
                 EpubCapabilityKeys.CONTRACT_VERSION,
+                EpubCapabilityKeys.MAX_CONTRACT_VERSION,
                 EpubCapabilityKeys.FEATURES,
                 EpubCapabilityKeys.READIUM_VERSION,
             ),
             capabilities?.keySet(),
         )
         assertEquals(EpubIds.REQUIRED_HOST_VERSION_CODE, capabilities?.getLong(EpubCapabilityKeys.REQUIRES_HOST_VERSION))
-        assertEquals(EpubContract.CONTRACT_VERSION, capabilities?.getInt(EpubCapabilityKeys.CONTRACT_VERSION))
+        // Roadmap P9.4: the baseline stays 1 for version 1 hosts; the newest version is advertised separately.
+        assertEquals(EpubContract.MIN_CONTRACT_VERSION, capabilities?.getInt(EpubCapabilityKeys.CONTRACT_VERSION))
+        assertEquals(EpubContract.MAX_CONTRACT_VERSION, capabilities?.getInt(EpubCapabilityKeys.MAX_CONTRACT_VERSION))
+        assertEquals(2, capabilities?.getInt(EpubCapabilityKeys.MAX_CONTRACT_VERSION))
         assertEquals(ReadiumEpubReaderPlugin.EPUB_FEATURES, capabilities?.getStringArray(EpubCapabilityKeys.FEATURES)?.toList())
         assertEquals(BuildConfig.READIUM_VERSION, capabilities?.getString(EpubCapabilityKeys.READIUM_VERSION))
         assertEquals(epubCapabilities().keySet(), capabilities?.keySet())
@@ -255,8 +262,9 @@ class PluginContractInstrumentationTest {
             assertFalse(activity.name, info.exported)
         }
 
-        // Four services in the package (roadmap P5.2 audit): the three exported plugin doors above and the
-        // read-aloud service (roadmap P3 / D15), the only one not exported, media playback type.
+        // Five services in the package (roadmap P5.2 audit, P9.1): the three exported plugin doors above, the
+        // read-aloud service (roadmap P3 / D15, media playback type) and Room's own invalidation service
+        // (roadmap P9.1, declared by the room-runtime manifest); the last two are not exported.
         val services = packageManager.getPackageInfo(context.packageName, PackageManager.GET_SERVICES).services.orEmpty()
         assertEquals(
             setOf(
@@ -264,9 +272,11 @@ class PluginContractInstrumentationTest {
                 PluginInfoService::class.java.name,
                 ReadiumEpubReaderPluginService::class.java.name,
                 TtsForegroundService::class.java.name,
+                ROOM_INVALIDATION_SERVICE,
             ),
             services.map { it.name }.toSet(),
         )
+        assertFalse(ROOM_INVALIDATION_SERVICE, packageManager.getServiceInfo(ComponentName(context.packageName, ROOM_INVALIDATION_SERVICE), 0).exported)
         val ttsService = packageManager.getServiceInfo(ComponentName(context, TtsForegroundService::class.java), 0)
         assertFalse(ttsService.exported)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {

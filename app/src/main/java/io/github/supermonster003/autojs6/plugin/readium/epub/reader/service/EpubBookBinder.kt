@@ -3,6 +3,11 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader.service
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationJson
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationPolicy
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookJson
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.HtmlBlockExtractor
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
@@ -19,6 +24,7 @@ import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.epub.api.EpubErrorCodes
 import org.autojs.plugin.epub.api.IEpubBook
 import org.json.JSONArray
+import org.json.JSONObject
 import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Link
 import org.readium.r2.shared.publication.Locator
@@ -35,6 +41,9 @@ import org.readium.r2.shared.util.getOrElse
  * [Publication] backed by the host's descriptor. Calls on one book are serialized by [mutex];
  * every Bundle answer either carries its result keys or an error code, and after [release]
  * every call answers `SESSION_CLOSED`. [lastUsedAt] feeds the idle sweep of [BookRegistry].
+ * Every answer is stamped with [contractVersion], the version the host's `openBook` request
+ * negotiated (roadmap P9.4); `getAnnotations` (contract version 2) reads the reader's highlights
+ * of this book from [annotations] under the book's fingerprint.
  */
 @OptIn(ExperimentalReadiumApi::class)
 internal class EpubBookBinder(
@@ -42,6 +51,8 @@ internal class EpubBookBinder(
     private val resource: PfdResource,
     private val guard: CallerGuard,
     private val onClosed: (EpubBookBinder) -> Unit,
+    val contractVersion: Int = ContractVersions.BASELINE,
+    private val annotations: AnnotationStore? = null,
 ) : IEpubBook.Stub() {
 
     @Volatile
@@ -55,14 +66,19 @@ internal class EpubBookBinder(
     private val mutex = Mutex()
     private var cachedBlocks: Pair<String, List<TextBlock>>? = null
 
+    /** The book's fingerprints (full, then the quick alias), computed once on the first `getAnnotations`. */
+    private var fingerprints: List<String>? = null
+
+    private fun ok(build: Bundle.() -> Unit): Bundle = Answers.ok(contractVersion, build)
+
     override fun getMetadata(): Bundle = answer {
         val metadata = BookJson.metadata(publication, publication.positions().size).toString()
-        Answers.ok { putString(EpubContract.KEY_METADATA, metadata) }
+        ok { putString(EpubContract.KEY_METADATA, metadata) }
     }
 
     override fun getToc(): Bundle = answer {
         val toc = BookJson.toc(publication)
-        Answers.ok {
+        ok {
             putString(EpubContract.KEY_TOC, toc.array.toString())
             putBoolean(EpubContract.KEY_HAS_MORE, toc.hasMore)
         }
@@ -70,7 +86,7 @@ internal class EpubBookBinder(
 
     override fun getReadingOrder(): Bundle = answer {
         val order = BookJson.readingOrder(publication)
-        Answers.ok {
+        ok {
             putString(EpubContract.KEY_READING_ORDER, order.array.toString())
             putBoolean(EpubContract.KEY_HAS_MORE, order.hasMore)
         }
@@ -86,7 +102,7 @@ internal class EpubBookBinder(
         val (index, link) = resolveResource(req)
         val rendered = TextExtractor.render(blocksOf(link), text.markdown)
         val chunk = TextExtractor.slice(rendered, text.offset, text.maxChars)
-        Answers.ok {
+        ok {
             putString(EpubContract.KEY_HREF, link.href.toString())
             putInt(EpubContract.KEY_INDEX, index)
             putString(EpubContract.KEY_FORMAT, if (text.markdown) EpubContract.FORMAT_MARKDOWN else EpubContract.FORMAT_TEXT)
@@ -146,7 +162,7 @@ internal class EpubBookBinder(
         }
         val results = JSONArray()
         hits.drop(search.offset).forEach { results.put(BookJson.searchResult(it)) }
-        Answers.ok {
+        ok {
             putString(EpubContract.KEY_QUERY, search.query)
             putInt(EpubContract.KEY_OFFSET, search.offset)
             putString(EpubContract.KEY_RESULTS, results.toString())
@@ -156,12 +172,66 @@ internal class EpubBookBinder(
 
     override fun getPositions(): Bundle = answer {
         val count = publication.positions().size
-        Answers.ok { putInt(EpubContract.KEY_POSITIONS, count) }
+        ok { putInt(EpubContract.KEY_POSITIONS, count) }
     }
 
     override fun close() {
         guard.check()
         release()
+    }
+
+    /**
+     * Contract version 2 (roadmap P9.4): one page of the reader's highlights and notes of this
+     * book, in reading order, cut early to stay below `MAX_ANNOTATIONS_BYTES`. A book the host
+     * opened as a version 1 peer answers `INVALID_ARGUMENT`: such a host must not call this at all.
+     */
+    override fun getAnnotations(request: Bundle?): Bundle = answer {
+        if (!ContractVersions.supportsAnnotations(contractVersion)) {
+            throw ContractViolation(
+                EpubErrorCodes.INVALID_ARGUMENT,
+                "getAnnotations needs contract version ${EpubContract.CONTRACT_VERSION_ANNOTATIONS}; this book was opened with version $contractVersion",
+            )
+        }
+        val store = annotations ?: throw ContractViolation(EpubErrorCodes.INTERNAL, "the annotation store is not available")
+        val req = request ?: Bundle.EMPTY
+        val page = Limits.annotationsRequest(req.getInt(EpubContract.KEY_OFFSET), req.getInt(EpubContract.KEY_LIMIT))
+        val all = AnnotationPolicy.ordered(storedAnnotations(store), publication.readingOrder.map { it.href.toString() })
+        val array = JSONArray()
+        var bytes = 2
+        var count = 0
+        for (annotation in all.drop(page.offset)) {
+            if (count >= page.limit) break
+            val json = AnnotationJson.toJson(annotation).toString()
+            val size = json.toByteArray(Charsets.UTF_8).size + 1
+            if (count > 0 && bytes + size > EpubContract.MAX_ANNOTATIONS_BYTES) break
+            array.put(JSONObject(json))
+            bytes += size
+            count++
+        }
+        ok {
+            putInt(EpubContract.KEY_OFFSET, page.offset)
+            putString(EpubContract.KEY_ANNOTATIONS, array.toString())
+            putBoolean(EpubContract.KEY_HAS_MORE, page.offset + count < all.size)
+        }
+    }
+
+    /**
+     * The rows of this book under its full fingerprint, plus whatever still sits under the quick
+     * alias (a reader that has not finished its fingerprint migration); the full key wins on the
+     * same place, like the migration itself.
+     */
+    private suspend fun storedAnnotations(store: AnnotationStore): List<BookAnnotation> {
+        val keys = fingerprints ?: fingerprintsOf().also { fingerprints = it }
+        val primary = store.list(keys[0])
+        if (keys.size < 2) return primary
+        val alias = store.list(keys[1])
+        return primary + AnnotationPolicy.mergeable(primary, alias)
+    }
+
+    private fun fingerprintsOf(): List<String> {
+        val full = ParcelFileDescriptor.AutoCloseInputStream(resource.duplicateDescriptor()).use { BookFingerprint.fullKey(it.channel) }
+        val quick = ParcelFileDescriptor.AutoCloseInputStream(resource.duplicateDescriptor()).use { BookFingerprint.quickKey(it.channel) }
+        return if (quick == full) listOf(full) else listOf(full, quick)
     }
 
     /** Closes the book from either side of the Binder; idempotent. */
@@ -191,11 +261,11 @@ internal class EpubBookBinder(
                 }
             }
         } catch (e: ContractViolation) {
-            Answers.error(e)
+            Answers.error(contractVersion, e)
         } catch (e: SecurityException) {
             throw e
         } catch (e: Throwable) {
-            Answers.error(EpubErrorCodes.INTERNAL, e.toString())
+            Answers.error(contractVersion, EpubErrorCodes.INTERNAL, e.toString())
         }
     }
 

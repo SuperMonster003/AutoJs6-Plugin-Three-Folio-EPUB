@@ -60,6 +60,7 @@ Readium 为阅读顺序中的每个资源创建一个 `R2BasicWebView` (`R2EpubP
 | `PluginInfoService`, `ExplorerActionService` | 是 | `PLUGIN` | 宿主协议 |
 | `service.ReadiumEpubReaderPluginService` | 是 | `PLUGIN` + `CallerGuard` (宿主包名) | 只读描述符与有界参数 (`service/Limits`) |
 | `tts.TtsForegroundService` | 否 | - | 只有阅读器绑定 |
+| `androidx.room.MultiInstanceInvalidationService` (Room 运行时清单声明, P9.1) | 否 | - | 只有本进程的 Room 数据库 (未启用多进程失效通知) |
 | debug `EpubReaderTestContentProvider` | 仅 debug 包 | - | 测试文档 |
 
 ## 5. 存储与日志

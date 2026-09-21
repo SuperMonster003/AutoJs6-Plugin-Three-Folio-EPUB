@@ -26,6 +26,17 @@ class LimitsTest {
         assertEquals(EpubErrorCodes.LIMIT_EXCEEDED to "too much", EpubErrorCodes.decode(violation.message.orEmpty()))
     }
 
+    /** Contract version 2 (roadmap P9.4): the `getAnnotations` page request. */
+    @Test
+    fun annotationsPagesResolveTheDefaultAndRefuseTheOutOfRange() {
+        assertEquals(AnnotationsRequest(0, EpubContract.DEFAULT_ANNOTATIONS_LIMIT), Limits.annotationsRequest(0, 0))
+        assertEquals(AnnotationsRequest(150, 7), Limits.annotationsRequest(150, 7))
+        assertEquals(AnnotationsRequest(0, EpubContract.MAX_ANNOTATIONS_PAGE), Limits.annotationsRequest(0, EpubContract.MAX_ANNOTATIONS_PAGE))
+        assertEquals(EpubErrorCodes.INVALID_ARGUMENT, violation { Limits.annotationsRequest(-1, 0) }.code)
+        assertEquals(EpubErrorCodes.INVALID_ARGUMENT, violation { Limits.annotationsRequest(0, -1) }.code)
+        assertEquals(EpubErrorCodes.LIMIT_EXCEEDED, violation { Limits.annotationsRequest(0, EpubContract.MAX_ANNOTATIONS_PAGE + 1) }.code)
+    }
+
     @Test
     fun hrefsAreTrimmedBoundedAndFreeOfControlCharacters() {
         assertEquals("OEBPS/ch1.xhtml", Limits.href("  OEBPS/ch1.xhtml\n"))

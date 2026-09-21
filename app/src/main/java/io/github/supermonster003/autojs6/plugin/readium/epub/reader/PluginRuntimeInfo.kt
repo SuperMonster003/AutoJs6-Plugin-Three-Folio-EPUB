@@ -3,6 +3,7 @@ package io.github.supermonster003.autojs6.plugin.readium.epub.reader
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ContractVersions
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.common.api.PluginInfo
 import org.autojs.plugin.epub.api.EpubCapabilityKeys
@@ -43,8 +44,9 @@ internal object ReadiumEpubReaderPlugin {
 
     /**
      * Features the `org.autojs.plugin.EPUB` service advertises (roadmap P5.2, `reader-session`
-     * since P5.3). `tts` stays out: contract version 1 has no read-aloud control surface, so
-     * advertising it would promise nothing a host can call. Android-free so JUnit can lock the set.
+     * since P5.3, `annotations` since P9.4 with contract version 2). `tts` stays out: the contract
+     * has no read-aloud control surface, so advertising it would promise nothing a host can call.
+     * Android-free so JUnit can lock the set.
      */
     val EPUB_FEATURES: List<String> = listOf(
         EpubContract.FEATURE_SEARCH,
@@ -52,6 +54,7 @@ internal object ReadiumEpubReaderPlugin {
         EpubContract.FEATURE_RESOURCE_EXPORT,
         EpubContract.FEATURE_MARKDOWN,
         EpubContract.FEATURE_READER_SESSION,
+        EpubContract.FEATURE_ANNOTATIONS,
     )
 
     /**
@@ -109,10 +112,15 @@ internal fun Context.readiumEpubPluginInfo(): PluginInfo = pluginIdentity(
     capabilities = epubCapabilities(),
 )
 
-/** `PluginInfo.capabilities` of the EPUB service and the answer of `IEpubPlugin.getCapabilities`. */
+/**
+ * `PluginInfo.capabilities` of the EPUB service and the answer of `IEpubPlugin.getCapabilities`.
+ * The baseline version stays 1 so hosts of contract version 1 keep accepting the plugin; the
+ * newest version travels in `epubMaxContractVersion` (roadmap P9.4, [ContractVersions]).
+ */
 internal fun epubCapabilities(): Bundle = Bundle().apply {
     putLong(EpubCapabilityKeys.REQUIRES_HOST_VERSION, EpubIds.REQUIRED_HOST_VERSION_CODE)
-    putInt(EpubCapabilityKeys.CONTRACT_VERSION, EpubContract.CONTRACT_VERSION)
+    putInt(EpubCapabilityKeys.CONTRACT_VERSION, ContractVersions.BASELINE)
+    putInt(EpubCapabilityKeys.MAX_CONTRACT_VERSION, ContractVersions.NEWEST)
     putStringArray(EpubCapabilityKeys.FEATURES, ReadiumEpubReaderPlugin.EPUB_FEATURES.toTypedArray())
     putString(EpubCapabilityKeys.READIUM_VERSION, BuildConfig.READIUM_VERSION)
 }

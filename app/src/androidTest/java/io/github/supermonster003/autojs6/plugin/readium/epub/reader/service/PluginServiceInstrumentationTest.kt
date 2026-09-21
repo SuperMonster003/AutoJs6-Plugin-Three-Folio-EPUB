@@ -11,11 +11,17 @@ import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationDatabase
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStyle
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookFingerprint
 import java.util.concurrent.TimeUnit
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.BuildConfig
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.readiumEpubReaderPluginInfo
+import kotlinx.coroutines.runBlocking
 import org.autojs.plugin.epub.api.EpubCapabilityKeys
 import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.epub.api.EpubErrorCodes
@@ -67,19 +73,28 @@ class PluginServiceInstrumentationTest {
 
     private fun IEpubBook.remote(): IEpubBook = IEpubBook.Stub.asInterface(RemoteOnlyBinder(asBinder()))
 
-    private fun open(plugin: IEpubPlugin, name: String, options: Bundle = Bundle()): IEpubBook =
+    /** The options a version 2 host writes (roadmap P9.4); [openLegacy] plays a version 1 host. */
+    private fun options(build: Bundle.() -> Unit = {}): Bundle = Bundle().apply {
+        putInt(EpubContract.KEY_CONTRACT_VERSION, EpubContract.CONTRACT_VERSION)
+        build()
+    }
+
+    private fun open(plugin: IEpubPlugin, name: String, options: Bundle = options()): IEpubBook =
         descriptor(name).use { plugin.openBook(it, options).remote() }
+
+    /** A host of contract version 1 (6.8.0 build 5282): no version key at all. */
+    private fun openLegacy(plugin: IEpubPlugin, name: String): IEpubBook = open(plugin, name, Bundle())
 
     private fun Bundle.errorCode(): String? = getString(EpubContract.KEY_ERROR_CODE)
 
-    private fun Bundle.requireOk(what: String): Bundle {
-        assertEquals(EpubContract.CONTRACT_VERSION, getInt(EpubContract.KEY_CONTRACT_VERSION))
+    private fun Bundle.requireOk(what: String, version: Int = EpubContract.CONTRACT_VERSION): Bundle {
+        assertEquals(what, version, getInt(EpubContract.KEY_CONTRACT_VERSION))
         assertNull("$what: ${getString(EpubContract.KEY_ERROR_MESSAGE)}", errorCode())
         return this
     }
 
-    private fun Bundle.requireError(what: String, code: String): Bundle {
-        assertEquals(EpubContract.CONTRACT_VERSION, getInt(EpubContract.KEY_CONTRACT_VERSION))
+    private fun Bundle.requireError(what: String, code: String, version: Int = EpubContract.CONTRACT_VERSION): Bundle {
+        assertEquals(what, version, getInt(EpubContract.KEY_CONTRACT_VERSION))
         assertEquals(what, code, errorCode())
         assertTrue(what, getString(EpubContract.KEY_ERROR_MESSAGE).orEmpty().toByteArray().size <= EpubContract.MAX_ERROR_MESSAGE_BYTES)
         return this
@@ -100,6 +115,14 @@ class PluginServiceInstrumentationTest {
         book.search(
             Bundle().apply {
                 putString(EpubContract.KEY_QUERY, query)
+                putInt(EpubContract.KEY_OFFSET, offset)
+                putInt(EpubContract.KEY_LIMIT, limit)
+            },
+        )
+
+    private fun annotations(book: IEpubBook, offset: Int = 0, limit: Int = 0): Bundle =
+        book.getAnnotations(
+            Bundle().apply {
                 putInt(EpubContract.KEY_OFFSET, offset)
                 putInt(EpubContract.KEY_LIMIT, limit)
             },
@@ -157,7 +180,8 @@ class PluginServiceInstrumentationTest {
         assertEquals(explorer.name, info.name)
 
         val capabilities = plugin.capabilities
-        assertEquals(EpubContract.CONTRACT_VERSION, capabilities.getInt(EpubCapabilityKeys.CONTRACT_VERSION))
+        assertEquals(EpubContract.MIN_CONTRACT_VERSION, capabilities.getInt(EpubCapabilityKeys.CONTRACT_VERSION))
+        assertEquals(EpubContract.MAX_CONTRACT_VERSION, capabilities.getInt(EpubCapabilityKeys.MAX_CONTRACT_VERSION))
         assertEquals(EpubIds.REQUIRED_HOST_VERSION_CODE, capabilities.getLong(EpubCapabilityKeys.REQUIRES_HOST_VERSION))
         assertEquals(ReadiumEpubReaderPlugin.EPUB_FEATURES, capabilities.getStringArray(EpubCapabilityKeys.FEATURES)?.toList())
         assertEquals(BuildConfig.READIUM_VERSION, capabilities.getString(EpubCapabilityKeys.READIUM_VERSION))
@@ -170,7 +194,7 @@ class PluginServiceInstrumentationTest {
         val plugin = bind()
         val baseline = openDescriptors()
         note("device api=${Build.VERSION.SDK_INT} readium=${BuildConfig.READIUM_VERSION} descriptors=$baseline")
-        val book = open(plugin, "minimal-epub3.epub", Bundle().apply { putString(EpubContract.KEY_DISPLAY_NAME, "minimal-epub3.epub") })
+        val book = open(plugin, "minimal-epub3.epub", options { putString(EpubContract.KEY_DISPLAY_NAME, "minimal-epub3.epub") })
 
         // Metadata.
         val metadata = JSONObject(book.metadata.requireOk("metadata").getString(EpubContract.KEY_METADATA).orEmpty())
@@ -299,6 +323,82 @@ class PluginServiceInstrumentationTest {
         note("descriptors after close: $after (baseline $baseline)")
         assertTrue("descriptors leaked: $baseline -> $after", after <= baseline)
         writeNotes("service")
+    }
+
+    /**
+     * Roadmap P9.4 (contract version 2): a book opened by a version 1 host answers with version 1
+     * and refuses `getAnnotations`; a version 2 book pages the reader's highlights of the same
+     * file (stored under its full fingerprint) in reading order, echoes the offset, flags the
+     * remainder and refuses an oversized page.
+     */
+    @Test
+    fun annotationsFollowTheNegotiatedVersion() {
+        val plugin = bind()
+        val database = AnnotationDatabase.get(context)
+        val dao = database.annotations()
+        runBlocking { dao.deleteEverything() }
+        val file = fixture("minimal-epub3.epub")
+        val key = file.inputStream().use { BookFingerprint.fullKey(it.channel) }
+        try {
+            val legacy = openLegacy(plugin, "minimal-epub3.epub")
+            legacy.metadata.requireOk("legacy metadata", version = 1)
+            legacy.positions.requireOk("legacy positions", version = 1)
+            annotations(legacy).requireError("legacy getAnnotations", EpubErrorCodes.INVALID_ARGUMENT, version = 1)
+            legacy.close()
+            note("version 1 host: answers stamped 1, getAnnotations refused with INVALID_ARGUMENT")
+
+            val book = open(plugin, "minimal-epub3.epub")
+            book.metadata.requireOk("v2 metadata")
+            val empty = annotations(book).requireOk("empty page")
+            assertEquals(0, JSONArray(empty.getString(EpubContract.KEY_ANNOTATIONS)).length())
+            assertFalse(empty.getBoolean(EpubContract.KEY_HAS_MORE))
+
+            fun locator(href: String, progression: Double, quote: String) = JSONObject()
+                .put(EpubContract.FIELD_HREF, href)
+                .put(EpubContract.FIELD_TYPE, "application/xhtml+xml")
+                .put(EpubContract.FIELD_LOCATIONS, JSONObject().put(EpubContract.FIELD_PROGRESSION, progression))
+                .put(EpubContract.FIELD_TEXT, JSONObject().put(EpubContract.FIELD_HIGHLIGHT, quote))
+                .toString()
+            runBlocking {
+                // Inserted out of reading order on purpose; the third chapter first.
+                dao.insert(BookAnnotation(bookKey = key, href = "OEBPS/chapter3.xhtml", locator = locator("OEBPS/chapter3.xhtml", 0.4, "third"), quote = "third", style = AnnotationStyle.UNDERLINE, color = AnnotationColors.BLUE, note = "a note", chapter = "Chapter 3", createdAt = 1_000L))
+                dao.insert(BookAnnotation(bookKey = key, href = "OEBPS/chapter1.xhtml", locator = locator("OEBPS/chapter1.xhtml", 0.7, "later in one"), quote = "later in one", createdAt = 2_000L))
+                dao.insert(BookAnnotation(bookKey = key, href = "OEBPS/chapter1.xhtml", locator = locator("OEBPS/chapter1.xhtml", 0.2, "early in one"), quote = "early in one", createdAt = 3_000L))
+            }
+            val all = JSONArray(annotations(book).requireOk("all").getString(EpubContract.KEY_ANNOTATIONS))
+            assertEquals(3, all.length())
+            assertEquals(listOf("early in one", "later in one", "third"), (0 until 3).map { all.getJSONObject(it).getString(EpubContract.FIELD_QUOTE) })
+            val third = all.getJSONObject(2)
+            assertEquals(EpubContract.STYLE_UNDERLINE, third.getString(EpubContract.FIELD_STYLE))
+            assertEquals("#64B5F6", third.getString(EpubContract.FIELD_COLOR))
+            assertEquals("a note", third.getString(EpubContract.FIELD_NOTE))
+            assertEquals("Chapter 3", third.getString(EpubContract.FIELD_TITLE))
+            assertEquals("OEBPS/chapter3.xhtml", third.getJSONObject(EpubContract.FIELD_LOCATOR).getString(EpubContract.FIELD_HREF))
+            assertTrue(third.getLong(EpubContract.FIELD_ID) > 0L)
+            assertEquals(1_000L, third.getLong(EpubContract.FIELD_CREATED_AT))
+            assertFalse(all.getJSONObject(0).has(EpubContract.FIELD_NOTE))
+            assertEquals(setOf("id", "style", "color", "quote", "locator", "createdAt", "updatedAt"), all.getJSONObject(0).keys().asSequence().toSet())
+
+            val first = annotations(book, offset = 0, limit = 2).requireOk("page 1")
+            assertEquals(0, first.getInt(EpubContract.KEY_OFFSET))
+            assertEquals(2, JSONArray(first.getString(EpubContract.KEY_ANNOTATIONS)).length())
+            assertTrue(first.getBoolean(EpubContract.KEY_HAS_MORE))
+            val second = annotations(book, offset = 2, limit = 2).requireOk("page 2")
+            assertEquals(2, second.getInt(EpubContract.KEY_OFFSET))
+            assertEquals("third", JSONArray(second.getString(EpubContract.KEY_ANNOTATIONS)).getJSONObject(0).getString(EpubContract.FIELD_QUOTE))
+            assertFalse(second.getBoolean(EpubContract.KEY_HAS_MORE))
+            val beyond = annotations(book, offset = 9, limit = 2).requireOk("beyond")
+            assertEquals(0, JSONArray(beyond.getString(EpubContract.KEY_ANNOTATIONS)).length())
+            assertFalse(beyond.getBoolean(EpubContract.KEY_HAS_MORE))
+            annotations(book, limit = EpubContract.MAX_ANNOTATIONS_PAGE + 1).requireError("oversized page", EpubErrorCodes.LIMIT_EXCEEDED)
+            annotations(book, offset = -1).requireError("negative offset", EpubErrorCodes.INVALID_ARGUMENT)
+            book.close()
+            annotations(book).requireError("after close", EpubErrorCodes.SESSION_CLOSED)
+            note("version 2 host: 3 highlights in reading order, pages 2+1, limit ${EpubContract.MAX_ANNOTATIONS_PAGE + 1} refused")
+        } finally {
+            runBlocking { dao.deleteEverything() }
+            writeNotes("service-annotations")
+        }
     }
 
     @Test

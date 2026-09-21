@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -191,6 +192,16 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     /** The adopted book's own descriptor copy for the fingerprints; closed with the book. */
     private var adoptedDescriptor: ParcelFileDescriptor? = null
     private var bookmarkAnnounceJob: Job? = null
+
+    /** Roadmap P9.4: the host session hears the highlights of the adopted book as `highlight` events. */
+    private var annotationAnnounceJob: Job? = null
+
+    /**
+     * Every key the adopted book has been stored under (the quick alias, then the full
+     * fingerprint): the announcer filters the live table by this set, so the fingerprint
+     * migration moving rows between the two keys is not a change.
+     */
+    private val announcedBookKeys = LinkedHashSet<String>()
     private val fontsMutex = Mutex()
     private val _fonts = MutableStateFlow(fontStore.read())
 
@@ -396,6 +407,17 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         bookmarkAnnounceJob = viewModelScope.launch {
             _bookmarks.collect { session.updateBookmarks(it) }
         }
+        // The stored highlights are the baseline too (contract version 2, roadmap P9.4); the live
+        // table is filtered by every key this book has had, so the migration below moves nothing.
+        synchronized(announcedBookKeys) {
+            announcedBookKeys.clear()
+            stored.key?.let { announcedBookKeys.add(it) }
+        }
+        annotationAnnounceJob = viewModelScope.launch {
+            annotationStore.observeAll()
+                .map { rows -> synchronized(announcedBookKeys) { rows.filter { it.bookKey in announcedBookKeys } } }
+                .collect { session.updateAnnotations(it) }
+        }
         return OpenState.Ready
     }
 
@@ -451,6 +473,8 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         hostSession = null
         bookmarkAnnounceJob?.cancel()
         bookmarkAnnounceJob = null
+        annotationAnnounceJob?.cancel()
+        annotationAnnounceJob = null
     }
 
     /**
@@ -466,6 +490,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
             }
         }.getOrNull() ?: return
         fullFingerprintMillis = SystemClock.elapsedRealtime() - started
+        synchronized(announcedBookKeys) { if (announcedBookKeys.isNotEmpty()) announcedBookKeys.add(fullKey) }
         storeMutex.withLock {
             val current = bookKey ?: return
             // Store writes never take the reader down (see persist): a failed alias write only
@@ -828,6 +853,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         recentUri = null
         bookmarkAnnounceJob?.cancel()
         bookmarkAnnounceJob = null
+        annotationAnnounceJob?.cancel()
+        annotationAnnounceJob = null
+        synchronized(announcedBookKeys) { announcedBookKeys.clear() }
         adoptedDescriptor?.let { runCatching { it.close() } }
         adoptedDescriptor = null
         tts.stop()

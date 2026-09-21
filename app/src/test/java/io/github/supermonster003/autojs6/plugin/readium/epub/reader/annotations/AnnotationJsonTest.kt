@@ -1,5 +1,6 @@
 package io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations
 
+import org.autojs.plugin.epub.api.EpubContract
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -42,6 +43,23 @@ class AnnotationJsonTest {
         assertEquals(100L, json.getLong("createdAt"))
         assertEquals(200L, json.getLong("updatedAt"))
         assertEquals(setOf("id", "style", "color", "note", "quote", "title", "locator", "createdAt", "updatedAt"), json.keys().asSequence().toSet())
+    }
+
+    /** Roadmap P9.4: the document's field names are the contract's (`EpubContract.FIELD_*`, contract version 2). */
+    @Test
+    fun theFieldNamesAreTheContracts() {
+        assertEquals(EpubContract.FIELD_ID, AnnotationJson.FIELD_ID)
+        assertEquals(EpubContract.FIELD_STYLE, AnnotationJson.FIELD_STYLE)
+        assertEquals(EpubContract.FIELD_COLOR, AnnotationJson.FIELD_COLOR)
+        assertEquals(EpubContract.FIELD_NOTE, AnnotationJson.FIELD_NOTE)
+        assertEquals(EpubContract.FIELD_QUOTE, AnnotationJson.FIELD_QUOTE)
+        assertEquals(EpubContract.FIELD_TITLE, AnnotationJson.FIELD_TITLE)
+        assertEquals(EpubContract.FIELD_LOCATOR, AnnotationJson.FIELD_LOCATOR)
+        assertEquals(EpubContract.FIELD_CREATED_AT, AnnotationJson.FIELD_CREATED_AT)
+        assertEquals(EpubContract.FIELD_UPDATED_AT, AnnotationJson.FIELD_UPDATED_AT)
+        assertEquals(EpubContract.STYLE_HIGHLIGHT, AnnotationStyle.HIGHLIGHT)
+        assertEquals(EpubContract.STYLE_UNDERLINE, AnnotationStyle.UNDERLINE)
+        assertEquals(EpubContract.MAX_ANNOTATIONS, AnnotationPolicy.MAX_PER_BOOK)
     }
 
     @Test

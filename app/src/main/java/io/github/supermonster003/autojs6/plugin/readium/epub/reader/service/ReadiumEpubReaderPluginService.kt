@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.BuildConfig
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationDatabase
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpenError
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.BookOpener
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
@@ -36,6 +38,7 @@ class ReadiumEpubReaderPluginService : Service() {
     private val guard by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { CallerGuard(this, allowOwnUid = BuildConfig.DEBUG) }
     private val opener by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { BookOpener(this) }
     private val registry = BookRegistry()
+    private val annotationStore by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { AnnotationStore(AnnotationDatabase.get(this)) }
 
     private val binder = object : IEpubPlugin.Stub() {
         override fun getInfo(): PluginInfo {
@@ -88,7 +91,7 @@ class ReadiumEpubReaderPluginService : Service() {
             val opened = runBlocking { withTimeoutOrNull(EpubContract.OPEN_TIMEOUT_MS) { opener.open(pfdResource) } }
                 ?: throw ContractViolation(EpubErrorCodes.TIMEOUT, "opening took longer than ${EpubContract.OPEN_TIMEOUT_MS} ms")
             val publication = opened.getOrElse { error -> throw ContractViolation(codeOf(error), error.message) }
-            val book = EpubBookBinder(publication, pfdResource, guard, registry::remove)
+            val book = EpubBookBinder(publication, pfdResource, guard, registry::remove, ContractVersions.of(options), annotationStore)
             try {
                 registry.register(book)
             } catch (e: ContractViolation) {
@@ -137,7 +140,7 @@ class ReadiumEpubReaderPluginService : Service() {
                 ?: throw ContractViolation(EpubErrorCodes.TIMEOUT, "opening took longer than ${EpubContract.OPEN_TIMEOUT_MS} ms")
             val book = opened.getOrElse { error -> throw ContractViolation(codeOf(error), error.message) }
             publication = book
-            val session = ReaderSessionRegistry.open(displayName, pfdResource, book, target, preferences?.patch ?: PreferencePatch.EMPTY, callback)
+            val session = ReaderSessionRegistry.open(displayName, ContractVersions.of(options), pfdResource, book, target, preferences?.patch ?: PreferencePatch.EMPTY, callback)
             if (target != null) {
                 try {
                     session.validateTarget(target)

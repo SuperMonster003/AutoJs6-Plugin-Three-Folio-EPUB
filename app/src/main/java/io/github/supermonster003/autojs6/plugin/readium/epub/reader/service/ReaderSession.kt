@@ -6,6 +6,8 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.RemoteException
 import android.os.SystemClock
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationJson
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.PfdResource
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.TocFlattener
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
@@ -54,14 +56,18 @@ internal interface ReaderSessionController {
  *
  * Events go out as `onEvent(generation, seq, bundle)` with one generation per session and a
  * strictly increasing `seq`; `open` once the navigator shows the book, `progress` throttled to
- * [EpubContract.PROGRESS_THROTTLE_MS], `bookmark` per added or removed bookmark, `error` for a
- * refused preference key or an unreachable `goTo` target, and exactly one `close` with its
- * reason. A dead host callback ends the session silently and the reader stays open for the user.
+ * [EpubContract.PROGRESS_THROTTLE_MS], `bookmark` per added or removed bookmark, `highlight`
+ * per added, updated or removed highlight or note (contract version 2 only, roadmap P9.4),
+ * `error` for a refused preference key or an unreachable `goTo` target, and exactly one `close`
+ * with its reason. Every bundle is stamped with [contractVersion], the version the host's
+ * `openReader` request negotiated. A dead host callback ends the session silently and the reader
+ * stays open for the user.
  */
 internal class ReaderSession(
     val token: String,
     val generation: Long,
     val displayName: String?,
+    val contractVersion: Int,
     resource: PfdResource,
     val publication: Publication,
     initialTarget: SessionTarget?,
@@ -111,6 +117,7 @@ internal class ReaderSession(
     @Volatile
     private var bookmarksJson: JSONArray = JSONArray()
     private var knownBookmarks: Map<Long, Bookmark>? = null
+    private var knownAnnotations: Map<Long, BookAnnotation>? = null
 
     private var opened = false
     private val progressThrottle = ProgressThrottle<Locator>(EpubContract.PROGRESS_THROTTLE_MS)
@@ -245,6 +252,34 @@ internal class ReaderSession(
         }
     }
 
+    /**
+     * The highlights of the book as the view model observes them (contract version 2): the first
+     * list is the baseline, later ones are diffed by row id into `highlight` events (removed
+     * first, then added and updated in list order). A row whose only change is its book key (the
+     * fingerprint migration) is not a change. A version 1 host hears nothing.
+     */
+    fun updateAnnotations(annotations: List<BookAnnotation>) {
+        val next = annotations.associateBy { it.id }
+        val previous = knownAnnotations
+        knownAnnotations = next
+        if (previous == null || !ContractVersions.supportsAnnotations(contractVersion)) return
+        previous.values.filter { it.id !in next }.forEach { emitHighlight(EpubContract.CHANGE_REMOVED, it) }
+        annotations.forEach { annotation ->
+            val before = previous[annotation.id]
+            when {
+                before == null -> emitHighlight(EpubContract.CHANGE_ADDED, annotation)
+                before.copy(bookKey = annotation.bookKey) != annotation -> emitHighlight(EpubContract.CHANGE_UPDATED, annotation)
+            }
+        }
+    }
+
+    private fun emitHighlight(change: String, annotation: BookAnnotation) {
+        emit(EpubContract.EVENT_HIGHLIGHT) {
+            putString(EpubContract.KEY_CHANGE, change)
+            putString(EpubContract.KEY_ANNOTATIONS, JSONArray().put(AnnotationJson.toJson(annotation)).toString())
+        }
+    }
+
     // ---- Host side (binder threads) ----
 
     /** Checks that [target] names a place of this book; the shape was checked by [SessionTarget.parse]. */
@@ -300,7 +335,7 @@ internal class ReaderSession(
         handler.post { adopter.applyPreferencePatch(parse.patch) }
     }
 
-    fun stateBundle(): Bundle = Answers.ok {
+    fun stateBundle(): Bundle = Answers.ok(contractVersion) {
         putString(EpubContract.KEY_SESSION_TOKEN, token)
         putBoolean(EpubContract.KEY_VISIBLE, visible)
         putInt(EpubContract.KEY_POSITIONS, positions)
@@ -315,7 +350,7 @@ internal class ReaderSession(
         }
     }
 
-    fun bookmarksBundle(): Bundle = Answers.ok { putString(EpubContract.KEY_BOOKMARKS, bookmarksJson.toString()) }
+    fun bookmarksBundle(): Bundle = Answers.ok(contractVersion) { putString(EpubContract.KEY_BOOKMARKS, bookmarksJson.toString()) }
 
     /**
      * Ends the session exactly once: the `close` event (unless the host is gone), the callback
@@ -395,13 +430,14 @@ internal class ReaderSession(
 
     /** Under [lock]: numbers and sends one event; false when the host callback is gone. */
     private fun send(type: String, build: Bundle.() -> Unit): Boolean {
-        val bundle = Answers.ok {
+        val bundle = Answers.ok(contractVersion) {
             putString(EpubContract.KEY_EVENT, type)
             build()
         }
         if (DescriptorIo.parcelSize(bundle) > EpubContract.MAX_EVENT_BYTES) {
             bundle.remove(EpubContract.KEY_LOCATOR)
             bundle.remove(EpubContract.KEY_BOOKMARKS)
+            bundle.remove(EpubContract.KEY_ANNOTATIONS)
             if (DescriptorIo.parcelSize(bundle) > EpubContract.MAX_EVENT_BYTES) return true
         }
         return try {
@@ -438,13 +474,14 @@ internal object ReaderSessionRegistry {
 
     fun open(
         displayName: String?,
+        contractVersion: Int,
         resource: PfdResource,
         publication: Publication,
         target: SessionTarget?,
         preferences: PreferencePatch,
         callback: IEpubReaderCallback,
     ): ReaderSession {
-        val session = ReaderSession(HostSessionPolicy.newToken(), generations.incrementAndGet(), displayName, resource, publication, target, preferences, callback)
+        val session = ReaderSession(HostSessionPolicy.newToken(), generations.incrementAndGet(), displayName, contractVersion, resource, publication, target, preferences, callback)
         session.onClosed = ::forget
         val previous: ReaderSession?
         synchronized(this) {

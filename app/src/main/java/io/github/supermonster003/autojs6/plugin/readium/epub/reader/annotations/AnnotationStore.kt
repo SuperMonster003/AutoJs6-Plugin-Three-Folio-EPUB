@@ -28,6 +28,9 @@ internal class AnnotationStore(private val database: AnnotationDatabase) {
 
     fun observe(bookKey: String): Flow<List<BookAnnotation>> = dao.observe(bookKey)
 
+    /** Every row of every book, live; the host session announcer filters it by the keys its book has had (roadmap P9.4). */
+    fun observeAll(): Flow<List<BookAnnotation>> = dao.observeAll()
+
     suspend fun list(bookKey: String): List<BookAnnotation> = dao.list(bookKey)
 
     suspend fun get(id: Long): BookAnnotation? = dao.get(id)

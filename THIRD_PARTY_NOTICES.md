@@ -25,8 +25,8 @@ the components themselves embed.
 ## AutoJs6 EPUB API
 
 - Component: `epub-api.aar` (EPUB Binder contract of roadmap P5: `IEpubPlugin`, `IEpubBook`, `IEpubReaderSession`, `IEpubReaderCallback`, `EpubActions`, `EpubCapabilityKeys`, `EpubContract`, `EpubErrorCodes`, `EpubIds`)
-- Source: <https://github.com/SuperMonster003/AutoJs6> (`plugin-api/epub-api`), release build of host commit `261417e90` (AutoJs6 6.8.0, build 5282; contract version 1)
-- SHA-256: `cabb624968959c46618c891026c328928f8f9ee4ec8cc2b45ee532e41c9ee535` (pinned in `locks/host-api-aars.lock`)
+- Source: <https://github.com/SuperMonster003/AutoJs6> (`plugin-api/epub-api`), release build of host commit `603bd4a4f` (AutoJs6 6.8.0 development tree after build 5282; contract version 2, baseline 1)
+- SHA-256: `20cbec07056f9b07735f7d617323c01c21574eae68b76f562aa1625e2ee96226` (pinned in `locks/host-api-aars.lock`)
 - License: Mozilla Public License 2.0
 
 ## Readium Kotlin Toolkit
