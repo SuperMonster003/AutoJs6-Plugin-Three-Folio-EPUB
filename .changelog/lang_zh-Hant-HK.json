@@ -6,9 +6,9 @@
   "changelog_label_dependency": "依賴",
   "$data": {
     "v1.0.0": {
-      "released_date": "2026/09/19",
+      "released_date": "2026/09/21",
       "hint": [
-        "開發組建: 路線圖 P0 階段 (骨架, Readium 驗證, 測試樣本) 進行中; 首個公開版本隨路線圖 P8 階段發佈"
+        "首個正式版本: 1.0.0 完成路線圖 P0 至 P8 階段 (閱讀器, 偏好與字型, 搜尋與書籤, 朗讀, 獨立入口, 宿主契約, `epub` 指令碼 API, 健壯性與發佈 gate); `epub` 指令碼 API 與範例指令碼隨 AutoJs6 6.8.0 (版本號 5282) 提供; 標示, 筆記與匯出將在 1.1.0 (路線圖 P9) 跟進"
       ],
       "feature": [
         "AutoJs6 檔案管理器中為 `.epub` 檔案提供 `閱讀 EPUB` 主按鈕與溢出選單動作 (外掛程式 ID `readium-epub-reader`, Explorer Action v2); 宿主回報為 `application/zip` 且副檔名為 `.epub` 的檔案同樣接受",

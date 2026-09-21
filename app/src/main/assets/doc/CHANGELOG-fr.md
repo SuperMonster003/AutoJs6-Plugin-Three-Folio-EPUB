@@ -6,9 +6,9 @@
 
 # v1.0.0
 
-###### 2026/09/19
+###### 2026/09/21
 
-* `Note` Version de développement : les phases P0 de la feuille de route (squelette, validation de Readium, jeux d'essai) sont en cours ; la première version publique arrive avec la phase P8
+* `Note` Première version : 1.0.0 clôt les phases P0 à P8 de la feuille de route (liseuse, préférences et polices, recherche et signets, lecture à voix haute, entrée autonome, contrat de l'hôte, API de script `epub`, robustesse et porte de publication) ; l'API de script `epub` et les scripts d'exemple sont livrés avec AutoJs6 6.8.0 (build 5282) ; les surlignages, les notes et l'export suivront dans 1.1.0 (feuille de route P9)
 * `Fonctionnalité` Un bouton principal `Lire l'EPUB` et une action de menu pour les fichiers `.epub` dans le gestionnaire de fichiers d'AutoJs6 (ID de plugin `readium-epub-reader`, Explorer Action v2); les fichiers portant l'extension `.epub` que l'hôte signale comme `application/zip` sont aussi acceptés
 * `Fonctionnalité` Base de la liseuse : les livres EPUB 2 et EPUB 3 sont rendus par le navigateur Readium, avec une table des matières et des liens externes confirmés
 * `Fonctionnalité` Mémoire de la position de lecture : la dernière position de chaque livre est enregistrée sous l'empreinte de son contenu (clé rapide à l'ouverture, puis SHA-256 du fichier complet) et restaurée à l'ouverture suivante ; `Reprendre au début` l'efface

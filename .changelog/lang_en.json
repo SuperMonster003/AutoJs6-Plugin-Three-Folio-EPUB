@@ -6,9 +6,9 @@
   "changelog_label_dependency": "Dependency",
   "$data": {
     "v1.0.0": {
-      "released_date": "2026/09/19",
+      "released_date": "2026/09/21",
       "hint": [
-        "Development build: the roadmap phases P0 (skeleton, Readium spike, fixtures) are in progress; the first public release ships with roadmap phase P8"
+        "First release: 1.0.0 closes roadmap phases P0 to P8 (reader, preferences and fonts, search and bookmarks, read-aloud, standalone entry, host contract, `epub` script API, robustness and the release gate); the `epub` script API and the sample scripts ship with AutoJs6 6.8.0 (build 5282); highlights, notes and export follow in 1.1.0 (roadmap P9)"
       ],
       "feature": [
         "A `Readium EPUB Reader` primary button and overflow action for `.epub` files in the AutoJs6 file manager (plugin ID `readium-epub-reader`, Explorer Action v2); files the host reports as `application/zip` with the `.epub` extension are accepted too",

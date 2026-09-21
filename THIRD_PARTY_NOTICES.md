@@ -3,7 +3,10 @@
 This file records third-party components shipped with or consumed by the Readium EPUB Reader
 plugin. The plugin itself is licensed under the Mozilla Public License 2.0; the components below
 retain their own licenses. Runtime dependencies are added to this list in the same commit that
-introduces them.
+introduces them. Reconciled with `:app:dependencies --configuration releaseRuntimeClasspath` for the
+1.0.0 release (2026-09-21, roadmap P8.2). The plugin bundles no license texts under `assets/`: the settings
+page opens `LICENSE` and this file from the repository, and the release APK carries only the notices that
+the components themselves embed.
 
 ## AutoJs6 common plugin API
 
@@ -54,7 +57,7 @@ introduces them.
 
 ## AndroidX and Material Components
 
-- Component: `androidx.activity:activity-ktx`, `androidx.appcompat:appcompat`, `androidx.constraintlayout:constraintlayout`, `androidx.core:core-ktx`, `androidx.fragment:fragment-ktx`, `androidx.lifecycle:lifecycle-runtime-ktx`, `androidx.lifecycle:lifecycle-viewmodel-ktx`, `androidx.webkit:webkit`, `com.google.android.material:material`
+- Component: `androidx.activity:activity-ktx`, `androidx.appcompat:appcompat`, `androidx.constraintlayout:constraintlayout`, `androidx.core:core-ktx`, `androidx.databinding:viewbinding` (the generated view binding classes), `androidx.fragment:fragment-ktx`, `androidx.lifecycle:lifecycle-runtime-ktx`, `androidx.lifecycle:lifecycle-viewmodel-ktx`, `androidx.webkit:webkit`, `com.google.android.material:material`
 - Source: <https://github.com/androidx/androidx>, <https://github.com/material-components/material-components-android>
 - License: Apache License 2.0
 

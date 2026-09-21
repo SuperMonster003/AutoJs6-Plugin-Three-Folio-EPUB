@@ -307,9 +307,9 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 #### v1.0.0
 
-_2026/09/19_
+_2026/09/21_
 
-- `Hint` Development build: the roadmap phases P0 (skeleton, Readium spike, fixtures) are in progress; the first public release ships with roadmap phase P8
+- `Hint` First release: 1.0.0 closes roadmap phases P0 to P8 (reader, preferences and fonts, search and bookmarks, read-aloud, standalone entry, host contract, `epub` script API, robustness and the release gate); the `epub` script API and the sample scripts ship with AutoJs6 6.8.0 (build 5282); highlights, notes and export follow in 1.1.0 (roadmap P9)
 - `Feature` A `Readium EPUB Reader` primary button and overflow action for `.epub` files in the AutoJs6 file manager (plugin ID `readium-epub-reader`, Explorer Action v2); files the host reports as `application/zip` with the `.epub` extension are accepted too
 - `Feature` Reader baseline: EPUB 2 and EPUB 3 books render through the Readium navigator, with a table of contents and confirmed external links
 - `Feature` Reading position memory: the last locator of every book is saved under its content fingerprint (a quick key while opening, the full-file SHA-256 afterwards) and restored on the next open; `Start from the beginning` clears it
