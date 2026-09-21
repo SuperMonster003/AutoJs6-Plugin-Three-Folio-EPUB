@@ -216,6 +216,7 @@ _2026/09/19_
 - `修正` NCX / OPF の XML が途中で切れているか不正な本はフェイルクローズするようになりました: サービスは `PARSE_FAILED` を返し, リーダーは開けなかったパネルを表示します. 以前は `INTERNAL` コードか, Readium の XML パーサーが投げる `AssertionError` によるクラッシュでした (ロードマップ P7.1)
 - `修正` `search` の 1 ページはプラグイン側で 50 秒に制限され, 巨大な本 (50 000 リソース) の後方でしか一致しないクエリには `TIMEOUT` を返します. Binder スレッドがホスト自身の 60 秒の呼び出しタイムアウトを過ぎても忙しいままになることはなくなりました (ロードマップ P7.1)
 - `修正` リーダーで Readium が作成するすべてのページ WebView は, Readium 自身の設定に加えて境界を持つようになりました: ファイルシステムとコンテンツプロバイダーへのアクセスを禁止し, file URL の 2 つのクロスオリジンスイッチをオフにし, JavaScript は Readium のために有効のままです (ロードマップ D6). WebView, コンテナ, コンポーネントの境界レビューは `docs/dev/security-boundaries.md` に記録されています (ロードマップ P7.2)
+- `修正` リーダーのプロセスが未処理の例外で終了する場合, システム自身のクラッシュ処理が走る前に現在の読書位置を同期的にディスクへ書き込みます. プラグイン自体はログを書かず Timber のツリーも植えないため, 本のタイトル, パス, 本文が logcat に出ることはありません (ロードマップ P7.7)
 - `依存関係` Readium Kotlin Toolkit 3.4.0 を追加 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `依存関係` `androidx.media3:media3-session` 1.11.0 を追加 (`readium-navigator-media-tts` が間接的に導入済み. 読み上げのフォアグラウンドサービスのために直接宣言)
 - `依存関係` `org.jsoup:jsoup` 1.23.2 を追加 (`readium-shared` が間接的に導入済み. EPUB サービスの章テキスト抽出のために直接宣言)

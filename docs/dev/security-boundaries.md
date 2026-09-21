@@ -66,7 +66,8 @@ Readium 为阅读顺序中的每个资源创建一个 `R2BasicWebView` (`R2EpubP
 
 - `android:allowBackup="false"`; 书从不复制 (D11, `PfdResource` 直接在描述符上定位读); 被拒绝的书不写盘 (第 2 节).
 - `files/` 只保存进度, 书签, 最近列表, 导入字体与设置; 无书正文缓存.
-- 日志: 插件源码没有 `Log.*` / Timber 调用; Readium 内部的 Timber 没有被种树, 其输出为空操作 (P7.7 记录).
+- 日志 (P7.7): 插件源码没有 `Log.*` / Timber 调用, 也不为 Timber 种树 (设备断言 `Timber.treeCount == 0`), Readium 内部的 Timber 输出因此是空操作; release 与 debug 相同. 书名, 路径, 正文不会进入 logcat.
+- 崩溃前保存进度 (P7.7): `store/CrashFlush` 在首次注册时接管默认未捕获异常处理器, 崩溃时先同步运行每个注册的 flush (互不影响), 再把异常交还给系统原来的处理器; 阅读器 view model 在书打开期间注册一次 `flushProgressNow` (当前 locator 直接经原子写入落盘, 不等节流与持久化协程), 随阅读器一起注销. 证据 `EpubReaderCrashFlushInstrumentationTest` (`files/p2-evidence/crash-flush-api<N>.txt`): 6 台设备上 flush 在 4 .. 14 ms 内把第三章位置写到磁盘, 注册数打开时 1, 关闭后 0; JVM `CrashFlushTest` 覆盖顺序, 失败隔离与卸载.
 
 ## 6. 设备证据
 

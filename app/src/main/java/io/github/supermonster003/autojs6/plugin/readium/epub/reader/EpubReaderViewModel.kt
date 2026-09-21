@@ -34,6 +34,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.Sess
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.Bookmark
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookmarkCodec
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.CrashFlush
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontImportResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.FontStore
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
@@ -130,6 +131,9 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     private val persistScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))
     private val throttle = ProgressThrottle<ProgressRecord>()
     private var delayedFlush: Job? = null
+
+    /** Roadmap P7.7: if the process is about to die from an uncaught exception, the position is written first. */
+    private val crashFlush = CrashFlush.register(::flushProgressNow)
 
     private val _state = MutableStateFlow<OpenState>(OpenState.Idle)
     val state: StateFlow<OpenState> get() = _state
@@ -483,6 +487,19 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         throttle.flush(System.currentTimeMillis())?.let(::persist)
     }
 
+    /**
+     * The crash path (roadmap P7.7) cannot wait for [persistScope]: the current locator is written on the
+     * dying thread, straight through the atomic store write. The recent list catches up on the next open.
+     */
+    private fun flushProgressNow() {
+        val key = bookKey ?: return
+        val locator = lastLocator ?: return
+        delayedFlush?.cancel()
+        val now = System.currentTimeMillis()
+        throttle.flush(now)
+        store.writeProgress(key, ProgressRecord(locator.toJSON(), now, locator.locations.totalProgression))
+    }
+
     /** "Start from the beginning": forgets the stored position of this book. */
     fun clearProgress() {
         delayedFlush?.cancel()
@@ -766,6 +783,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     override fun onCleared() {
         flushProgress()
+        crashFlush.cancel()
         flushPreferences()
         // The user left the reader: the host hears `close(user)` before the book goes.
         hostSession?.close(EpubContract.REASON_USER, finish = false)

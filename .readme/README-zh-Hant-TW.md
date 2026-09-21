@@ -216,6 +216,7 @@ _2026/09/19_
 - `修復` NCX / OPF 的 XML 被截斷或格式錯誤的書籍現在會失敗關閉: 服務回答 `PARSE_FAILED`, 閱讀器顯示開啟失敗面板, 而不是 `INTERNAL` 代碼或因 Readium XML 解析器擲回的 `AssertionError` 而當機 (路線圖 P7.1)
 - `修復` 單頁 `search` 在插件側限制為 50 秒, 查詢只在超大書籍 (50 000 個資源) 的靠後位置命中時回答 `TIMEOUT`, Binder 執行緒不再在宿主自身的 60 秒呼叫逾時之後繼續忙碌 (路線圖 P7.1)
 - `修復` 閱讀器中 Readium 建立的每個頁面 WebView 現在都在 Readium 自身設定之上帶有邊界: 不允許存取檔案系統與內容提供者, 兩個 file URL 跨來源開關關閉, JavaScript 為 Readium 保持開啟 (路線圖 D6); WebView, 容器與元件邊界的複核記錄在 `docs/dev/security-boundaries.md` (路線圖 P7.2)
+- `修復` 閱讀器處理程序因未捕捉例外而死亡時, 先同步把目前閱讀位置寫入磁碟, 再交給系統自身的當機處理; 插件本身不寫日誌也不為 Timber 種樹, 書名, 路徑與正文不會進入 logcat (路線圖 P7.7)
 - `相依性` 附加 Readium Kotlin Toolkit 3.4.0 (`readium-shared`, `readium-streamer`, `readium-navigator`, `readium-navigator-media-tts`)
 - `相依性` 附加 `androidx.media3:media3-session` 1.11.0 (`readium-navigator-media-tts` 已間接引入; 為朗讀前台服務直接宣告)
 - `相依性` 附加 `org.jsoup:jsoup` 1.23.2 (`readium-shared` 已間接引入; 為 EPUB 服務的章節文字擷取直接宣告)

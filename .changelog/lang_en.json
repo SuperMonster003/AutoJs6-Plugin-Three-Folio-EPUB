@@ -46,7 +46,8 @@
         "A host session whose launch intent reaches a reader already on top of its task (single-top delivery, for example after a script left the reader open) opens in a fresh reader instead of waiting unclaimed until the 60 s timeout; the previous reader ends like a replaced one (roadmap P6.2)",
         "A book whose NCX / OPF XML is truncated or otherwise malformed now fails closed: the service answers `PARSE_FAILED` and the reader shows its open-failed panel, instead of the `INTERNAL` code or a crash from the `AssertionError` that Readium's XML parser throws (roadmap P7.1)",
         "One `search` page is bounded to 50 s on the plugin side and answers `TIMEOUT` when the query only matches late in a huge book (50 000 resources), so the Binder thread no longer stays busy past the host's own 60 s call timeout (roadmap P7.1)",
-        "Every page WebView Readium creates in the reader now carries a boundary on top of Readium's own settings: no file-system or content-provider access and both file-URL cross-origin switches off, while JavaScript stays on for Readium (roadmap D6); the review of the WebView, container and component boundaries is recorded in `docs/dev/security-boundaries.md` (roadmap P7.2)"
+        "Every page WebView Readium creates in the reader now carries a boundary on top of Readium's own settings: no file-system or content-provider access and both file-URL cross-origin switches off, while JavaScript stays on for Readium (roadmap D6); the review of the WebView, container and component boundaries is recorded in `docs/dev/security-boundaries.md` (roadmap P7.2)",
+        "If the reader process dies from an uncaught exception, the current reading position is written to disk first, synchronously, before the system's own crash handling runs; the plugin itself writes no logs and plants no Timber tree, so no book title, path or text ever reaches logcat (roadmap P7.7)"
       ]
     }
   }
