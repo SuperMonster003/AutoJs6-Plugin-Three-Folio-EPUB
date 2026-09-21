@@ -154,6 +154,8 @@ class EpubReaderLauncherInstrumentationTest {
 
         main { launcher.openBook(launcher.shownBooks.single()) }
         val reader = awaitReader()
+        assertEquals(missing, reader.intent.data)
+        assertNotNull("The launcher request must reach the reader", onMain { reader.resolveRequest() })
         await("open failed") { reader.readerModel.state.value is OpenState.Failed }
         assertTrue((reader.readerModel.state.value as OpenState.Failed).failure is OpenFailure.CannotRead)
         await("marked unavailable") { store.read().single().available == false }

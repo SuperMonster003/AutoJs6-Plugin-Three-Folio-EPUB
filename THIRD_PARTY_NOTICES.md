@@ -80,6 +80,7 @@ in the APK.
 
 - JUnit 4 (`junit:junit`): Eclipse Public License 1.0
 - AndroidX Test (`androidx.test:runner`, `androidx.test:rules`, `androidx.test.ext:junit`): Apache License 2.0
+- Android Test Orchestrator (`androidx.test:orchestrator:1.6.1`): Apache License 2.0; test execution only, installed separately from the application. Source: https://developer.android.com/jetpack/androidx/releases/test; SHA-256 of `orchestrator-1.6.1.apk`: `0a8aa1f18da0613d863be7be26e2a5c8de2f6892660b86577848a122ff7df6c5`.
 - kotlinx-coroutines-test: Apache License 2.0
 
 ## Test fixtures

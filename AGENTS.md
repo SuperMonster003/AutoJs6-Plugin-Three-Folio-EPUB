@@ -301,6 +301,7 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 - `build.yml`: push, pull request 与手动触发; `contents: read`; JDK 21 Temurin; 运行 AAR 门禁, JVM 测试, lint, debug / androidTest APK 与原生对齐检查, 上传产物; 在 API 24 (x86) 与 API 35 (x86_64) 模拟器上执行 instrumentation 测试.
 - `markdown.yml`: Windows 环境运行 `.python\check_markdown.bat`, 阻止生成文档漂移.
 - CI action 使用固定大版本并定期更新; timeout 与真实构建时长匹配.
+- CI 的设备测试通过 `-Preadium.test.isolate=true` 启用 Android Test Orchestrator, 每个用例使用独立进程并清除被测应用数据, 避免阅读进度, 后台朗读与异步持久化影响后续用例. 本地常规运行默认保留原有方式; 使用隔离模式时只能连接测试设备, 不用于保留个人书籍及设置的设备.
 
 ## 17. 验证顺序
 
