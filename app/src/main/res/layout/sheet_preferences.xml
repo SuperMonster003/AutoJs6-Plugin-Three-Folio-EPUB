@@ -205,6 +205,7 @@
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/font_size_slider"
+                    android:contentDescription="@string/text_preferences_font_size"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -269,6 +270,7 @@
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/page_margins_slider"
+                    android:contentDescription="@string/text_preferences_page_margins"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -346,6 +348,7 @@
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/line_height_slider"
+                        android:contentDescription="@string/text_preferences_line_height"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -374,6 +377,7 @@
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/paragraph_spacing_slider"
+                        android:contentDescription="@string/text_preferences_paragraph_spacing"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

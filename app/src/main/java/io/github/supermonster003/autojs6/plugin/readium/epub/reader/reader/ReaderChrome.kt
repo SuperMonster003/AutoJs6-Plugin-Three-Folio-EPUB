@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.view.size
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.databinding.ActivityEpubReaderBinding
@@ -75,7 +74,9 @@ internal class ReaderChrome(
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             root.updatePadding(left = bars.left, right = bars.right)
             binding.toolbar.updatePadding(top = bars.top)
-            binding.toolbar.updateLayoutParams { height = actionBarSize + bars.top }
+            // A minimum, not a fixed height: at large font scales the title and the chapter subtitle need
+            // more than the action bar size together, and the toolbar grows instead of clipping them.
+            binding.toolbar.minimumHeight = actionBarSize + bars.top
             binding.progressPanel.updatePadding(bottom = bars.bottom)
             binding.statusPanel.updatePadding(bottom = statusPanelPaddingBottom + bars.bottom)
             WindowInsetsCompat.CONSUMED

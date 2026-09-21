@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- wrap_content with the action bar as the minimum: at large font scales the title and the
+         chapter subtitle need more than 56 dp together, and a fixed height would clip the subtitle. -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/AppTheme.Toolbar"
         app:popupTheme="@style/AppTheme.PopupOverlay"
