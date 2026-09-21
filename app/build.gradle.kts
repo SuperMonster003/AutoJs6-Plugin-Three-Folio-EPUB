@@ -372,6 +372,9 @@ extra {
 
 // Reject accidental native dependencies on every ABI (roadmap D7).
 nativeAlignment { expectNoNativeLibraries.set(true) }
+// The aggregate verifier reads whatever APKs exist under outputs/apk: order it after the assemblies named on the same
+// command line, otherwise Gradle may schedule it first and find nothing (GitHub-hosted runner, roadmap P8.3).
+tasks.named("verifyNativePageAlignment") { mustRunAfter("assembleDebug", "assembleRelease") }
 
 // Fail before collection when credentials, keystore or the actual APK set are incomplete.
 val verifySignedReleaseArtifacts = tasks.register("verifySignedReleaseArtifacts") {
