@@ -43,7 +43,36 @@
 
 يقرأ الملحق الكتاب مباشرة عبر واصف الملف المؤقت الذي يمنحه المضيف. لا يحصل أبدا على مسار نظام الملفات, ولا ينسخ الكتاب إلى أي مكان, ولا يستخرجه إلى التخزين.
 
-> المرحلة الحالية (بنية تطوير 1.0.0): يفتح القارئ الكتاب بإعدادات Readium الافتراضية, ويوفر جدول محتويات, ويتذكر موضع القراءة لكل كتاب, ويقدم وضع التمرير ومناطق النقر ومفاتيح الصوت ووضع الانغماس, ويضم لوحة تفضيلات لحجم النص والخط والتباعد والمحاذاة والأعمدة والمظاهر يمكنها اتباع الوضع الليلي للمضيف, ويستورد خطوط TTF أو OTF الخاصة بك ويدعم كتب CJK العمودية والكتب التي تقرأ من اليمين إلى اليسار, ويعرض كتب التخطيط الثابت بصفحة واحدة أو صفحتين, ويبحث في الكتاب كله, ويحفظ الإشارات المرجعية, ويتعامل مع روابط الكتاب الداخلية والملاحظات والصور مع مناطق نقر قابلة للضبط ومفاتيح لوحة المفاتيح, ويقرأ بصوت عال بمحرك تحويل النص إلى كلام في النظام. تفتح أيقونة التطبيق مشغلا مستقلا يعرض الكتب الأخيرة ومنتقي المستندات في النظام, ويمكن للتطبيقات الأخرى تسليم كتاب EPUB عبر `ACTION_VIEW`, وتغطي صفحة الإعدادات القيم الافتراضية للقارئ والبيانات المحفوظة على الجهاز والتحقق اليدوي من التحديثات. تقدم خدمة `org.autojs.plugin.EPUB` لمضيف AutoJs6 البيانات الوصفية وجدول المحتويات والنص والموارد والبحث وتفتح جلسة قراءة يقودها المضيف (أحداث الموضع والإشارات المرجعية والإغلاق, والانتقالات, وتقليب الصفحات, والتفضيلات); وواجهة البرمجة `epub` مخططة في ROADMAP.md وتصل مع عميل المضيف.
+> 1.0.0 هو الإصدار الأول. يفتح القارئ كتب EPUB 2 وEPUB 3 مع جدول محتويات, ويتذكر موضع القراءة لكل كتاب, ويقدم وضع التمرير ومناطق النقر ومفاتيح الصوت ووضع الانغماس, ولوحة تفضيلات (حجم النص والخط والتباعد والمحاذاة والأعمدة ومظاهر يمكنها اتباع الوضع الليلي للمضيف), وخطوط TTF / OTF المستوردة, وكتب CJK العمودية والكتب من اليمين إلى اليسار, وكتب التخطيط الثابت بصفحة واحدة أو صفحتين متقابلتين, والبحث في النص الكامل, والإشارات المرجعية, والروابط داخل الكتاب, والحواشي والصور, والقراءة بصوت عال بمحرك تحويل النص إلى كلام في النظام. يفتح رمز التطبيق مشغلا يضم الكتب الأخيرة ومنتقي مستندات النظام, وتسلم التطبيقات الأخرى ملف EPUB عبر `ACTION_VIEW`, وتغطي صفحة الإعدادات القيم الافتراضية للقارئ والبيانات المحفوظة على الجهاز والتحقق اليدوي من التحديثات. تشحن واجهة البرمجة النصية `epub` وجلسة قارئ المضيف وثلاثة نصوص برمجية نموذجية مع AutoJs6 6.8.0 (البنية 5282). التمييز والملاحظات والتصدير مخطط لها في 1.1.0 (ROADMAP.md, P9).
+
+******
+
+### لقطات الشاشة
+
+******
+
+التقطت على هاتف من كتب العينة المولدة في `docs/fixtures` (لا يعرض أي كتاب من طرف ثالث); تتبع الواجهة لغة AutoJs6, وهي هنا الإنجليزية:
+
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>القراءة</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>جدول المحتويات</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>تفضيلات القراءة</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>البحث في النص الكامل</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>الإشارات المرجعية</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>القراءة بصوت عال</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>المظهر الداكن</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>مظهر البني الداكن</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>اليابانية العمودية</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>التخطيط الثابت</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>الكتب الأخيرة</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>الإعدادات</td>
+  </tr>
+</table>
 
 ******
 
@@ -68,10 +97,20 @@
 - مشغل مستقل: تفتح أيقونة التطبيق شبكة الكتب الأخيرة مع الغلاف والعنوان والمؤلف والتقدم ووقت آخر قراءة, إضافة إلى زر `فتح EPUB` الذي يختار كتابا عبر منتقي المستندات في النظام; القارئ هو نفسه الذي يفتحه مدير الملفات.
 - يفتح من تطبيقات أخرى: يمكن لمدير ملفات أو متصفح أو تطبيق بريد تسليم كتاب EPUB عبر `content://` من خلال `ACTION_VIEW`; ويبقيه خيار `إضافة إلى الكتب الأخيرة` في قائمة التجاوز في المشغل عندما يسمح المرسل بوصول دائم.
 - صفحة إعدادات للسمة وتقليب الصفحات والقيم الافتراضية للقراءة بصوت عال والروابط وإدارة البيانات, إضافة إلى سجل الإصدارات وتحقق يدوي من التحديثات لا يسأل GitHub إلا عند النقر
-- خدمة البرمجة النصية: تتيح خدمة Binder `org.autojs.plugin.EPUB` لمضيف AutoJs6 قراءة كتاب دون فتح القارئ (البيانات الوصفية وجدول المحتويات وترتيب القراءة ونص الفصول كنص عادي أو Markdown خفيف والموارد والبحث في النص الكامل وعدد المواضع), مع طلبات محدودة, و8 كتب مفتوحة على الأكثر في الوقت نفسه, ووصول مقصور على المضيف; وتصل واجهة البرمجة `epub` مع عميل المضيف.
+- خدمة البرمجة النصية: تتيح خدمة Binder `org.autojs.plugin.EPUB` لمضيف AutoJs6 قراءة كتاب دون فتح القارئ (البيانات الوصفية وجدول المحتويات وترتيب القراءة ونص الفصول كنص عادي أو Markdown خفيف والموارد والبحث في النص الكامل وعدد المواضع), مع طلبات محدودة, و8 كتب مفتوحة على الأكثر في الوقت نفسه, ووصول مقصور على المضيف; ويعرضها AutoJs6 6.8.0 للنصوص البرمجية كوحدة `epub` (انظر البرمجة النصية أدناه).
 - جلسة قراءة يقودها المضيف: يستطيع مضيف AutoJs6 فتح القارئ على كتاب عبر خدمة `org.autojs.plugin.EPUB` ومتابعته (أحداث الموضع والإشارات المرجعية والإغلاق), والانتقال إلى محدد موضع أو href أو تقدم, وتقليب الصفحات أو الفصول, وضبط تفضيلات القراءة; ولا يبدأ القارئ إلا بتشغيل صريح من المضيف نفسه برمز جلسة لمرة واحدة, ويترك إغلاق الجلسة القارئ مفتوحا للمستخدم ما لم يطلب المضيف إنهاءه.
 - التكامل مع المضيف: تتبع القوائم والحوارات لغة AutoJs6 والوضع الداكن; يتم التحقق من مغلف Explorer Action بدقة قبل فتح أي محتوى.
 - متعدد اللغات: الواجهة والتعليمات و README وسجل التغييرات متاحة بعشر لغات.
+
+******
+
+### التثبيت
+
+******
+
+1. من مركز الإضافات: افتح `الإضافات` في AutoJs6, واختر `Readium EPUB Reader` من القائمة الرسمية وانقر تثبيت; ينزل مركز الإضافات ملف APK الموقع ويثبته ويتيح لك تفعيل الإضافة.
+2. من GitHub: نزل ملف APK من صفحة [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) (يحمل اسم الملف CRC32 ويسرد `SHA256SUMS` المجموع الاختباري), وثبته, ثم فعل الإضافة في مركز الإضافات.
+3. المتطلبات: بنية AutoJs6 الداخلية 5269 أو أحدث لمدخل مدير الملفات, وAutoJs6 6.8.0 (البنية 5282) أو أحدث لواجهة البرمجة النصية `epub`, وAndroid 7.0 أو أحدث, وWebView للنظام.
 
 ******
 
@@ -86,8 +125,61 @@
 5. بدون مدير الملفات, انقر أيقونة التطبيق: يعرض المشغل كتبك الأخيرة, ويختار `فتح EPUB` كتابا عبر منتقي المستندات في النظام; تبقى الكتب المفتوحة بهذه الطريقة في القائمة مع غلافها وتقدمها.
 6. من تطبيق آخر (مدير ملفات, تنزيلات المتصفح, مرفق بريد) اختر هذا القارئ لملف `.epub`; يفتح الكتاب بالطريقة نفسها, ويبقيه خيار `إضافة إلى الكتب الأخيرة` في قائمة التجاوز في قائمة المشغل عندما يسمح التطبيق المرسل بوصول دائم.
 7. افتح `الإعدادات` من قائمة المشغل أو قائمة التجاوز في القارئ لضبط السمة وتقليب الصفحات والقيم الافتراضية للقراءة بصوت عال والروابط, ومسح البيانات التي يحتفظ بها الملحق, وقراءة سجل الإصدارات أو التحقق من التحديثات (لا يتصل التحقق بـ GitHub إلا عند النقر).
+8. من نص برمجي: يقرأ `epub.open(path)` كتابا (البيانات الوصفية والمحتويات والنص والبحث) ويفتح `epub.read(path)` هذا القارئ ويبلغ عن موضعه; انظر قسم البرمجة النصية أدناه وأمثلة `الكتب الإلكترونية` في AutoJs6.
 
 > إذا لم يظهر الملحق في مركز الملحقات فحدث AutoJs6 أولا إلى إصدار حديث (البنية الداخلية 5269 أو أحدث). يدعم Explorer Action v2 الزر الرئيسي وقائمة الملف الواحد مع إذن قراءة مؤقت للمستند والمجلد الأب.
+
+******
+
+### البرمجة النصية
+
+******
+
+يضيف AutoJs6 6.8.0 الوحدة العامة `epub` (الاسم البديل `$epub`) التي تخدمها هذه الإضافة: اقرأ كتابا دون فتح القارئ, أو افتح القارئ وتابعه من نص برمجي. يرفق AutoJs6 ثلاثة نصوص برمجية نموذجية تحت `الأمثلة > الكتب الإلكترونية`, والمرجع في [وثائق AutoJs6](https://docs.autojs6.com/#/epub):
+
+البيانات الوصفية وجدول المحتويات ونص الفصول:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+الغلاف والبحث والدوال المساعدة:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+فتح القارئ ومتابعة الموضع:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+المسارات نسبية إلى دليل عمل النص البرمجي أو مطلقة (لا تقبل معرفات `content://`). يرمي كل استدعاء `EpubError` مع `code` (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT`, ...) عندما يتعذر استخدام الإضافة أو الكتاب, ويخبر `epub.isAvailable()` ما إذا كانت الإضافة مثبتة ومفعلة, ولكل طريقة نظير `*Async` يعيد Promise.
 
 ******
 
@@ -102,6 +194,21 @@ epub
 ```
 
 يدعم EPUB فقط: الكتب القابلة لإعادة التدفق وذات التخطيط الثابت في EPUB 2 أو EPUB 3. أرشيفات القصص المصورة (CBZ) والكتب الصوتية و PDF والكتب المحمية بـ LCP خارج النطاق; الكتاب المعلم كمشفر بـ LCP يبلغ عنه كغير قابل للقراءة بدلا من عرض محتوى تالف.
+
+******
+
+### التوافق
+
+******
+
+ما تحتاجه الإضافة, وما تم التحقق منه عليه, وما يبقى خارج النطاق:
+
+- AutoJs6: البنية الداخلية 5269 أو أحدث لمدخل مدير الملفات (Explorer Action v2); وتحتاج واجهة البرمجة النصية `epub` وجلسة قارئ المضيف والنصوص البرمجية النموذجية إلى AutoJs6 6.8.0 (البنية 5282), وهي آخر بنية للمضيف روجعت لهذا الإصدار.
+- Android 7.0 (API 24) حتى Android 16 (API 37, الهدف); تعرض الصفحات في WebView الجهاز, لذا يتوقع وجود Android System WebView أو Chrome محدث. لا تحتوي الإضافة على مكتبات أصلية وتعمل دون تغيير على أجهزة صفحات 16 KB.
+- تم التحقق على AVD API 24 / 33 / 36 / 37 وSony Xperia XZ1 Compact (Android 9) وRedmi 12C (Android 13, MIUI) وXiaomi Pad 6 (Android 15, جانب الخدمة); مصفوفة الجهاز x السيناريو وانحرافاتها وإصدارات WebView في `docs/dev/compatibility-matrix.md`.
+- الكتب: EPUB 2 وEPUB 3, القابلة لإعادة التدفق وذات التخطيط الثابت, وCJK العمودية ومن اليمين إلى اليسار. الكتب المحمية بـ DRM (LCP, Adobe ADEPT) يبلغ عنها كمحمية ولا تعرض أبدا; وPDF وMOBI وAZW وCBZ والكتب الصوتية خارج النطاق.
+- تحتاج القراءة بصوت عال إلى محرك تحويل النص إلى كلام مع بيانات صوت للغة الكتاب (خدمات Google الصوتية أو محرك الشركة المصنعة أو أي محرك آخر مثبت); والجهاز الذي لا يملك محركا صالحا يبلغ عن ذلك بعد نحو 20 ثانية بدلا من البقاء صامتا.
+- الحجم والأداء: حجم APK الإصدار نحو 3.3 MB; يفتح كتاب بحجم 200 MB خلال 1 إلى 3 ثوان على هاتف من عام 2017, ولا يؤخر حساب المواضع والبصمة الصفحة الأولى أبدا, أما الكتب ذات آلاف الفصول فتستغرق وقتا أطول بوضوح للفتح (`docs/dev/performance-baseline.md`).
 
 ******
 
@@ -120,6 +227,22 @@ epub
 #### هل يرفع هذا الملحق كتبي إلى أي مكان?
 
 لا. ليس للملحق خادم خاص به. تستخدم الشبكة فقط عندما يشير الكتاب نفسه إلى موارد بعيدة, وللتحقق اليدوي من التحديثات في صفحة الإعدادات الذي لا يسأل واجهة GitHub Releases عبر HTTPS إلا عند النقر ولا ينزل شيئا أبدا.
+
+#### لماذا لا تدعم ملفات PDF أو MOBI أو AZW؟
+
+بني القارئ على مجموعة أدوات Readium التي تعرض EPUB فقط. يحتاج PDF إلى محرك عرض مختلف, وMOBI / AZW صيغتا Amazon دون محرك عرض مفتوح; حولها أولا إلى EPUB بأداة مثل Calibre. أرشيفات القصص المصورة (CBZ) والكتب الصوتية خارج النطاق أيضا.
+
+#### القراءة بصوت عال لا تصدر صوتا
+
+تتحدث الإضافة عبر محرك تحويل النص إلى كلام المختار في إعدادات النظام (`إمكانية الوصول > إخراج تحويل النص إلى كلام`). تحقق من تثبيت محرك يملك بيانات صوت للغة الكتاب, ومن رفع مستوى صوت الوسائط, ومن عدم احتفاظ تطبيق آخر بتركيز الصوت (تتوقف القراءة مؤقتا عند مكالمة أو موسيقى). يستخدم الكتاب بلغة لا يستطيع المحرك نطقها صوت المحرك الافتراضي, ويعرض الجهاز الذي لا يملك محركا صالحا رسالة بعد نحو 20 ثانية.
+
+#### الخط المستورد لا يظهر في الكتاب
+
+قد تثبت أنماط الناشر خطوطها الخاصة: أوقف `أنماط الناشر` في لوحة التفضيلات واختر الخط المستورد مرة أخرى. تقبل ملفات TTF وOTF فقط (ترفض مجموعات الخطوط `.ttc` برسالة خاصة بها), ويطبق الخط على نص المتن, وتحتفظ العناوين التي حدد لها الناشر عائلة معينة بها.
+
+#### كيف تعالج الكتب اليابانية أو الصينية العمودية؟
+
+الكتاب الذي يعلن spine فيه تقدم الصفحات من اليمين إلى اليسار ولغة يابانية أو صينية يعرض عموديا ويقلب صفحاته من اليمين إلى اليسار; ويفرض تفضيل `اتجاه النص` النص الأفقي أو العمودي لأي كتاب. تحافظ الواجهة على اتجاه لغة AutoJs6, فتبقى الواجهة الإنجليزية من اليسار إلى اليمين بينما يقرأ الكتاب من اليمين إلى اليسار.
 
 ******
 
@@ -172,7 +295,7 @@ audited host protocol: 22
 
 ******
 
-تتبع القدرات المخططة وحالة إنجازها في ROADMAP.md كقائمة قابلة للتحقق, منظمة حسب المراحل مع معايير القبول: حفظ موضع القراءة والإشارات المرجعية, التفضيلات واستيراد الخطوط, البحث في النص الكامل, القراءة الصوتية, التخطيط الثابت, مدخل التطبيق المستقل, عقد المضيف وواجهة السكربت `epub`. تصف العناصر غير المحددة خططا وليس قدرات متاحة. نرحب بالملاحظات عبر Issues.
+يتتبع ROADMAP.md كل معلم كقائمة قابلة للتحديد مع معايير القبول والأدلة: P0 إلى P8 (القارئ, والتفضيلات والخطوط, والبحث والإشارات المرجعية, والقراءة بصوت عال, والمدخل المستقل, وعقد المضيف, وواجهة البرمجة النصية `epub`, والمتانة وبوابة إصدار 1.0.0) محددة; وP9 (التمييز والملاحظات والتصدير, 1.1.0) مخطط له. تصف العناصر غير المحددة خططا لا قدرات مسلمة. الملاحظات عبر Issues موضع ترحيب.
 
 - [عرض ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
 
@@ -269,13 +392,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### الترخيص وإشعارات الطرف الثالث
+
+******
+
+الإضافة مرخصة بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE). تسرد Readium Kotlin Toolkit (BSD 3-Clause) وAndroidX Media3 وJsoup ومكتبات عقود AutoJs6 والمكونات الأخرى المشحونة في APK مع إصداراتها ومجاميعها الاختبارية وتراخيصها في [إشعارات الطرف الثالث](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md).
+
+******
+
 ### الروابط
 
 ******
 
 - وثائق AutoJs6: https://docs.autojs6.com
+- مرجع واجهة البرمجة النصية `epub`: https://docs.autojs6.com/#/epub
 - مواصفة EPUB 3.3: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- إشعارات الطرف الثالث: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
+- محاذاة صفحات 16 KB والتحقق من البنية: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md

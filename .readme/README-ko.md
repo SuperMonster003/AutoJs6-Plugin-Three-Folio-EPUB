@@ -43,7 +43,36 @@
 
 플러그인은 호스트가 부여한 임시 파일 디스크립터로 책을 직접 읽습니다. 파일 시스템 경로를 받지 않고, 책을 어디에도 복사하지 않으며, 저장소에 압축을 풀지도 않습니다.
 
-> 현재 단계 (1.0.0 개발 빌드): 리더는 Readium 기본 설정으로 책을 열고, 목차를 제공하며, 각 책의 읽기 위치를 기억하고, 스크롤 모드, 탭 영역, 볼륨 키, 몰입 모드를 제공하며, 글자 크기, 글꼴, 간격, 정렬, 단 수, 테마 (호스트의 야간 모드를 따를 수 있음)를 위한 설정 패널을 갖추고 있으며, 자체 TTF / OTF 글꼴을 가져올 수 있으며, CJK 세로쓰기와 오른쪽에서 왼쪽으로 읽는 책도 지원하며, 고정 레이아웃 책을 한 페이지 또는 두 페이지로 표시하며, 책 전체를 검색하며, 북마크를 남기며, 책 안의 링크, 주석, 이미지와 설정 가능한 탭 영역, 키보드 키를 지원하며, 시스템 텍스트 음성 변환 엔진으로 읽어 줍니다. 앱 아이콘은 최근 책과 시스템 문서 선택기를 갖춘 독립 실행 런처를 열고, 다른 앱도 `ACTION_VIEW`로 EPUB을 넘길 수 있으며, 설정 페이지는 리더 기본값, 기기에 보관되는 데이터, 수동 업데이트 확인을 다룹니다. `org.autojs.plugin.EPUB` 서비스는 AutoJs6 호스트에 메타데이터, 목차, 텍스트, 리소스, 검색을 제공하고 호스트 주도의 리더 세션 (위치, 북마크, 닫힘 이벤트, 이동, 페이지 넘김, 설정)을 엽니다. `epub` 스크립트 API는 ROADMAP.md에 계획되어 있으며 호스트 클라이언트와 함께 제공됩니다.
+> 1.0.0은 첫 릴리스입니다. 리더는 EPUB 2와 EPUB 3 책을 목차와 함께 열고, 책마다 읽던 위치를 기억하며, 스크롤 모드, 탭 영역, 볼륨 키, 몰입 모드, 환경설정 패널 (글자 크기, 글꼴, 간격, 정렬, 단, 호스트의 야간 모드를 따를 수 있는 테마), 가져온 TTF / OTF 글꼴, CJK 세로쓰기와 오른쪽에서 왼쪽 책, 단일 페이지 또는 펼침면으로 보는 고정 레이아웃 책, 전체 텍스트 검색, 북마크, 책 안의 링크, 주석과 이미지, 그리고 시스템 텍스트 음성 변환 엔진을 쓰는 소리 내어 읽기를 제공합니다. 앱 아이콘은 최근 책과 시스템 문서 선택기가 있는 런처를 열고, 다른 앱은 `ACTION_VIEW`로 EPUB을 넘길 수 있으며, 설정 페이지는 리더 기본값, 기기에 보관되는 데이터, 수동 업데이트 확인을 다룹니다. `epub` 스크립트 API, 호스트 리더 세션, 샘플 스크립트 세 개는 AutoJs6 6.8.0 (빌드 5282)과 함께 제공됩니다. 하이라이트, 메모, 내보내기는 1.1.0에 계획되어 있습니다 (ROADMAP.md, P9).
+
+******
+
+### 스크린샷
+
+******
+
+`docs/fixtures`로 생성한 샘플 책을 휴대폰에서 찍은 것입니다 (제3자의 책은 보여주지 않습니다). 인터페이스 언어는 AutoJs6의 언어를 따르며 여기서는 영어입니다:
+
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>읽기</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>목차</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>읽기 환경설정</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>전체 텍스트 검색</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>북마크</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>소리 내어 읽기</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>어두운 테마</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>세피아 테마</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>일본어 세로쓰기</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>고정 레이아웃</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>최근 책</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>설정</td>
+  </tr>
+</table>
 
 ******
 
@@ -68,10 +97,20 @@
 - 독립 실행 런처: 앱 아이콘이 표지, 제목, 저자, 진행률, 마지막 읽은 시각이 있는 최근 책 그리드와 시스템 문서 선택기로 책을 고르는 `EPUB 열기` 버튼을 엽니다. 리더는 파일 관리자에서 여는 것과 같습니다.
 - 다른 앱에서 열기: 파일 관리자, 브라우저, 메일 앱이 `ACTION_VIEW`로 `content://` EPUB을 넘길 수 있습니다. 오버플로 메뉴의 `최근 책에 추가`는 보낸 앱이 지속적인 접근을 허용할 때 런처에 남깁니다.
 - 설정 페이지: 테마, 페이지 넘기기, 소리 내어 읽기 기본값, 링크, 데이터 관리와 함께 릴리스 기록 및 탭할 때만 GitHub에 묻는 수동 업데이트 확인
-- 스크립트 서비스: `org.autojs.plugin.EPUB` Binder 서비스로 AutoJs6 호스트는 리더를 열지 않고도 책을 읽을 수 있습니다 (메타데이터, 목차, 읽기 순서, 일반 텍스트 또는 경량 Markdown 장 텍스트, 리소스, 전체 텍스트 검색, 위치 수). 요청에는 상한이 있고, 동시에 최대 8권까지 열 수 있으며, 접근은 호스트로 제한됩니다. `epub` 스크립트 API는 호스트 클라이언트와 함께 제공됩니다.
+- 스크립트 서비스: `org.autojs.plugin.EPUB` Binder 서비스로 AutoJs6 호스트는 리더를 열지 않고도 책을 읽을 수 있습니다 (메타데이터, 목차, 읽기 순서, 일반 텍스트 또는 경량 Markdown 장 텍스트, 리소스, 전체 텍스트 검색, 위치 수). 요청에는 상한이 있고, 동시에 최대 8권까지 열 수 있으며, 접근은 호스트로 제한됩니다. AutoJs6 6.8.0은 이를 `epub` 모듈로 스크립트에 노출합니다 (아래 "스크립트에서 사용" 참조).
 - 호스트 리더 세션: AutoJs6 호스트는 `org.autojs.plugin.EPUB` 서비스를 통해 책의 리더를 열고 따라갈 수 있으며 (위치, 북마크, 닫힘 이벤트), 로케이터, href 또는 진행률로 이동하고, 페이지나 장을 넘기고, 읽기 설정을 바꿀 수 있습니다. 리더는 호스트가 일회용 세션 토큰을 담아 명시적으로 시작할 때만 열리며, 세션을 닫아도 호스트가 종료를 요청하지 않는 한 리더는 사용자에게 남습니다.
 - 호스트 연동: 메뉴와 대화 상자는 AutoJs6의 언어와 다크 모드를 따르며, Explorer Action 봉투는 콘텐츠를 열기 전에 엄격하게 검증됩니다.
 - 다국어: 인터페이스, 설명, README, changelog를 10개 언어로 제공합니다.
+
+******
+
+### 설치
+
+******
+
+1. 플러그인 센터에서: AutoJs6에서 `플러그인`을 열고 공식 목록에서 `Readium EPUB Reader`를 골라 설치를 누릅니다. 플러그인 센터가 서명된 APK를 내려받아 설치하고 플러그인을 활성화할 수 있게 합니다.
+2. GitHub에서: [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) 페이지에서 APK를 내려받고 (파일 이름에 CRC32가 붙고 `SHA256SUMS`에 체크섬이 있습니다) 설치한 뒤 플러그인 센터에서 플러그인을 활성화합니다.
+3. 요구 사항: 파일 관리자 진입점에는 AutoJs6 내부 빌드 5269 이상, `epub` 스크립트 API에는 AutoJs6 6.8.0 (빌드 5282) 이상, Android 7.0 이상, 그리고 시스템 WebView가 필요합니다.
 
 ******
 
@@ -86,8 +125,61 @@
 5. 파일 관리자를 거치지 않으려면 앱 아이콘을 누르세요. 런처가 최근 책을 나열하고 `EPUB 열기`가 시스템 문서 선택기로 책을 고릅니다. 이렇게 연 책은 표지와 진행률과 함께 목록에 남습니다.
 6. 다른 앱 (파일 관리자, 브라우저의 다운로드, 메일 첨부)에서 `.epub` 파일에 이 리더를 선택하세요. 책은 같은 방식으로 열리고, 오버플로 메뉴의 `최근 책에 추가`는 보낸 앱이 지속적인 접근을 허용할 때 런처 목록에 남깁니다.
 7. 런처 메뉴나 리더 오버플로 메뉴에서 `설정`을 열어 테마, 페이지 넘기기, 소리 내어 읽기 기본값, 링크를 설정하고, 플러그인이 보관하는 데이터를 지우고, 릴리스 기록을 읽거나 업데이트를 확인할 수 있습니다 (확인은 탭할 때만 GitHub에 접속합니다).
+8. 스크립트에서: `epub.open(path)`로 책을 읽고 (메타데이터, 목차, 텍스트, 검색) `epub.read(path)`로 이 리더를 열어 위치를 보고받습니다. 아래 "스크립트에서 사용"과 AutoJs6의 `전자책` 샘플을 참조하세요.
 
 > 플러그인 센터에 플러그인이 보이지 않으면 먼저 AutoJs6를 최신 버전 (내부 빌드 5269 이상)으로 업데이트하세요. Explorer Action v2는 단일 파일의 기본 버튼과 메뉴를 지원하며 문서와 상위 폴더의 임시 읽기 권한을 사용합니다.
+
+******
+
+### 스크립트에서 사용
+
+******
+
+AutoJs6 6.8.0은 전역 모듈 `epub` (별칭 `$epub`)을 추가하며 이 플러그인이 그 요청을 처리합니다: 리더를 열지 않고 책을 읽거나, 스크립트에서 리더를 열고 위치를 따라갈 수 있습니다. AutoJs6에는 `샘플 > 전자책` 아래에 샘플 스크립트 세 개가 들어 있고, 참조 문서는 [AutoJs6 문서](https://docs.autojs6.com/#/epub)에 있습니다:
+
+메타데이터, 목차, 장 텍스트:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+표지, 검색, 편의 함수:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+리더 열기와 위치 따라가기:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+경로는 스크립트 작업 디렉터리 기준 상대 경로이거나 절대 경로입니다 (`content://` URI는 받지 않습니다). 플러그인이나 책을 사용할 수 없으면 모든 호출이 `code`가 있는 `EpubError`를 던집니다 (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT` 등). `epub.isAvailable()`은 플러그인이 설치되고 활성화되었는지 알려주며, 모든 메서드에는 Promise를 반환하는 `*Async` 짝이 있습니다.
 
 ******
 
@@ -102,6 +194,21 @@ epub
 ```
 
 EPUB만 지원합니다: EPUB 2 또는 EPUB 3의 리플로우와 고정 레이아웃 책. 만화 아카이브 (CBZ), 오디오북, PDF, LCP로 보호된 책은 범위 밖입니다. LCP 암호화로 표시된 책은 깨진 내용을 표시하지 않고 읽을 수 없다고 알립니다.
+
+******
+
+### 호환성
+
+******
+
+플러그인에 필요한 것, 검증한 환경, 범위 밖인 것:
+
+- AutoJs6: 파일 관리자 진입점 (Explorer Action v2)에는 내부 빌드 5269 이상이 필요합니다. `epub` 스크립트 API, 호스트 리더 세션, 샘플 스크립트에는 AutoJs6 6.8.0 (빌드 5282)이 필요하며, 이는 이번 릴리스에서 감사한 마지막 호스트 빌드입니다.
+- Android 7.0 (API 24)부터 Android 16 (API 37, 대상)까지. 페이지는 기기의 WebView에서 렌더링되므로 최신 Android System WebView 또는 Chrome이 필요합니다. 플러그인에는 네이티브 라이브러리가 없어 16 KB 페이지 기기에서도 그대로 실행됩니다.
+- 검증 완료: AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI), Xiaomi Pad 6 (Android 15, 서비스 측). 기기 x 시나리오 매트릭스, 편차, WebView 버전은 `docs/dev/compatibility-matrix.md`에 있습니다.
+- 책: EPUB 2와 EPUB 3, 리플로우와 고정 레이아웃, CJK 세로쓰기와 오른쪽에서 왼쪽. DRM으로 보호된 책 (LCP, Adobe ADEPT)은 보호됨으로 보고되며 렌더링되지 않습니다. PDF, MOBI, AZW, CBZ, 오디오북은 범위 밖입니다.
+- 소리 내어 읽기에는 책의 언어 음성 데이터가 있는 텍스트 음성 변환 엔진이 필요합니다 (Google 음성 서비스, 제조사 엔진, 그 밖의 설치된 엔진). 사용할 수 있는 엔진이 없는 기기는 조용히 있지 않고 약 20초 뒤에 알립니다.
+- 크기와 성능: release APK는 약 3.3 MB입니다. 200 MB 책은 2017년 휴대폰에서 1 ~ 3초에 열리고, 위치와 지문 계산은 첫 페이지를 늦추지 않으며, 수천 개 장이 있는 책은 여는 데 눈에 띄게 오래 걸립니다 (`docs/dev/performance-baseline.md`).
 
 ******
 
@@ -120,6 +227,22 @@ EPUB만 지원합니다: EPUB 2 또는 EPUB 3의 리플로우와 고정 레이�
 #### 이 플러그인이 내 책을 어딘가로 업로드하나요?
 
 아니요. 플러그인에는 자체 서버가 없습니다. 네트워크는 책 자체가 원격 리소스를 참조할 때와 설정 페이지의 수동 업데이트 확인 (탭할 때만 HTTPS로 GitHub Releases API에 묻고 아무것도 내려받지 않음)에만 사용됩니다.
+
+#### PDF, MOBI, AZW 파일은 왜 지원하지 않나요?
+
+리더는 Readium 툴킷 위에 만들어졌고 EPUB만 렌더링합니다. PDF에는 다른 렌더러가 필요하고, MOBI / AZW는 공개 렌더링 엔진이 없는 Amazon 형식입니다. 먼저 Calibre 같은 도구로 EPUB으로 변환하세요. 만화 아카이브 (CBZ)와 오디오북도 범위 밖입니다.
+
+#### 소리 내어 읽기에서 소리가 나지 않습니다
+
+플러그인은 시스템 설정에서 고른 텍스트 음성 변환 엔진으로 말합니다 (`접근성 > 텍스트 음성 변환 출력`). 책의 언어 음성 데이터가 있는 엔진이 설치되어 있는지, 미디어 볼륨이 올라가 있는지, 다른 앱이 오디오 포커스를 잡고 있지 않은지 (통화나 음악은 읽기를 일시정지합니다) 확인하세요. 엔진이 말할 수 없는 언어의 책은 엔진의 기본 음성을 쓰고, 사용할 수 있는 엔진이 없는 기기는 약 20초 뒤에 메시지를 보여줍니다.
+
+#### 가져온 글꼴이 책에 적용되지 않습니다
+
+출판사 스타일이 자체 글꼴을 고정했을 수 있습니다: 환경설정 패널에서 `출판사 스타일`을 끄고 가져온 글꼴을 다시 선택하세요. TTF와 OTF 파일만 받으며 (글꼴 모음 `.ttc`는 별도 메시지로 거부됩니다), 글꼴은 본문에 적용되고 출판사가 특정 글꼴 패밀리를 지정한 제목은 그대로 유지됩니다.
+
+#### 일본어나 중국어 세로쓰기 책은 어떻게 처리되나요?
+
+spine이 오른쪽에서 왼쪽 페이지 진행을 선언하고 언어가 일본어나 중국어인 책은 세로로 렌더링되며 오른쪽에서 왼쪽으로 페이지를 넘깁니다. `텍스트 방향` 환경설정으로 어떤 책이든 가로 또는 세로 텍스트를 강제할 수 있습니다. 인터페이스는 AutoJs6 언어의 방향을 유지하므로 영어 인터페이스는 왼쪽에서 오른쪽 그대로이고 책은 오른쪽에서 왼쪽으로 읽습니다.
 
 ******
 
@@ -172,7 +295,7 @@ Explorer Action v2는 단일 파일의 기본 버튼과 메뉴를 지원하며 �
 
 ******
 
-계획된 기능과 완료 상태는 ROADMAP.md에 체크 가능한 목록으로 기록되며 수락 기준이 있는 마일스톤으로 정리됩니다: 읽기 위치 기억과 북마크, 환경 설정과 글꼴 가져오기, 전체 텍스트 검색, 읽어주기, 고정 레이아웃, 독립 앱 진입점, 호스트 계약과 `epub` 스크립트 API. 체크되지 않은 항목은 출시된 기능이 아니라 계획입니다. Issues를 통한 피드백을 환영합니다.
+ROADMAP.md는 모든 마일스톤을 수용 기준과 증거가 있는 체크리스트로 추적합니다: P0부터 P8까지 (리더, 환경설정과 글꼴, 검색과 북마크, 소리 내어 읽기, 독립 진입점, 호스트 계약, `epub` 스크립트 API, 견고성, 1.0.0 릴리스 게이트)는 체크되었고, P9 (하이라이트, 메모, 내보내기, 1.1.0)는 계획 중입니다. 체크되지 않은 항목은 출시된 기능이 아니라 계획입니다. Issues를 통한 피드백을 환영합니다.
 
 - [ROADMAP.md 보기](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
 
@@ -269,13 +392,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### 라이선스와 서드파티 고지
+
+******
+
+플러그인은 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE)으로 배포됩니다. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3와 Jsoup, AutoJs6 계약 라이브러리, 그리고 APK에 포함된 다른 구성 요소의 버전, 체크섬, 라이선스는 [서드파티 고지](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md)에 나열되어 있습니다.
+
+******
+
 ### 링크
 
 ******
 
 - AutoJs6 문서: https://docs.autojs6.com
+- `epub` 스크립트 API 참조: https://docs.autojs6.com/#/epub
 - EPUB 3.3 명세: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- 서드파티 고지: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
+- 16 KB 페이지 정렬과 빌드 검증: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md

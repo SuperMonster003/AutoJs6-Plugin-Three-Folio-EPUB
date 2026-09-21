@@ -7,7 +7,21 @@
   "h3_introduction": "简介",
   "p_introduction_what": "一键阅读: 在 AutoJs6 文件管理器中直接打开 `.epub` 文件, 既可点按主按钮 `阅读 EPUB`, 也可从溢出菜单进入. 阅读器基于 [Readium Kotlin Toolkit]({{ readium_url }}) {{ readium_version }} 构建, 这是众多商业阅读器共同采用的开源引擎.",
   "p_introduction_how": "插件直接通过宿主授予的临时文件描述符读取书籍, 不会拿到文件系统路径, 不会把书籍复制到任何位置, 也不会解压到存储.",
-  "p_status": "当前阶段 (1.0.0 开发构建): 阅读器以 Readium 默认设置打开书籍, 提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 并提供偏好面板设置字号, 字体, 间距, 对齐, 列数与主题 (可跟随宿主夜间模式), 并可导入自己的 TTF / OTF 字体, 支持 CJK 竖排与从右到左的书籍, 并以单页或双页显示固定版式书籍, 并支持全文搜索, 并可添加书签, 并支持书内链接, 注释, 图片, 可配置的点按翻页与键盘按键, 并可用系统文字转语音引擎朗读. 应用图标打开独立启动器, 提供最近书籍与系统文档选择器, 其它应用也可以通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `org.autojs.plugin.EPUB` 服务向 AutoJs6 宿主提供元数据, 目录, 文本, 资源与搜索, 并可打开由宿主驱动的阅读器会话 (位置, 书签与关闭事件, 跳转, 翻页与偏好); `epub` 脚本 API 已在 ROADMAP.md 中排期, 随宿主客户端提供.",
+  "p_status": "1.0.0 是首个正式版本. 阅读器打开 EPUB 2 与 EPUB 3 书籍并提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 偏好面板 (字号, 字体, 间距, 对齐, 列数与可跟随宿主夜间模式的主题), 导入的 TTF / OTF 字体, CJK 竖排与从右到左的书籍, 以单页或双页显示的固定版式书籍, 全文搜索, 书签, 书内链接, 注释与图片, 以及使用系统文字转语音引擎的朗读. 应用图标打开带最近书籍与系统文档选择器的启动器, 其它应用可通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `epub` 脚本 API, 宿主阅读器会话与三份示例脚本随 AutoJs6 6.8.0 (版本号 {{ audited_host_build }}) 提供. 高亮, 笔记与导出计划在 1.1.0 (ROADMAP.md, P9).",
+  "h3_screenshots": "截图",
+  "p_screenshots": "在手机上以 `docs/fixtures` 生成的样本书截取 (不展示任何第三方书籍); 界面跟随 AutoJs6 的语言, 此处为英文",
+  "caption_reader": "阅读",
+  "caption_table_of_contents": "目录",
+  "caption_preferences": "阅读偏好",
+  "caption_search": "全文搜索",
+  "caption_bookmarks": "书签",
+  "caption_read_aloud": "朗读",
+  "caption_dark_theme": "深色主题",
+  "caption_sepia_theme": "羊皮纸主题",
+  "caption_vertical": "日文竖排",
+  "caption_fixed_layout": "固定版式",
+  "caption_launcher": "最近书籍",
+  "caption_settings": "设置",
   "h3_features": "功能亮点",
   "features": [
     "Readium 引擎: EPUB 2 (NCX) 与 EPUB 3 (NAV) 书籍经 Readium 导航器与 Readium CSS 渲染, 支持内链, 脚注与图片.",
@@ -27,10 +41,16 @@
     "独立启动器: 应用图标打开最近书籍网格 (封面, 书名, 作者, 进度与最后阅读时间) 与 `打开 EPUB` 按钮, 后者通过系统文档选择器选书; 阅读器与文件管理器打开的是同一个.",
     "从其它应用打开: 文件管理器, 浏览器或邮件应用可以通过 `ACTION_VIEW` 交给阅读器一个 `content://` EPUB; 溢出菜单中的 `加入最近书籍` 在发送方允许持久访问时把它留在启动器中.",
     "设置页: 主题, 翻页, 朗读默认值, 链接与数据管理, 另有发行历史与只在点按时询问 GitHub 的手动更新检查",
-    "脚本服务: `org.autojs.plugin.EPUB` Binder 服务让 AutoJs6 宿主不打开阅读器也能读取书籍 (元数据, 目录, 阅读顺序, 纯文本或轻量 Markdown 的章节文本, 资源, 全文搜索与位置数), 请求受上限约束, 同时最多打开 8 本, 只允许宿主访问; `epub` 脚本 API 随宿主客户端提供.",
+    "脚本服务: `org.autojs.plugin.EPUB` Binder 服务让 AutoJs6 宿主无需打开阅读器即可读取书籍 (元数据, 目录, 阅读顺序, 纯文本或轻量 Markdown 的章节文本, 资源, 全文搜索与位置数), 请求有上限, 同时最多打开 8 本书, 且只对宿主开放; AutoJs6 6.8.0 以 `epub` 模块把它提供给脚本 (见下文 \"脚本调用\").",
     "宿主阅读器会话: AutoJs6 宿主可经 `org.autojs.plugin.EPUB` 服务在某本书上打开阅读器并跟随它 (位置, 书签与关闭事件), 跳到 locator, href 或进度, 翻页或跳章, 设置阅读偏好; 阅读器只由宿主携带一次性会话令牌显式启动, 关闭会话时阅读器仍留给用户, 除非宿主要求结束.",
     "宿主集成: 菜单与对话框跟随 AutoJs6 的语言和暗色模式; 打开任何内容之前都会严格校验 Explorer Action 信封.",
     "多语言: 界面, 说明, README 与更新日志均提供 10 种语言."
+  ],
+  "h3_installation": "安装",
+  "installation_steps": [
+    "从插件中心: 在 AutoJs6 中打开 `插件`, 在官方列表中找到 `Readium EPUB Reader` 并点按安装; 插件中心会下载已签名的 APK, 完成安装并提供启用开关.",
+    "从 GitHub: 在 [Releases]({{ repo_url }}/releases) 页面下载 APK (文件名带 CRC32, `SHA256SUMS` 列出校验值), 安装后在插件中心启用插件.",
+    "要求: 文件管理器入口需要 AutoJs6 内部版本号 {{ required_host_build }} 及以上, `epub` 脚本 API 需要 AutoJs6 6.8.0 (版本号 {{ audited_host_build }}) 及以上, Android 7.0 及以上, 以及系统 WebView."
   ],
   "h3_usage": "使用方法",
   "usage_steps": [
@@ -40,12 +60,29 @@
     "使用工具栏上的目录按钮在章节间跳转, 使用偏好按钮调整文字与主题; 点按页面左右三分之一或按音量键翻页, 点按中央隐藏或显示工具栏; 按返回键关闭阅读器, 阅读位置会被记住.",
     "不经文件管理器时, 点按应用图标: 启动器列出最近书籍, `打开 EPUB` 通过系统文档选择器选书; 这样打开的书籍会带着封面与进度留在列表中.",
     "在其它应用 (文件管理器, 浏览器的下载, 邮件附件) 中为 `.epub` 文件选择本阅读器; 书籍以同样方式打开, 溢出菜单中的 `加入最近书籍` 在发送方允许持久访问时把它留在启动器的列表中.",
-    "在启动器菜单或阅读器溢出菜单中打开 `设置`, 可设置主题, 翻页, 朗读默认值与链接, 清除插件保存的数据, 阅读发行历史或检查更新 (只有点按时才会联系 GitHub)."
+    "在启动器菜单或阅读器溢出菜单中打开 `设置`, 可设置主题, 翻页, 朗读默认值与链接, 清除插件保存的数据, 阅读发行历史或检查更新 (只有点按时才会联系 GitHub).",
+    "从脚本: `epub.open(path)` 读取书籍 (元数据, 目录, 文本, 搜索), `epub.read(path)` 打开本阅读器并报告阅读位置; 见下文 \"脚本调用\" 与 AutoJs6 中的 `电子书` 示例."
   ],
   "p_usage_note": "若插件中心未显示该插件, 请先将 AutoJs6 升级到较新版本 (内部版本号 {{ required_host_build }} 及以上). Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录.",
+  "h3_scripting": "脚本调用",
+  "p_scripting_intro": "AutoJs6 6.8.0 新增全局模块 `epub` (别名 `$epub`), 由本插件提供服务: 不打开阅读器即可读取书籍, 也可以从脚本打开阅读器并跟踪阅读位置. AutoJs6 在 `示例 > 电子书` 下附带三份示例脚本, 完整参考见 [AutoJs6 文档]({{ docs_epub_api_url }})",
+  "text_script_metadata": "元数据, 目录与章节文本",
+  "text_script_export": "封面, 搜索与便捷函数",
+  "text_script_reader": "打开阅读器并跟踪位置",
+  "p_scripting_note": "路径相对脚本工作目录或使用绝对路径 (不接受 `content://` URI). 插件或书籍不可用时每个调用都会抛出带 `code` 的 `EpubError` (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT` 等), `epub.isAvailable()` 告知插件是否已安装并启用, 每个方法都有返回 Promise 的 `*Async` 版本.",
   "h3_supported_formats": "支持的格式",
   "p_supported_formats": "插件识别以下文件扩展名, 同时接受宿主明确标记为 `application/epub+zip` 的无扩展名文件",
   "p_format_scope": "仅支持 EPUB: EPUB 2 或 EPUB 3 的可重排与固定版式书籍. 漫画归档 (CBZ), 有声书, PDF 与 LCP 加密书籍不在范围内; 标记为 LCP 加密的书籍会提示无法读取, 而不是渲染乱码.",
+  "h3_compatibility": "兼容性",
+  "p_compatibility_intro": "插件的运行要求, 已验证的环境与不在范围内的内容",
+  "compatibility_points": [
+    "AutoJs6: 文件管理器入口 (Explorer Action v2) 需要内部版本号 {{ required_host_build }} 及以上; `epub` 脚本 API, 宿主阅读器会话与示例脚本需要 AutoJs6 6.8.0 (版本号 {{ audited_host_build }}), 这也是本次发布审计过的最高宿主版本.",
+    "Android 7.0 (API 24) 至 Android 16 (API 37, 目标版本); 页面在设备的 WebView 中渲染, 需要较新的 Android System WebView 或 Chrome. 插件不含原生库, 在 16 KB 页设备上无需改动即可运行.",
+    "已在 AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) 与 Xiaomi Pad 6 (Android 15, 服务侧) 上验证; 设备 x 场景矩阵, 偏差与 WebView 版本见 `docs/dev/compatibility-matrix.md`.",
+    "书籍: EPUB 2 与 EPUB 3, 可重排与固定版式, CJK 竖排与从右到左. 受 DRM 保护的书籍 (LCP, Adobe ADEPT) 会提示受保护而不会渲染; PDF, MOBI, AZW, CBZ 与有声书不在范围内.",
+    "朗读需要带有书籍语言语音数据的文字转语音引擎 (Google 语音服务, 厂商引擎或其它已安装引擎); 没有可用引擎的设备会在约 20 秒后给出提示, 而不是一直无声.",
+    "体积与性能: release APK 约 3.3 MB; 200 MB 的书在 2017 年的手机上 1 到 3 秒打开, 位置与指纹计算不会拖慢首屏, 数千章的书打开明显更慢 (`docs/dev/performance-baseline.md`)."
+  ],
   "h3_faq": "常见问题",
   "faq": [
     {
@@ -59,6 +96,22 @@
     {
       "q": "这个插件会把我的书上传到某处吗?",
       "a": "不会. 插件没有自己的服务器. 只有当书籍本身引用远程资源时, 以及设置页中的手动更新检查 (只在你点按时通过 HTTPS 询问 GitHub Releases API, 从不下载任何文件), 才会使用网络."
+    },
+    {
+      "q": "为什么不支持 PDF, MOBI 或 AZW?",
+      "a": "阅读器基于 Readium 工具包构建, 它只渲染 EPUB. PDF 需要另一套渲染器, MOBI / AZW 是 Amazon 的格式且没有开放的渲染引擎; 请先用 Calibre 之类的工具转换为 EPUB. 漫画归档 (CBZ) 与有声书同样不在范围内."
+    },
+    {
+      "q": "朗读没有声音",
+      "a": "插件通过系统设置中选择的文字转语音引擎发声 (`无障碍 > 文字转语音输出`). 请确认已安装带有书籍语言语音数据的引擎, 媒体音量已调高, 且没有其它应用占用音频焦点 (来电或音乐会暂停朗读). 引擎不会说的语言会使用引擎的默认语音; 没有可用引擎的设备会在约 20 秒后给出提示."
+    },
+    {
+      "q": "导入的字体在书中没有生效",
+      "a": "出版方样式可能固定了自己的字体: 在偏好面板中关闭 `出版方样式`, 再重新选择导入的字体. 只接受 TTF 与 OTF 文件 (字体集 `.ttc` 会以专门的提示拒绝), 字体应用于正文, 出版方指定了特定字族的标题保持不变."
+    },
+    {
+      "q": "日文或中文竖排书籍如何处理?",
+      "a": "spine 声明从右到左翻页且语言为日文或中文的书籍会竖排渲染并从右向左翻页; `文字方向` 偏好可以为任何书籍强制横排或竖排. 界面保持 AutoJs6 语言的方向, 因此英文界面仍从左到右, 而书籍从右向左阅读."
     }
   ],
   "h3_security": "权限与安全",
@@ -80,7 +133,7 @@
   "p_plugin_scope": "Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录. 需要 AutoJs6 构建 {{ required_host_build }} 或更高版本.",
   "text_link_protocol_compatibility": "查看 Explorer Action 兼容矩阵",
   "h3_roadmap": "开发路线图",
-  "p_roadmap": "计划中的能力及其完成状态以可勾选清单的形式记录在 ROADMAP.md 中, 按里程碑组织并附验收标准: 阅读位置记忆与书签, 偏好设置与字体导入, 全文搜索, 朗读, 固定版式, 独立应用入口, 宿主契约与 `epub` 脚本 API. 未勾选的条目表示计划而非已交付能力. 欢迎通过 Issues 反馈.",
+  "p_roadmap": "ROADMAP.md 以可勾选的列表跟踪每个里程碑, 附验收标准与证据: P0 至 P8 (阅读器, 偏好与字体, 搜索与书签, 朗读, 独立入口, 宿主契约, `epub` 脚本 API, 健壮性与 1.0.0 发布 gate) 已勾选; P9 (高亮, 笔记与导出, 1.1.0) 在计划中. 未勾选的条目是计划而非已交付的能力. 欢迎通过 Issues 反馈.",
   "text_link_roadmap": "查看 ROADMAP.md",
   "h3_release_history": "发行历史",
   "h5_for_more_release_history": "更多发行历史可参阅",
@@ -89,8 +142,13 @@
   "p_build_params": "构建参数来自 `version.properties`, 当前最低 SDK 为 {{ android_min_sdk }}, 目标 SDK 为 {{ android_target_sdk }}",
   "h3_resource_layout": "本地化与文档生成",
   "p_resource_layout": "`strings.xml` 提供插件信息和阅读器界面的本地化, `plugin_instruction.md` 提供宿主侧展示的使用说明. README 与更新日志一律修改 `.readme/` 与 `.changelog/` 下的 JSON 源文件, 再运行 `py .python/generate_markdown.py` 重新生成, 生成产物不手工编辑; 运行 `py .python/generate_markdown.py --check` 可校验源文件与生成产物是否同步",
+  "h3_license": "许可证与第三方声明",
+  "p_license": "插件以 [Mozilla Public License 2.0]({{ license_url }}) 授权. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 与 Jsoup, AutoJs6 契约库以及 APK 中附带的其它组件的版本, 校验值与许可证列于 [第三方声明]({{ third_party_notices_url }}).",
   "h3_links": "相关链接",
   "text_link_autojs6_docs": "AutoJs6 文档",
   "text_link_format_reference": "EPUB 3.3 规范",
-  "text_link_readium": "Readium Kotlin Toolkit"
+  "text_link_readium": "Readium Kotlin Toolkit",
+  "text_link_epub_api_docs": "`epub` 脚本 API 参考",
+  "text_link_third_party_notices": "第三方声明",
+  "text_link_16kb": "16 KB 页对齐与构建验证"
 }

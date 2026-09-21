@@ -38,11 +38,48 @@
 
 ******
 
+### {{ h3_screenshots }}
+
+******
+
+{{ p_screenshots }}:
+
+<table>
+  <tr>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>{{ caption_reader }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>{{ caption_table_of_contents }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>{{ caption_preferences }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>{{ caption_search }}</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>{{ caption_bookmarks }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>{{ caption_read_aloud }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>{{ caption_dark_theme }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>{{ caption_sepia_theme }}</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>{{ caption_vertical }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>{{ caption_fixed_layout }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>{{ caption_launcher }}</td>
+    <td align="center"><img src="{{ repo_url }}/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>{{ caption_settings }}</td>
+  </tr>
+</table>
+
+******
+
 ### {{ h3_features }}
 
 ******
 
 {{ placeholder_features }}
+
+******
+
+### {{ h3_installation }}
+
+******
+
+{{ placeholder_installation_steps }}
 
 ******
 
@@ -53,6 +90,58 @@
 {{ placeholder_usage_steps }}
 
 > {{ p_usage_note }}
+
+******
+
+### {{ h3_scripting }}
+
+******
+
+{{ p_scripting_intro }}:
+
+{{ text_script_metadata }}:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+{{ text_script_export }}:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+{{ text_script_reader }}:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+{{ p_scripting_note }}
 
 ******
 
@@ -67,6 +156,16 @@
 ```
 
 {{ p_format_scope }}
+
+******
+
+### {{ h3_compatibility }}
+
+******
+
+{{ p_compatibility_intro }}:
+
+{{ placeholder_compatibility_points }}
 
 ******
 
@@ -175,13 +274,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### {{ h3_license }}
+
+******
+
+{{ p_license }}
+
+******
+
 ### {{ h3_links }}
 
 ******
 
 - {{ text_link_autojs6_docs }}: {{ docs_autojs6_url }}
+- {{ text_link_epub_api_docs }}: {{ docs_epub_api_url }}
 - {{ text_link_format_reference }}: {{ format_reference_url }}
 - {{ text_link_readium }}: {{ readium_url }}
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- {{ text_link_third_party_notices }}: {{ third_party_notices_url }}
+- {{ text_link_16kb }}: {{ repo_url }}/blob/master/docs/16kb.md

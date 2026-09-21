@@ -43,7 +43,36 @@
 
 プラグインはホストが付与した一時的なファイル記述子から本を直接読み取ります. ファイルシステムのパスは受け取らず, 本をどこにもコピーせず, ストレージへ展開することもありません.
 
-> 現在の段階 (1.0.0 開発ビルド): リーダーは Readium の既定設定で本を開き, 目次を提供し, 各書籍の読書位置を記憶し, スクロールモード, タップ領域, 音量キー, 没入モードを提供し, 文字サイズ, フォント, 間隔, 配置, 段組, テーマ (ホストの夜間モードに追従可能) の設定パネルを備え, 独自の TTF / OTF フォントを取り込め, CJK の縦書きや右から左へ読む本にも対応し, 固定レイアウトの本を単ページまたは見開きで表示し, 本全体を検索でき, ブックマークを付けられ, 本の中のリンク, 注, 画像, 設定できるタップ領域とキーボード操作に対応し, システムのテキスト読み上げエンジンで読み上げます. アプリアイコンからは最近の本とシステムのドキュメントピッカーを備えたスタンドアロンのランチャーが開き, 他のアプリも `ACTION_VIEW` で EPUB を渡せます. 設定ページはリーダーの既定値, 端末に保存されるデータ, 手動のアップデート確認をカバーします. `org.autojs.plugin.EPUB` サービスは AutoJs6 ホストにメタデータ, 目次, テキスト, リソース, 検索を提供し, ホスト主導のリーダーセッション (位置, しおり, 閉じるイベント, ジャンプ, ページ送り, 設定) を開きます. `epub` スクリプト API は ROADMAP.md で計画されており, ホスト側クライアントとともに提供されます.
+> 1.0.0 は最初のリリースです. リーダーは EPUB 2 と EPUB 3 の本を目次付きで開き, 本ごとの読書位置を記憶し, スクロールモード, タップゾーン, 音量キー, 没入モード, 設定パネル (文字サイズ, フォント, 間隔, 揃え, 段組, ホストの夜間モードに従えるテーマ), インポートした TTF / OTF フォント, CJK 縦書きと右から左の本, 単ページまたは見開きの固定レイアウトの本, 全文検索, ブックマーク, 本の中のリンク, 注と画像, そしてシステムのテキスト読み上げエンジンによる読み上げを提供します. アプリアイコンは最近の本とシステムのドキュメントピッカーを持つランチャーを開き, 他のアプリは `ACTION_VIEW` で EPUB を渡せ, 設定ページはリーダーの既定値, 端末に保存されるデータ, 手動のアップデート確認を扱います. `epub` スクリプト API, ホストのリーダーセッション, 3 つのサンプルスクリプトは AutoJs6 6.8.0 (ビルド 5282) に同梱されます. ハイライト, ノート, エクスポートは 1.1.0 に予定しています (ROADMAP.md, P9).
+
+******
+
+### スクリーンショット
+
+******
+
+`docs/fixtures` で生成したサンプル本をスマートフォンで撮影したものです (第三者の本は一切写していません). 画面の言語は AutoJs6 の言語に従い, ここでは英語です:
+
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>読書</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>目次</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>読書設定</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>全文検索</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>ブックマーク</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>読み上げ</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>ダークテーマ</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>セピアテーマ</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>日本語縦書き</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>固定レイアウト</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>最近の本</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>設定</td>
+  </tr>
+</table>
 
 ******
 
@@ -68,10 +97,20 @@
 - スタンドアロンのランチャー: アプリアイコンから表紙, タイトル, 著者, 進捗, 最終閲覧時刻付きの最近の本のグリッドと, システムのドキュメントピッカーで本を選ぶ `EPUB を開く` ボタンを開けます. リーダーはファイルマネージャーから開くものと同じです.
 - 他のアプリから開く: ファイルマネージャー, ブラウザー, メールアプリは `ACTION_VIEW` で `content://` の EPUB を渡せます. オーバーフローメニューの `最近の本に追加` は, 送信元が永続的なアクセスを許可している場合にランチャーへ残します.
 - 設定ページ: テーマ, ページめくり, 読み上げの既定値, リンク, データ管理に加え, リリース履歴とタップしたときだけ GitHub に問い合わせる手動のアップデート確認
-- スクリプトサービス: `org.autojs.plugin.EPUB` Binder サービスにより, AutoJs6 ホストはリーダーを開かずに本を読み取れます (メタデータ, 目次, 読書順序, プレーンテキストまたは軽量 Markdown の章テキスト, リソース, 全文検索, 位置数). リクエストには上限があり, 同時に開ける本は最大 8 冊, アクセスはホストに限られます. `epub` スクリプト API はホスト側クライアントとともに提供されます.
+- スクリプトサービス: `org.autojs.plugin.EPUB` Binder サービスにより, AutoJs6 ホストはリーダーを開かずに本を読み取れます (メタデータ, 目次, 読書順序, プレーンテキストまたは軽量 Markdown の章テキスト, リソース, 全文検索, 位置数). リクエストには上限があり, 同時に開ける本は 8 冊まで, アクセスはホストに限られます. AutoJs6 6.8.0 はこれを `epub` モジュールとしてスクリプトに公開します (下記 "スクリプトからの利用" を参照).
 - ホストのリーダーセッション: AutoJs6 ホストは `org.autojs.plugin.EPUB` サービスを通じて本のリーダーを開いて追従でき (位置, しおり, 閉じるイベント), ロケーター, href, 進捗へジャンプし, ページや章を送り, 読書設定を変更できます. リーダーはホストが使い捨てのセッショントークンを付けて明示的に起動したときだけ開き, セッションを閉じてもホストが終了を求めない限りリーダーは利用者に残ります.
 - ホスト連携: メニューとダイアログは AutoJs6 の言語とダークモードに従い, Explorer Action の封筒はコンテンツを開く前に厳密に検証されます.
 - 多言語: インターフェース, 説明, README, changelog を 10 言語で提供します.
+
+******
+
+### インストール
+
+******
+
+1. プラグインセンターから: AutoJs6 で `プラグイン` を開き, 公式リストから `Readium EPUB Reader` を選んでインストールをタップします. プラグインセンターが署名済み APK をダウンロードしてインストールし, プラグインを有効化できます.
+2. GitHub から: [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) ページから APK をダウンロードし (ファイル名に CRC32 が付き, `SHA256SUMS` にチェックサムがあります), インストールしてからプラグインセンターでプラグインを有効化します.
+3. 要件: ファイルマネージャーの入口には AutoJs6 内部ビルド 5269 以降, `epub` スクリプト API には AutoJs6 6.8.0 (ビルド 5282) 以降, Android 7.0 以降, そしてシステム WebView が必要です.
 
 ******
 
@@ -86,8 +125,61 @@
 5. ファイルマネージャーを使わない場合はアプリアイコンをタップします. ランチャーが最近の本を一覧し, `EPUB を開く` でシステムのドキュメントピッカーから本を選べます. この方法で開いた本は表紙と進捗付きでリストに残ります.
 6. 他のアプリ (ファイルマネージャー, ブラウザーのダウンロード, メールの添付) で `.epub` ファイルにこのリーダーを選びます. 本は同じように開き, オーバーフローメニューの `最近の本に追加` は送信元が永続的なアクセスを許可している場合にランチャーのリストへ残します.
 7. ランチャーのメニューまたはリーダーのオーバーフローメニューから `設定` を開くと, テーマ, ページめくり, 読み上げの既定値, リンクを設定し, プラグインが保存するデータを消去し, リリース履歴を読み, アップデートを確認できます (確認はタップしたときだけ GitHub に接続します).
+8. スクリプトから: `epub.open(path)` で本を読み取り (メタデータ, 目次, テキスト, 検索), `epub.read(path)` でこのリーダーを開いて位置の報告を受け取ります. 下記 "スクリプトからの利用" と AutoJs6 の `電子書籍` サンプルを参照してください.
 
 > プラグインセンターにこのプラグインが表示されない場合は, まず AutoJs6 を新しいバージョン (内部ビルド 5269 以降) に更新してください. Explorer Action v2 は単一ファイルのメインボタンとメニューに対応し, 文書と親ディレクトリへの一時的な読み取り権限を使用します.
+
+******
+
+### スクリプトからの利用
+
+******
+
+AutoJs6 6.8.0 はグローバルモジュール `epub` (別名 `$epub`) を追加し, このプラグインがそれに応えます: リーダーを開かずに本を読み取ることも, スクリプトからリーダーを開いて位置を追うこともできます. AutoJs6 には `サンプル > 電子書籍` の下に 3 つのサンプルスクリプトが同梱され, リファレンスは [AutoJs6 ドキュメント](https://docs.autojs6.com/#/epub) にあります:
+
+メタデータ, 目次, 章テキスト:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+表紙, 検索, 便利関数:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+リーダーを開いて位置を追う:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+パスはスクリプトの作業ディレクトリからの相対パスまたは絶対パスです (`content://` URI は受け付けません). プラグインや本が使えないとき, どの呼び出しも `code` 付きの `EpubError` を投げます (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT` など). `epub.isAvailable()` はプラグインがインストールされ有効かを返し, どのメソッドにも Promise を返す `*Async` 版があります.
 
 ******
 
@@ -102,6 +194,21 @@ epub
 ```
 
 EPUB のみ対応: EPUB 2 または EPUB 3 のリフロー型と固定レイアウトの本. コミックアーカイブ (CBZ), オーディオブック, PDF, LCP 保護された本は対象外です. LCP 暗号化と示された本は文字化けを表示せず, 読み取れない旨を報告します.
+
+******
+
+### 互換性
+
+******
+
+プラグインに必要なもの, 検証した環境, 対象外のもの:
+
+- AutoJs6: ファイルマネージャーの入口 (Explorer Action v2) には内部ビルド 5269 以降が必要です. `epub` スクリプト API, ホストのリーダーセッション, サンプルスクリプトには AutoJs6 6.8.0 (ビルド 5282) が必要で, これは本リリースで監査した最後のホストビルドです.
+- Android 7.0 (API 24) から Android 16 (API 37, ターゲット) まで. ページは端末の WebView で描画されるため, 最新の Android System WebView または Chrome が前提です. プラグインにネイティブライブラリはなく, 16 KB ページの端末でもそのまま動作します.
+- 検証済み: AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI), Xiaomi Pad 6 (Android 15, サービス側). 端末 x シナリオの表, 逸脱, WebView のバージョンは `docs/dev/compatibility-matrix.md` にあります.
+- 本: EPUB 2 と EPUB 3, リフロー型と固定レイアウト, CJK 縦書きと右から左. DRM で保護された本 (LCP, Adobe ADEPT) は保護されていると報告し, 描画しません. PDF, MOBI, AZW, CBZ, オーディオブックは対象外です.
+- 読み上げには本の言語の音声データを持つテキスト読み上げエンジンが必要です (Google 音声サービス, メーカーのエンジン, その他のインストール済みエンジン). 使えるエンジンのない端末では無音のままにならず, 約 20 秒後に報告します.
+- サイズと性能: release APK は約 3.3 MB. 200 MB の本は 2017 年のスマートフォンで 1 から 3 秒で開き, 位置と指紋の計算は最初のページを遅らせません. 数千章の本は開くのに目立って時間がかかります (`docs/dev/performance-baseline.md`).
 
 ******
 
@@ -120,6 +227,22 @@ EPUB のみ対応: EPUB 2 または EPUB 3 のリフロー型と固定レイア�
 #### このプラグインは本をどこかへアップロードしますか?
 
 いいえ. プラグインは独自のサーバーを持ちません. ネットワークは本自体がリモートリソースを参照する場合と, 設定ページの手動アップデート確認 (タップしたときだけ HTTPS で GitHub Releases API に問い合わせ, 何もダウンロードしません) にのみ使用されます.
+
+#### PDF, MOBI, AZW に対応しないのはなぜですか?
+
+リーダーは Readium ツールキットの上に作られており, EPUB のみを描画します. PDF には別のレンダラーが必要で, MOBI / AZW は Amazon の形式でオープンな描画エンジンがありません. まず Calibre などのツールで EPUB に変換してください. コミックアーカイブ (CBZ) とオーディオブックも対象外です.
+
+#### 読み上げの音が出ません
+
+プラグインはシステム設定で選んだテキスト読み上げエンジンで話します (`ユーザー補助 > テキスト読み上げの出力`). 本の言語の音声データを持つエンジンがインストールされていること, メディア音量が上がっていること, 他のアプリがオーディオフォーカスを持っていないこと (通話や音楽は読み上げを一時停止します) を確認してください. エンジンが話せない言語の本はエンジンの既定の音声を使い, 使えるエンジンのない端末では約 20 秒後にメッセージが表示されます.
+
+#### インポートしたフォントが本に反映されません
+
+出版社のスタイルが独自のフォントを固定していることがあります: 設定パネルで `出版社のスタイル` をオフにして, インポートしたフォントを選び直してください. 受け付けるのは TTF と OTF ファイルのみで (フォントコレクション `.ttc` は専用のメッセージで拒否されます), フォントは本文に適用され, 出版社が特定のファミリーを指定した見出しはそのままです.
+
+#### 日本語や中国語の縦書きの本はどう扱われますか?
+
+spine が右から左のページ進行を宣言し, 言語が日本語または中国語の本は縦書きで描画され, 右から左にページをめくります. `文字方向` の設定でどの本でも横書きまたは縦書きを強制できます. 画面は AutoJs6 の言語の方向を保つため, 英語の画面は左から右のまま, 本は右から左に読みます.
 
 ******
 
@@ -172,7 +295,7 @@ Explorer Action v2 は単一ファイルのメインボタンとメニューに�
 
 ******
 
-計画中の機能と完了状況は ROADMAP.md にチェック可能なリストとして記録され, 受け入れ基準付きのマイルストーンで整理されています: 読書位置の記憶とブックマーク, 設定とフォントの取り込み, 全文検索, 読み上げ, 固定レイアウト, 独立アプリの入口, ホスト契約と `epub` スクリプト API. 未チェックの項目は出荷済みの機能ではなく計画を示します. Issues でのフィードバックを歓迎します.
+ROADMAP.md は各マイルストーンを受け入れ基準と証拠付きのチェックリストとして追跡します: P0 から P8 (リーダー, 設定とフォント, 検索とブックマーク, 読み上げ, 単独の入口, ホスト契約, `epub` スクリプト API, 堅牢性, 1.0.0 リリースゲート) はチェック済みで, P9 (ハイライト, ノート, エクスポート, 1.1.0) は計画中です. 未チェックの項目は出荷済みの機能ではなく計画です. Issues でのフィードバックを歓迎します.
 
 - [ROADMAP.md を見る](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
 
@@ -269,13 +392,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### ライセンスとサードパーティ通知
+
+******
+
+このプラグインは [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE) の下で提供されます. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 と Jsoup, AutoJs6 のコントラクトライブラリ, その他 APK に同梱されるコンポーネントのバージョン, チェックサム, ライセンスは [サードパーティ通知](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md) に一覧しています.
+
+******
+
 ### リンク
 
 ******
 
 - AutoJs6 ドキュメント: https://docs.autojs6.com
+- `epub` スクリプト API リファレンス: https://docs.autojs6.com/#/epub
 - EPUB 3.3 仕様: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- サードパーティ通知: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
+- 16 KB ページアライメントとビルド検証: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md

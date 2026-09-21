@@ -43,7 +43,36 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> Current stage (1.0.0 development build): the reader opens the book with Readium's default settings, offers a table of contents, remembers the reading position of every book, provides scroll mode, tap zones, volume keys and immersive mode, and has a preferences panel for text size, font, spacing, alignment, columns and themes that can follow the host's night mode, and imports your own TTF or OTF fonts and handles vertical CJK and right-to-left books, and shows fixed-layout books as single pages or two-page spreads, and searches the whole book, and keeps bookmarks, and handles in-book links, notes and images with configurable tap zones and keyboard keys, and reads aloud with the system text-to-speech engine. The app icon opens a standalone launcher with the recent books and the system document picker, other apps can hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. An `org.autojs.plugin.EPUB` service answers metadata, contents, text, resources and search to the AutoJs6 host and opens a host-driven reader session (position, bookmark and close events, jumps, page turns and preferences); the `epub` scripting API is planned in ROADMAP.md and arrives with the host client.
+> 1.0.0 is the first release. The reader opens EPUB 2 and EPUB 3 books with a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, a preferences panel (text size, font, spacing, alignment, columns and themes that can follow the host's night mode), imported TTF / OTF fonts, vertical CJK and right-to-left books, fixed-layout books as single pages or spreads, full-text search, bookmarks, in-book links, notes and images, and read-aloud with the system text-to-speech engine. The app icon opens a launcher with the recent books and the system document picker, other apps hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `epub` script API, the host reader session and three sample scripts ship with AutoJs6 6.8.0 (build 5282). Highlights, notes and export are planned for 1.1.0 (ROADMAP.md, P9).
+
+******
+
+### Screenshots
+
+******
+
+Taken on a phone from the sample books generated in `docs/fixtures` (no third-party book is shown); the interface follows the AutoJs6 language, English here:
+
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>Reading</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>Table of contents</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>Reading preferences</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>Full-text search</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>Bookmarks</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>Read aloud</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>Dark theme</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>Sepia theme</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>Vertical Japanese</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>Fixed layout</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>Recent books</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>Settings</td>
+  </tr>
+</table>
 
 ******
 
@@ -68,10 +97,20 @@ The plugin reads the book directly through the temporary file descriptor granted
 - Standalone launcher: the app icon opens a grid of recent books with cover, title, author, progress and last read time, plus an `Open EPUB` button that picks a book with the system document picker; the reader is the same one the file manager opens.
 - Opens from other apps: a file manager, browser or mail app can hand over a `content://` EPUB through `ACTION_VIEW`; `Add to recent books` in the overflow menu keeps it in the launcher when the sender allows lasting access.
 - Settings page with theme, page turning, read-aloud defaults, links and data management, plus the release history and a manual update check that only asks GitHub when you tap it
-- Scripting service: an `org.autojs.plugin.EPUB` Binder service lets the AutoJs6 host read a book without opening the reader (metadata, table of contents, reading order, chapter text as plain text or light Markdown, resources, full-text search and position counts), with bounded requests, at most 8 books open at a time and access limited to the host; the `epub` script API arrives with the host client.
+- Scripting service: an `org.autojs.plugin.EPUB` Binder service lets the AutoJs6 host read a book without opening the reader (metadata, table of contents, reading order, chapter text as plain text or light Markdown, resources, full-text search and position counts), with bounded requests, at most 8 books open at a time and access limited to the host; AutoJs6 6.8.0 exposes it to scripts as the `epub` module (see Scripting below).
 - Host reader session: the AutoJs6 host can open the reader on a book through the `org.autojs.plugin.EPUB` service and follow it (position, bookmark and close events), jump to a locator, href or progression, turn pages or chapters and set the reading preferences; the reader starts only through the host's own explicit launch with a one-time session token, and closing the session leaves the reader open for the user unless the host asks to finish it.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
+
+******
+
+### Installation
+
+******
+
+1. From the plugin center: open `Plugins` in AutoJs6, pick `Readium EPUB Reader` from the official list and tap install; the plugin center downloads the signed APK, installs it and lets you enable the plugin.
+2. From GitHub: download the APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) page (the file name carries a CRC32 and `SHA256SUMS` lists the checksum), install it, then enable the plugin in the plugin center.
+3. Requirements: AutoJs6 internal build 5269 or later for the file manager entry, AutoJs6 6.8.0 (build 5282) or later for the `epub` script API, Android 7.0 or later, and a system WebView.
 
 ******
 
@@ -86,8 +125,61 @@ The plugin reads the book directly through the temporary file descriptor granted
 5. Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.
 6. From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.
 7. Open `Settings` from the launcher menu or the reader's overflow menu to set the theme, page turning, read-aloud defaults and links, clear the data the plugin keeps, read the release history or check for updates (the check contacts GitHub only when you tap it).
+8. From a script: `epub.open(path)` reads a book (metadata, contents, text, search) and `epub.read(path)` opens this reader and reports its position; see the Scripting section below and the `E-books` samples in AutoJs6.
 
 > If the plugin does not appear in the plugin center, update AutoJs6 to a recent version first (internal build 5269 or later). Explorer Action v2 supports both the primary button and the overflow menu for a single file, using temporary read grants for the document and its parent directory.
+
+******
+
+### Scripting
+
+******
+
+AutoJs6 6.8.0 adds the global `epub` module (alias `$epub`), which this plugin serves: read a book without opening the reader, or open the reader and follow it from a script. AutoJs6 ships three sample scripts under `Samples > E-books`, and the reference is in the [AutoJs6 documentation](https://docs.autojs6.com/#/epub):
+
+Metadata, table of contents and chapter text:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+Cover, search and the convenience functions:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+Open the reader and follow the position:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+Paths are relative to the script's working directory or absolute (`content://` URIs are not accepted). Every call throws an `EpubError` with a `code` (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT`, ...) when the plugin or the book cannot be used, `epub.isAvailable()` tells whether the plugin is installed and enabled, and every method has an `*Async` twin that returns a Promise.
 
 ******
 
@@ -102,6 +194,21 @@ epub
 ```
 
 Only EPUB is supported: reflowable and fixed-layout books in EPUB 2 or EPUB 3. Comic archives (CBZ), audiobooks, PDF and LCP-protected books are out of scope; a book marked as LCP-encrypted is reported as unreadable instead of rendering garbage.
+
+******
+
+### Compatibility
+
+******
+
+What the plugin needs, what it was verified on and what stays out of scope:
+
+- AutoJs6: internal build 5269 or later for the file manager entry (Explorer Action v2); the `epub` script API, the host reader session and the sample scripts need AutoJs6 6.8.0 (build 5282), the last host build audited for this release.
+- Android 7.0 (API 24) up to Android 16 (API 37, the target); the pages render in the device's WebView, so an up-to-date Android System WebView or Chrome is expected. The plugin has no native libraries and runs unchanged on 16 KB page devices.
+- Verified on AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) and Xiaomi Pad 6 (Android 15, service side); the device x scenario matrix, its deviations and the WebView versions are in `docs/dev/compatibility-matrix.md`.
+- Books: EPUB 2 and EPUB 3, reflowable and fixed layout, vertical CJK and right-to-left. DRM-protected books (LCP, Adobe ADEPT) are reported as protected and never rendered; PDF, MOBI, AZW, CBZ and audiobooks are out of scope.
+- Read-aloud needs a text-to-speech engine with voice data for the book's language (Google Speech Services, the vendor's engine or any other installed engine); a device without a usable engine reports it after about 20 seconds instead of staying silent.
+- Size and performance: the release APK is about 3.3 MB; a 200 MB book opens in 1 to 3 seconds on a 2017 phone, position and fingerprint computation never delay the first page, and books with thousands of chapters take noticeably longer to open (`docs/dev/performance-baseline.md`).
 
 ******
 
@@ -120,6 +227,22 @@ Yes. Open the preferences panel from the toolbar to set the text size, the font 
 #### Does this plugin upload my books anywhere?
 
 No. The plugin has no server of its own. Network access is only used when a book itself references remote resources, and for the manual update check on the settings page, which asks the GitHub Releases API over HTTPS only when you tap it and never downloads anything.
+
+#### Why are PDF, MOBI or AZW files not supported?
+
+The reader is built on the Readium toolkit, which renders EPUB only. PDF needs a different renderer, and MOBI / AZW are Amazon formats without an open rendering engine; convert them to EPUB with a tool such as Calibre first. Comic archives (CBZ) and audiobooks are out of scope as well.
+
+#### Read aloud makes no sound
+
+The plugin speaks through the text-to-speech engine chosen in the system settings (`Accessibility > Text-to-speech output`). Check that an engine with voice data for the book's language is installed, that the media volume is up and that no other app holds the audio focus (a call or music pauses read-aloud). A book in a language the engine cannot speak uses the engine's default voice, and a device without a usable engine shows a message after about 20 seconds.
+
+#### An imported font does not show in the book
+
+Publisher styles may pin their own fonts: switch `Publisher styles` off in the preferences panel and select the imported font again. Only TTF and OTF files are accepted (font collections, `.ttc`, are refused with their own message), a font applies to the body text, and headings the publisher styled with a specific family keep it.
+
+#### How are vertical Japanese or Chinese books handled?
+
+A book whose spine declares a right-to-left page progression and a Japanese or Chinese language renders vertically and turns pages from right to left; the `Text direction` preference forces horizontal or vertical text for any book. The interface keeps the AutoJs6 language direction, so an English interface stays left to right while the book reads right to left.
 
 ******
 
@@ -172,7 +295,7 @@ Explorer Action v2 supports both the primary button and the overflow menu for a 
 
 ******
 
-Planned capabilities and their completion status are tracked as a checkable list in ROADMAP.md, organized by milestones with acceptance criteria: reading position memory and bookmarks, preferences and font import, full-text search, read-aloud, fixed layout, the standalone app entry, the host contract and the `epub` scripting API. Unchecked items describe plans rather than shipped capabilities. Feedback via Issues is welcome.
+ROADMAP.md tracks every milestone as a checkable list with acceptance criteria and evidence: P0 to P8 (the reader, preferences and fonts, search and bookmarks, read-aloud, the standalone entry, the host contract, the `epub` script API, robustness and the 1.0.0 release gate) are checked; P9 (highlights, notes and export, 1.1.0) is planned. Unchecked items describe plans rather than shipped capabilities. Feedback via Issues is welcome.
 
 - [View ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
 
@@ -269,13 +392,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### License and Third-Party Notices
+
+******
+
+The plugin is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE). The Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 and Jsoup, the AutoJs6 contract libraries and the other components shipped in the APK are listed with their versions, checksums and licenses in [Third-Party Notices](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md).
+
+******
+
 ### Links
 
 ******
 
 - AutoJs6 documentation: https://docs.autojs6.com
+- `epub` script API reference: https://docs.autojs6.com/#/epub
 - EPUB 3.3 specification: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
+- 16 KB page alignment and build verification: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md

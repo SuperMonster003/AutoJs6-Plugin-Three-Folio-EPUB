@@ -43,7 +43,36 @@
 
 插件直接通过宿主授予的临时文件描述符读取书籍, 不会拿到文件系统路径, 不会把书籍复制到任何位置, 也不会解压到存储.
 
-> 当前阶段 (1.0.0 开发构建): 阅读器以 Readium 默认设置打开书籍, 提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 并提供偏好面板设置字号, 字体, 间距, 对齐, 列数与主题 (可跟随宿主夜间模式), 并可导入自己的 TTF / OTF 字体, 支持 CJK 竖排与从右到左的书籍, 并以单页或双页显示固定版式书籍, 并支持全文搜索, 并可添加书签, 并支持书内链接, 注释, 图片, 可配置的点按翻页与键盘按键, 并可用系统文字转语音引擎朗读. 应用图标打开独立启动器, 提供最近书籍与系统文档选择器, 其它应用也可以通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `org.autojs.plugin.EPUB` 服务向 AutoJs6 宿主提供元数据, 目录, 文本, 资源与搜索, 并可打开由宿主驱动的阅读器会话 (位置, 书签与关闭事件, 跳转, 翻页与偏好); `epub` 脚本 API 已在 ROADMAP.md 中排期, 随宿主客户端提供.
+> 1.0.0 是首个正式版本. 阅读器打开 EPUB 2 与 EPUB 3 书籍并提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 偏好面板 (字号, 字体, 间距, 对齐, 列数与可跟随宿主夜间模式的主题), 导入的 TTF / OTF 字体, CJK 竖排与从右到左的书籍, 以单页或双页显示的固定版式书籍, 全文搜索, 书签, 书内链接, 注释与图片, 以及使用系统文字转语音引擎的朗读. 应用图标打开带最近书籍与系统文档选择器的启动器, 其它应用可通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `epub` 脚本 API, 宿主阅读器会话与三份示例脚本随 AutoJs6 6.8.0 (版本号 5282) 提供. 高亮, 笔记与导出计划在 1.1.0 (ROADMAP.md, P9).
+
+******
+
+### 截图
+
+******
+
+在手机上以 `docs/fixtures` 生成的样本书截取 (不展示任何第三方书籍); 界面跟随 AutoJs6 的语言, 此处为英文:
+
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>阅读</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>目录</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>阅读偏好</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>全文搜索</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>书签</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>朗读</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>深色主题</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>羊皮纸主题</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>日文竖排</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>固定版式</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>最近书籍</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>设置</td>
+  </tr>
+</table>
 
 ******
 
@@ -68,10 +97,20 @@
 - 独立启动器: 应用图标打开最近书籍网格 (封面, 书名, 作者, 进度与最后阅读时间) 与 `打开 EPUB` 按钮, 后者通过系统文档选择器选书; 阅读器与文件管理器打开的是同一个.
 - 从其它应用打开: 文件管理器, 浏览器或邮件应用可以通过 `ACTION_VIEW` 交给阅读器一个 `content://` EPUB; 溢出菜单中的 `加入最近书籍` 在发送方允许持久访问时把它留在启动器中.
 - 设置页: 主题, 翻页, 朗读默认值, 链接与数据管理, 另有发行历史与只在点按时询问 GitHub 的手动更新检查
-- 脚本服务: `org.autojs.plugin.EPUB` Binder 服务让 AutoJs6 宿主不打开阅读器也能读取书籍 (元数据, 目录, 阅读顺序, 纯文本或轻量 Markdown 的章节文本, 资源, 全文搜索与位置数), 请求受上限约束, 同时最多打开 8 本, 只允许宿主访问; `epub` 脚本 API 随宿主客户端提供.
+- 脚本服务: `org.autojs.plugin.EPUB` Binder 服务让 AutoJs6 宿主无需打开阅读器即可读取书籍 (元数据, 目录, 阅读顺序, 纯文本或轻量 Markdown 的章节文本, 资源, 全文搜索与位置数), 请求有上限, 同时最多打开 8 本书, 且只对宿主开放; AutoJs6 6.8.0 以 `epub` 模块把它提供给脚本 (见下文 "脚本调用").
 - 宿主阅读器会话: AutoJs6 宿主可经 `org.autojs.plugin.EPUB` 服务在某本书上打开阅读器并跟随它 (位置, 书签与关闭事件), 跳到 locator, href 或进度, 翻页或跳章, 设置阅读偏好; 阅读器只由宿主携带一次性会话令牌显式启动, 关闭会话时阅读器仍留给用户, 除非宿主要求结束.
 - 宿主集成: 菜单与对话框跟随 AutoJs6 的语言和暗色模式; 打开任何内容之前都会严格校验 Explorer Action 信封.
 - 多语言: 界面, 说明, README 与更新日志均提供 10 种语言.
+
+******
+
+### 安装
+
+******
+
+1. 从插件中心: 在 AutoJs6 中打开 `插件`, 在官方列表中找到 `Readium EPUB Reader` 并点按安装; 插件中心会下载已签名的 APK, 完成安装并提供启用开关.
+2. 从 GitHub: 在 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) 页面下载 APK (文件名带 CRC32, `SHA256SUMS` 列出校验值), 安装后在插件中心启用插件.
+3. 要求: 文件管理器入口需要 AutoJs6 内部版本号 5269 及以上, `epub` 脚本 API 需要 AutoJs6 6.8.0 (版本号 5282) 及以上, Android 7.0 及以上, 以及系统 WebView.
 
 ******
 
@@ -86,8 +125,61 @@
 5. 不经文件管理器时, 点按应用图标: 启动器列出最近书籍, `打开 EPUB` 通过系统文档选择器选书; 这样打开的书籍会带着封面与进度留在列表中.
 6. 在其它应用 (文件管理器, 浏览器的下载, 邮件附件) 中为 `.epub` 文件选择本阅读器; 书籍以同样方式打开, 溢出菜单中的 `加入最近书籍` 在发送方允许持久访问时把它留在启动器的列表中.
 7. 在启动器菜单或阅读器溢出菜单中打开 `设置`, 可设置主题, 翻页, 朗读默认值与链接, 清除插件保存的数据, 阅读发行历史或检查更新 (只有点按时才会联系 GitHub).
+8. 从脚本: `epub.open(path)` 读取书籍 (元数据, 目录, 文本, 搜索), `epub.read(path)` 打开本阅读器并报告阅读位置; 见下文 "脚本调用" 与 AutoJs6 中的 `电子书` 示例.
 
 > 若插件中心未显示该插件, 请先将 AutoJs6 升级到较新版本 (内部版本号 5269 及以上). Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录.
+
+******
+
+### 脚本调用
+
+******
+
+AutoJs6 6.8.0 新增全局模块 `epub` (别名 `$epub`), 由本插件提供服务: 不打开阅读器即可读取书籍, 也可以从脚本打开阅读器并跟踪阅读位置. AutoJs6 在 `示例 > 电子书` 下附带三份示例脚本, 完整参考见 [AutoJs6 文档](https://docs.autojs6.com/#/epub):
+
+元数据, 目录与章节文本:
+
+```javascript
+let book = epub.open('./books/lighthouse.epub');
+console.log(book.metadata.title, '-', (book.metadata.authors || []).join(', '));
+book.toc.forEach(entry => console.log(entry.title, entry.href, (entry.children || []).length, 'children'));
+console.log(book.readingOrder.length, 'resources,', book.positions, 'positions');
+let first = book.readingOrder[0];
+console.log(book.text(first.href, { format: 'markdown' }));
+book.close();
+```
+
+封面, 搜索与便捷函数:
+
+```javascript
+let path = './books/lighthouse.epub';
+let book = epub.open(path);
+try {
+    console.log('cover saved to', book.cover(files.cwd(), { overwrite: true }));
+} catch (e) {
+    if (!(e instanceof epub.EpubError) || e.code !== 'RESOURCE_NOT_FOUND') throw e;
+    console.log('this book has no cover');
+}
+book.search('lighthouse', { limit: 20 }).forEach(hit => console.log(hit.title || hit.href, ':', hit.text));
+files.write('./lighthouse.txt', book.textAll({ maxChars: 2 * 1024 * 1024 }));
+book.close();
+console.log(epub.metadata(path).language); // the convenience functions open and close the book themselves
+epub.tocAsync(path).then(toc => console.log(toc.length, 'entries'));
+```
+
+打开阅读器并跟踪位置:
+
+```javascript
+let session = epub.read('./books/lighthouse.epub', { progression: 0.25, preferences: { theme: 'sepia' } });
+session.on('open', e => console.log('opened', e.title, 'at', e.href, '|', e.positions, 'positions'));
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('bookmark', e => console.log('bookmark', e.action, e.locator.href, '| total', session.bookmarks().length));
+session.on('close', e => console.log('closed:', e.reason)); // user, host, replaced, timeout, error or overflow
+setTimeout(() => session.isOpen && session.nextChapter(), 30 * 1000);
+setTimeout(() => session.isOpen && session.close(), 60 * 1000);
+```
+
+路径相对脚本工作目录或使用绝对路径 (不接受 `content://` URI). 插件或书籍不可用时每个调用都会抛出带 `code` 的 `EpubError` (`PLUGIN_UNAVAILABLE`, `NOT_EPUB`, `ENCRYPTED`, `PARSE_FAILED`, `TIMEOUT` 等), `epub.isAvailable()` 告知插件是否已安装并启用, 每个方法都有返回 Promise 的 `*Async` 版本.
 
 ******
 
@@ -102,6 +194,21 @@ epub
 ```
 
 仅支持 EPUB: EPUB 2 或 EPUB 3 的可重排与固定版式书籍. 漫画归档 (CBZ), 有声书, PDF 与 LCP 加密书籍不在范围内; 标记为 LCP 加密的书籍会提示无法读取, 而不是渲染乱码.
+
+******
+
+### 兼容性
+
+******
+
+插件的运行要求, 已验证的环境与不在范围内的内容:
+
+- AutoJs6: 文件管理器入口 (Explorer Action v2) 需要内部版本号 5269 及以上; `epub` 脚本 API, 宿主阅读器会话与示例脚本需要 AutoJs6 6.8.0 (版本号 5282), 这也是本次发布审计过的最高宿主版本.
+- Android 7.0 (API 24) 至 Android 16 (API 37, 目标版本); 页面在设备的 WebView 中渲染, 需要较新的 Android System WebView 或 Chrome. 插件不含原生库, 在 16 KB 页设备上无需改动即可运行.
+- 已在 AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) 与 Xiaomi Pad 6 (Android 15, 服务侧) 上验证; 设备 x 场景矩阵, 偏差与 WebView 版本见 `docs/dev/compatibility-matrix.md`.
+- 书籍: EPUB 2 与 EPUB 3, 可重排与固定版式, CJK 竖排与从右到左. 受 DRM 保护的书籍 (LCP, Adobe ADEPT) 会提示受保护而不会渲染; PDF, MOBI, AZW, CBZ 与有声书不在范围内.
+- 朗读需要带有书籍语言语音数据的文字转语音引擎 (Google 语音服务, 厂商引擎或其它已安装引擎); 没有可用引擎的设备会在约 20 秒后给出提示, 而不是一直无声.
+- 体积与性能: release APK 约 3.3 MB; 200 MB 的书在 2017 年的手机上 1 到 3 秒打开, 位置与指纹计算不会拖慢首屏, 数千章的书打开明显更慢 (`docs/dev/performance-baseline.md`).
 
 ******
 
@@ -120,6 +227,22 @@ epub
 #### 这个插件会把我的书上传到某处吗?
 
 不会. 插件没有自己的服务器. 只有当书籍本身引用远程资源时, 以及设置页中的手动更新检查 (只在你点按时通过 HTTPS 询问 GitHub Releases API, 从不下载任何文件), 才会使用网络.
+
+#### 为什么不支持 PDF, MOBI 或 AZW?
+
+阅读器基于 Readium 工具包构建, 它只渲染 EPUB. PDF 需要另一套渲染器, MOBI / AZW 是 Amazon 的格式且没有开放的渲染引擎; 请先用 Calibre 之类的工具转换为 EPUB. 漫画归档 (CBZ) 与有声书同样不在范围内.
+
+#### 朗读没有声音
+
+插件通过系统设置中选择的文字转语音引擎发声 (`无障碍 > 文字转语音输出`). 请确认已安装带有书籍语言语音数据的引擎, 媒体音量已调高, 且没有其它应用占用音频焦点 (来电或音乐会暂停朗读). 引擎不会说的语言会使用引擎的默认语音; 没有可用引擎的设备会在约 20 秒后给出提示.
+
+#### 导入的字体在书中没有生效
+
+出版方样式可能固定了自己的字体: 在偏好面板中关闭 `出版方样式`, 再重新选择导入的字体. 只接受 TTF 与 OTF 文件 (字体集 `.ttc` 会以专门的提示拒绝), 字体应用于正文, 出版方指定了特定字族的标题保持不变.
+
+#### 日文或中文竖排书籍如何处理?
+
+spine 声明从右到左翻页且语言为日文或中文的书籍会竖排渲染并从右向左翻页; `文字方向` 偏好可以为任何书籍强制横排或竖排. 界面保持 AutoJs6 语言的方向, 因此英文界面仍从左到右, 而书籍从右向左阅读.
 
 ******
 
@@ -172,7 +295,7 @@ Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临�
 
 ******
 
-计划中的能力及其完成状态以可勾选清单的形式记录在 ROADMAP.md 中, 按里程碑组织并附验收标准: 阅读位置记忆与书签, 偏好设置与字体导入, 全文搜索, 朗读, 固定版式, 独立应用入口, 宿主契约与 `epub` 脚本 API. 未勾选的条目表示计划而非已交付能力. 欢迎通过 Issues 反馈.
+ROADMAP.md 以可勾选的列表跟踪每个里程碑, 附验收标准与证据: P0 至 P8 (阅读器, 偏好与字体, 搜索与书签, 朗读, 独立入口, 宿主契约, `epub` 脚本 API, 健壮性与 1.0.0 发布 gate) 已勾选; P9 (高亮, 笔记与导出, 1.1.0) 在计划中. 未勾选的条目是计划而非已交付的能力. 欢迎通过 Issues 反馈.
 
 - [查看 ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
 
@@ -269,13 +392,21 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
+### 许可证与第三方声明
+
+******
+
+插件以 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE) 授权. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 与 Jsoup, AutoJs6 契约库以及 APK 中附带的其它组件的版本, 校验值与许可证列于 [第三方声明](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md).
+
+******
+
 ### 相关链接
 
 ******
 
 - AutoJs6 文档: https://docs.autojs6.com
+- `epub` 脚本 API 参考: https://docs.autojs6.com/#/epub
 - EPUB 3.3 规范: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-
-
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md)
+- 第三方声明: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
+- 16 KB 页对齐与构建验证: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md
