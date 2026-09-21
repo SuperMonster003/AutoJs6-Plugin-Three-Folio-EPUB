@@ -11,6 +11,7 @@ import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import java.util.concurrent.TimeUnit
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.BuildConfig
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
@@ -44,7 +45,7 @@ import java.io.File
 class PluginServiceInstrumentationTest {
 
     @get:Rule
-    val serviceRule = ServiceTestRule()
+    val serviceRule: ServiceTestRule = ServiceTestRule.withTimeout(60, TimeUnit.SECONDS) // GitHub-hosted emulators exceed the 5 s default
 
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private val assets get() = InstrumentationRegistry.getInstrumentation().context.assets

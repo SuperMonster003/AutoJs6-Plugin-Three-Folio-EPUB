@@ -263,7 +263,7 @@ class EpubReaderPreferencesInstrumentationTest {
     }
 
     private fun await(message: String, detail: () -> String? = { null }, condition: () -> Boolean) {
-        val deadline = SystemClock.uptimeMillis() + 20000
+        val deadline = SystemClock.uptimeMillis() + 60000 // a cold open takes longer than 20 s on the GitHub-hosted API 35 emulator
         while (SystemClock.uptimeMillis() < deadline) {
             var ready = false
             main { ready = runCatching(condition).getOrDefault(false) }

@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import java.util.concurrent.TimeUnit
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderActivity
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
@@ -47,7 +48,7 @@ import java.io.File
 class ReaderSessionInstrumentationTest {
 
     @get:Rule
-    val serviceRule = ServiceTestRule()
+    val serviceRule: ServiceTestRule = ServiceTestRule.withTimeout(60, TimeUnit.SECONDS) // GitHub-hosted emulators exceed the 5 s default
 
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
     private val context get() = instrumentation.targetContext

@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import java.util.concurrent.TimeUnit
 import androidx.test.runner.AndroidJUnit4
 import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.epub.api.EpubErrorCodes
@@ -45,7 +46,7 @@ import java.util.zip.ZipOutputStream
 class HostileInputInstrumentationTest {
 
     @get:Rule
-    val serviceRule = ServiceTestRule()
+    val serviceRule: ServiceTestRule = ServiceTestRule.withTimeout(60, TimeUnit.SECONDS) // GitHub-hosted emulators exceed the 5 s default
 
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private val assets get() = InstrumentationRegistry.getInstrumentation().context.assets

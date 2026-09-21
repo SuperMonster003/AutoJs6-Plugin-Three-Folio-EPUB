@@ -15,6 +15,7 @@ import android.view.FrameMetrics
 import android.view.Window
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import java.util.concurrent.TimeUnit
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.service.ReadiumEpubReaderPluginService
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.tts.TtsStatus
@@ -57,7 +58,7 @@ import kotlin.random.Random
 class EpubReaderPerformanceInstrumentationTest {
 
     @get:Rule
-    val serviceRule = ServiceTestRule()
+    val serviceRule: ServiceTestRule = ServiceTestRule.withTimeout(60, TimeUnit.SECONDS) // GitHub-hosted emulators exceed the 5 s default
 
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
     private val context get() = instrumentation.targetContext
@@ -87,7 +88,10 @@ class EpubReaderPerformanceInstrumentationTest {
         }
         note("| book | Binder open | metadata + positions | search (last chapter) |")
         note("|---|---|---|---|")
-        for (book in books) measureService(book)
+        // One binding for the whole table: ServiceTestRule tracks only its last connection, so a bind per book would leak
+        // the earlier ones for the rest of the process and no later test would ever see onUnbind (CI run 35562068677).
+        val plugin = bind()
+        for (book in books) measureService(plugin, book)
         writeNotes("perf")
     }
 
@@ -164,8 +168,7 @@ class EpubReaderPerformanceInstrumentationTest {
 
     // ---- The Binder service ----
 
-    private fun measureService(book: Book) {
-        val plugin = bind()
+    private fun measureService(plugin: IEpubPlugin, book: Book) {
         val started = SystemClock.elapsedRealtime()
         val remote = ParcelFileDescriptor.open(book.file, ParcelFileDescriptor.MODE_READ_ONLY).use { plugin.openBook(it, Bundle()).remote() }
         val open = SystemClock.elapsedRealtime() - started

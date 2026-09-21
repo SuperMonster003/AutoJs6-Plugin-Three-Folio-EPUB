@@ -249,9 +249,15 @@ class EpubReaderAccessibilityInstrumentationTest {
             return
         }
         val before = locator(activity)
-        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
-        val turned = awaitOrNot(10_000) { locator(activity) != before }
-        note("keyboard: DPAD_RIGHT $before -> ${locator(activity)} (${if (turned) "turned" else "did not turn"})")
+        // A single press can be lost while the page settles on a slow emulator: press the way the controls test does, up to six times.
+        var presses = 0
+        var turned = false
+        while (!turned && presses < 6) {
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
+            presses++
+            turned = awaitOrNot(2_000) { locator(activity) != before }
+        }
+        note("keyboard: DPAD_RIGHT x$presses $before -> ${locator(activity)} (${if (turned) "turned" else "did not turn"})")
         if (!turned) problems += "keyboard: the right arrow did not turn the page"
         val trail = ArrayList<String>()
         repeat(6) {
