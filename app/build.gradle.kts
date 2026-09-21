@@ -135,6 +135,8 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+val isolatedDeviceTests = providers.gradleProperty("readium.test.isolate").map(String::toBoolean).getOrElse(false)
+
 android {
     namespace = globalApplicationId
     compileSdk = versions.sdkVersionCompile
@@ -147,6 +149,9 @@ android {
         versionName = versions.appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        if (isolatedDeviceTests) {
+            testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        }
 
         buildConfigField("int", "EXPLORER_ACTION_PROTOCOL_VERSION", explorerActionProtocolVersion.toString())
         buildConfigField("String", "READIUM_VERSION", "\"${libs.versions.readium.get()}\"")
@@ -178,6 +183,10 @@ android {
 
     lint {
         abortOnError = true
+    }
+
+    if (isolatedDeviceTests) {
+        testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     androidResources {
@@ -324,6 +333,7 @@ dependencies {
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.rules)
     androidTestImplementation(libs.test.runner)
+    androidTestUtil(libs.test.orchestrator)
 }
 
 tasks {

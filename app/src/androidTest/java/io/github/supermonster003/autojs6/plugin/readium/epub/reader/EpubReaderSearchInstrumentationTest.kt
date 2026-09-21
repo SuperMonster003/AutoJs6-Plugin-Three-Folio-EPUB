@@ -168,7 +168,7 @@ class EpubReaderSearchInstrumentationTest {
     fun largeBooksPageAndCapAndCancel() {
         val activity = instrumentation.startActivitySync(request(MANY)) as EpubReaderActivity
         try {
-            // 50 000 container entries: the API 24 emulator needs well over 30 s to show the first page.
+            // The fixture adds 2000 spine entries; allow extra startup time on slower API 24 emulators.
             awaitHref(activity, "chapter1.xhtml", 120000)
             val sheet = openSheet(activity)
             val started = SystemClock.uptimeMillis()

@@ -103,7 +103,7 @@ jobs:
           disable-animations: true
           script: |
             chmod +x gradlew
-            ./gradlew --max-workers=2 -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false :app:connectedDebugAndroidTest --console=plain --stacktrace
+            ./gradlew --max-workers=2 -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false -Preadium.test.isolate=true :app:connectedDebugAndroidTest --console=plain --stacktrace
 
       - name: Upload instrumentation reports after failure
         if: failure()

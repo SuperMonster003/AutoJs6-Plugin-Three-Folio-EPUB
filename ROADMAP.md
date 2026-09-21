@@ -1013,3 +1013,12 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 - 附带发现 8 (宿主 `epub.annotations` 未注册): 宿主 `603bd4a4f` 给 `Epub.kt` 加了 `annotations` / `annotationsAsync` 两个 `@RhinoRuntimeFunctionInterface` 方法却没列进 `selfAssignmentFunctions`, 脚本调用 `epub.annotations(path)` 得到 "Cannot find function annotations" 而 `book.annotations()` 正常; 宿主单元测试只覆盖对象层, 设备检查 (`build/p96_v2_host.py`) 才暴露. 修复 `04c55ac78a` (注册两个名字, 新增 `EpubGlobalFunctionsTest` 把该列表与声明的方法及错误透传集合逐一对照), app epub 包 58 用例通过; 宿主按约定不推送, 不加 changelog 行 (`603bd4a4f` 的条目已描述该函数).
 - 附带发现 9 (uiautomator 看不见浮动工具条): 文本选择工具条是框架的浮动 ActionMode (PopupWindow), AVD API 24 与 API 37 的 `uiautomator dump` 都不含其条目, 按标签找 "Highlight" 的脚本报 NOT FOUND 而截图里工具条就在; 本次按截图坐标点击完成, 后续自动化应走 instrumentation 的 `performSelectionAction` 而非 uiautomator. 另: 长按坐标落在段落间空白 (屏高 45%) 时不产生选择, 落在文字行上 (约 51%) 才有.
 - 下一步: 维护者确认后执行 1.1.0 的索引条目 (`73.json`, P9 未勾选项) 与关联仓库 / 宿主的推送; Pad 解锁后补跑界面类; P0.3 外部样本仍待网络许可.
+
+### 2026-09-22 (简体中文文案与 CI 隔离)
+
+- 按维护者要求统一简体中文 changelog 的历史文案并刷新中文生成物, 版本与日期不变; 其他语言留待简体中文终稿确认后统一翻译.
+- API 24 CI 的失败在整包同进程运行时可复现 (启动器 / 大书搜索等待超时, 后续出现进程崩溃), 对应类单独运行可通过. CI 通过 `-Preadium.test.isolate=true` 启用 Android Test Orchestrator 1.6.1, 每个用例使用独立 Instrumentation 并清理应用数据; 保留完整用例集合和原有超时, 本地默认运行方式不变. 测试依赖的版本, 来源, SHA-256 与许可证见 `THIRD_PARTY_NOTICES.md`.
+- 启动器不可读书用例增加接收 URI 与解析请求断言. 更正搜索用例的过时注释: 已提交的 `malformed-many-entries.epub` 夹具增加 2000 个 spine 条目, 并非注释原称的 50 000 个; 服务侧另有运行时生成的 50 000 条目压力用例, 本轮仍完整执行.
+- 完整隔离运行发现高亮事件用例只向数据库插入标注, 缺少已阅读书籍的进度与指纹别名, 依赖其他用例残留记录才能避开既有淘汰清理. 修正该用例的前置数据, 显式准备完整书籍记录; 阅读器的保留策略与运行时代码不变.
+- 本地验证: 专用 API 24 Google APIs x86 AVD, 完整 `:app:connectedDebugAndroidTest` 成功, 共 106 个用例 (101 通过, 5 按原有 assumption 跳过, 0 失败); debug / androidTest APK 构建与 257 个 JVM 用例通过. 跳过项是外部书籍样本, shell 持久 URI 授权, 需显式启用的 30 分钟朗读与截图采集, 以及 API 26+ 音频焦点. 未为此次修复新增跳过条件.
+- API 35 继续由 CI 矩阵覆盖, 本轮未在本地重跑; GitHub Actions 尚未基于本地提交重新执行. 本次未执行 release 构建与 lint, 变更限于文案和测试执行配置, 未调整运行时依赖或阅读器实现.

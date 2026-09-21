@@ -23,6 +23,8 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.EpubReaderAc
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.R
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.ReadiumEpubReaderPlugin
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.BookDataStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.store.ProgressRecord
 import kotlinx.coroutines.runBlocking
 import org.autojs.plugin.epub.api.EpubActions
 import org.autojs.plugin.epub.api.EpubContract
@@ -227,6 +229,13 @@ class ReaderSessionInstrumentationTest {
             .put(EpubContract.FIELD_TEXT, JSONObject().put(EpubContract.FIELD_HIGHLIGHT, quote))
         fun RecordingCallback.highlights() = snapshot().filter { it.type == EpubContract.EVENT_HIGHLIGHT }
         try {
+            // Model a previously read book as well as its highlight. Without the book record,
+            // retention correctly treats the raw database row as an evicted book's annotation.
+            val store = BookDataStore.forFilesDirectory(context.filesDir)
+            store.writeProgress(fullKey, ProgressRecord(locator(CHAPTER1, 0.0, ""), 1_000L))
+            val quickKey = fixture(FIXTURE).inputStream().use { BookFingerprint.quickKey(it.channel) }
+            store.writeAlias(quickKey, fullKey)
+
             // Stored before the session: the baseline.
             runBlocking { dao.insert(BookAnnotation(bookKey = fullKey, href = CHAPTER3, locator = locator(CHAPTER3, 0.5, "baseline").toString(), chapter = "Chapter 3", createdAt = 1_000L)) }
 
