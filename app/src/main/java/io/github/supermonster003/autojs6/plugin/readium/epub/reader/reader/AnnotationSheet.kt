@@ -32,9 +32,9 @@ import kotlinx.coroutines.launch
  * The highlights and notes panel (roadmap P9.2): a bottom sheet listing the open book's
  * annotations in reading order under one header per chapter, each row with its colour, the
  * highlighted passage, the note and the time. Tapping a row jumps there and closes the sheet,
- * the pencil opens the editor, the trash icon deletes one, the header clears them all after a
- * confirmation. Everything shown comes from the [EpubReaderActivity], so the sheet has no state
- * of its own to lose.
+ * the pencil opens the editor, the trash icon deletes one, the header exports them as Markdown
+ * (roadmap P9.3) or clears them all after a confirmation. Everything shown comes from the
+ * [EpubReaderActivity], so the sheet has no state of its own to lose.
  */
 internal class AnnotationSheet : BottomSheetDialogFragment() {
 
@@ -58,6 +58,7 @@ internal class AnnotationSheet : BottomSheetDialogFragment() {
         SheetAnnotationsBinding.inflate(inflater, container, false).also { _binding = it }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
+        annotationExport.setOnClickListener { host.exportAnnotations() }
         annotationClear.setOnClickListener { confirmClear() }
         annotationList.layoutManager = LinearLayoutManager(requireContext())
         annotationList.adapter = adapter
@@ -104,6 +105,7 @@ internal class AnnotationSheet : BottomSheetDialogFragment() {
     }
 
     private fun render(annotations: List<BookAnnotation>) = with(binding) {
+        annotationExport.isEnabled = annotations.isNotEmpty()
         annotationClear.isEnabled = annotations.isNotEmpty()
         annotationEmpty.isVisible = annotations.isEmpty()
         annotationList.isVisible = annotations.isNotEmpty()

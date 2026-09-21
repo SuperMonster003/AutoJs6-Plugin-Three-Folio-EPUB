@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -33,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationAddResult
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationColors
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationMarkdown
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.AnnotationStyle
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.annotations.BookAnnotation
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.book.FontsContainer
@@ -45,6 +47,7 @@ import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.Chrome
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ReaderTheme
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.AnnotationDialog
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.AnnotationExport
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.AnnotationSheet
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkPolicy
 import io.github.supermonster003.autojs6.plugin.readium.epub.reader.reader.BookmarkSheet
@@ -92,6 +95,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.autojs.plugin.epub.api.EpubActions
 import org.autojs.plugin.epub.api.EpubContract
 import org.json.JSONObject
@@ -158,6 +162,14 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
     private val fontPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) importFont(uri)
     }
+
+    /** Roadmap P9.3: the document the user picked for the Markdown export of the highlights. */
+    private val annotationSaver = registerForActivityResult(ActivityResultContracts.CreateDocument(AnnotationMarkdown.MIME_TYPE)) { uri ->
+        if (uri != null) writeAnnotationExport(uri)
+    }
+
+    internal var annotationExportDialog: AlertDialog? = null
+        private set
 
     private val paginationListener = object : EpubNavigatorFragment.PaginationListener {
         // Only reached once the navigator is in its ready state (reflowable layouts).
@@ -1047,6 +1059,62 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         AnnotationSheet.show(supportFragmentManager)
     }
 
+    // Export (roadmap P9.3)
+
+    /** The Markdown export of the open book's highlights, in the panel's order, with local times. */
+    internal fun annotationMarkdown(): String {
+        val metadata = model.publication?.metadata
+        return AnnotationMarkdown.render(
+            title = metadata?.title,
+            authors = metadata?.authors?.map { it.name }.orEmpty(),
+            annotations = model.annotations.value,
+            readingOrder = readingOrderHrefs,
+            formatTime = { DateUtils.formatDateTime(this, it, EXPORT_TIME_FLAGS) },
+        )
+    }
+
+    /** Offers the two ways out: the share sheet with the text, or a Markdown file placed with the document picker. */
+    internal fun exportAnnotations() {
+        if (model.annotations.value.isEmpty()) {
+            Toast.makeText(this, R.string.text_annotation_export_empty, Toast.LENGTH_SHORT).show()
+            return
+        }
+        annotationExportDialog?.dismiss()
+        annotationExportDialog = AlertDialog.Builder(this)
+            .setTitle(R.string.text_annotation_export)
+            .setItems(arrayOf(getString(R.string.text_annotation_export_share), getString(R.string.text_annotation_export_save))) { _, which ->
+                if (which == 0) shareAnnotations() else saveAnnotations()
+            }
+            .setNegativeButton(R.string.dialog_button_cancel, null)
+            .setOnDismissListener { if (annotationExportDialog === it) annotationExportDialog = null }
+            .show()
+    }
+
+    internal fun shareAnnotations() {
+        launchOrToast(AnnotationExport.shareIntent(annotationMarkdown(), model.publication?.metadata?.title))
+    }
+
+    internal fun saveAnnotations() {
+        try {
+            annotationSaver.launch(AnnotationMarkdown.fileName(model.publication?.metadata?.title))
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.text_no_file_picker, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Writes the export to [uri] off the main thread and says whether it landed. */
+    internal fun writeAnnotationExport(uri: Uri) {
+        val markdown = annotationMarkdown()
+        lifecycleScope.launch {
+            val written = withContext(Dispatchers.IO) { runCatching { AnnotationExport.write(contentResolver, uri, markdown) }.isSuccess }
+            Toast.makeText(
+                this@EpubReaderActivity,
+                if (written) R.string.text_annotation_export_saved else R.string.text_annotation_export_failed,
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
     /** A tap on the decoration [decorationId] of the highlights group opens the editor of its highlight. */
     internal fun onAnnotationDecorationActivated(decorationId: String): Boolean {
         val id = decorationId.removePrefix("$ANNOTATION_DECORATIONS-").toLongOrNull() ?: return false
@@ -1228,6 +1296,8 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         dismissLinkDialogs()
         ttsDialog?.dismiss()
         ttsDialog = null
+        annotationExportDialog?.dismiss()
+        annotationExportDialog = null
         super.onDestroy()
     }
 
@@ -1561,6 +1631,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         internal const val SEARCH_DECORATIONS = "search"
         internal const val TTS_DECORATIONS = "tts"
         internal const val ANNOTATION_DECORATIONS = "annotations"
+        private const val EXPORT_TIME_FLAGS = DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_YEAR
 
         /** Roadmap D26: the read-aloud notification reopens the reader on the book the parked voice reads. */
         internal const val ACTION_RESUME_READ_ALOUD = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.RESUME_READ_ALOUD"

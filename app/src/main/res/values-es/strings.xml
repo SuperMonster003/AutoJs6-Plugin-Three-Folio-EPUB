@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">Resaltado eliminado</string>
     <string name="text_annotation_edit">Editar resaltado</string>
     <string name="text_annotation_empty">Todavía no hay resaltados. Selecciona texto en el libro y elige "Resaltar" o "Añadir nota".</string>
+    <string name="text_annotation_export">Exportar</string>
+    <string name="text_annotation_export_empty">Nada que exportar</string>
+    <string name="text_annotation_export_failed">No se pudo guardar el archivo</string>
+    <string name="text_annotation_export_save">Guardar como archivo Markdown</string>
+    <string name="text_annotation_export_saved">Guardado</string>
+    <string name="text_annotation_export_share">Compartir como texto</string>
     <string name="text_annotation_full">Límite de resaltados alcanzado (%1$d)</string>
     <string name="text_annotation_highlight">Resaltar</string>
     <string name="text_annotation_invalid">No hay texto seleccionado para resaltar</string>

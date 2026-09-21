@@ -311,6 +311,7 @@ _2026/09/21_
 
 - `Note` Version de développement 1.1.0 (feuille de route P9): les surlignages, les notes et l'export sont en cours; les entrées ci-dessous décrivent ce qui est déjà en place
 - `Fonctionnalité` Surlignages et notes dans le lecteur (feuille de route P9.2): la barre de sélection de texte surligne le passage avec la dernière couleur choisie ou ouvre l'éditeur de note (surlignage / soulignement, cinq couleurs, note); les surlignages s'affichent dans la page et un appui rouvre leur éditeur; le panneau "Surlignages et notes" les liste par chapitre dans l'ordre de lecture avec aller à / modifier / supprimer / tout effacer; la page des réglages affiche et efface les surlignages enregistrés
+- `Fonctionnalité` Export des surlignages et des notes d'un livre en Markdown (feuille de route P9.3): le bouton d'export du panneau partage le texte via la feuille de partage du système ou enregistre un fichier `.md` à l'endroit choisi dans le sélecteur de documents; le document liste le titre, les auteurs et les chapitres dans l'ordre de lecture avec chaque passage, sa note et l'heure
 - `Dépendance` Ajout de `androidx.room:room-runtime` 2.8.1 (la base de données des surlignages et des notes, feuille de route D4 / P9); `room-compiler` ne s'exécute que via KSP à la compilation
 
 #### v1.0.0

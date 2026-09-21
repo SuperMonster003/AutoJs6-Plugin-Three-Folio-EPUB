@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">Выделение удалено</string>
     <string name="text_annotation_edit">Изменить выделение</string>
     <string name="text_annotation_empty">Выделений пока нет. Выделите текст в книге и выберите "Выделить" или "Добавить заметку".</string>
+    <string name="text_annotation_export">Экспорт</string>
+    <string name="text_annotation_export_empty">Нечего экспортировать</string>
+    <string name="text_annotation_export_failed">Не удалось сохранить файл</string>
+    <string name="text_annotation_export_save">Сохранить как файл Markdown</string>
+    <string name="text_annotation_export_saved">Сохранено</string>
+    <string name="text_annotation_export_share">Поделиться как текстом</string>
     <string name="text_annotation_full">Достигнут предел выделений (%1$d)</string>
     <string name="text_annotation_highlight">Выделить</string>
     <string name="text_annotation_invalid">Нет выделенного текста</string>

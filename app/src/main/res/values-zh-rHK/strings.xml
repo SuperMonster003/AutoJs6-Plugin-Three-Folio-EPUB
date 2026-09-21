@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">高亮已移除</string>
     <string name="text_annotation_edit">編輯高亮</string>
     <string name="text_annotation_empty">還沒有高亮. 在書中選取文字, 然後選擇 "高亮" 或 "新增筆記".</string>
+    <string name="text_annotation_export">匯出</string>
+    <string name="text_annotation_export_empty">沒有可匯出的內容</string>
+    <string name="text_annotation_export_failed">無法儲存檔案</string>
+    <string name="text_annotation_export_save">儲存為 Markdown 檔案</string>
+    <string name="text_annotation_export_saved">已儲存</string>
+    <string name="text_annotation_export_share">以文字分享</string>
     <string name="text_annotation_full">高亮數量已達上限 (%1$d)</string>
     <string name="text_annotation_highlight">高亮</string>
     <string name="text_annotation_invalid">沒有可高亮的選取文字</string>

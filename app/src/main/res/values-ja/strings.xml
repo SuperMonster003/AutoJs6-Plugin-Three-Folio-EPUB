@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">ハイライトを削除しました</string>
     <string name="text_annotation_edit">ハイライトを編集</string>
     <string name="text_annotation_empty">ハイライトはまだありません. 本文のテキストを選択して "ハイライト" か "ノートを追加" を選んでください.</string>
+    <string name="text_annotation_export">エクスポート</string>
+    <string name="text_annotation_export_empty">エクスポートするものがありません</string>
+    <string name="text_annotation_export_failed">ファイルを保存できませんでした</string>
+    <string name="text_annotation_export_save">Markdown ファイルとして保存</string>
+    <string name="text_annotation_export_saved">保存しました</string>
+    <string name="text_annotation_export_share">テキストとして共有</string>
     <string name="text_annotation_full">ハイライトの上限 (%1$d) に達しました</string>
     <string name="text_annotation_highlight">ハイライト</string>
     <string name="text_annotation_invalid">ハイライトする選択テキストがありません</string>

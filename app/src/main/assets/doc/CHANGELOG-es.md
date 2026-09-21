@@ -10,6 +10,7 @@
 
 * `Aviso` Compilación de desarrollo de 1.1.0 (hoja de ruta P9): los resaltados, las notas y la exportación están en desarrollo; las entradas siguientes registran lo que ya está listo
 * `Función` Resaltados y notas en el lector (hoja de ruta P9.2): la barra de selección de texto resalta el pasaje con el último color elegido o abre el editor de notas (resaltado / subrayado, cinco colores, nota); los resaltados se dibujan en la página y un toque vuelve a abrir su editor; el panel "Resaltados y notas" los lista por capítulo en orden de lectura con saltar / editar / eliminar / borrar todo; la página de ajustes muestra y borra los resaltados guardados
+* `Función` Exportación de los resaltados y notas de un libro como Markdown (hoja de ruta P9.3): el botón de exportar del panel comparte el texto mediante la hoja de compartir del sistema o guarda un archivo `.md` en el lugar elegido en el selector de documentos; el documento lista el título, los autores y los capítulos en orden de lectura con cada pasaje, su nota y la hora
 * `Dependencia` Se añade `androidx.room:room-runtime` 2.8.1 (la base de datos de resaltados y notas, hoja de ruta D4 / P9); `room-compiler` solo se ejecuta mediante KSP durante la compilación
 
 # v1.0.0

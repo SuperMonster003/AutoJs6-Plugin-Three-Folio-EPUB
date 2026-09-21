@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">하이라이트를 삭제했습니다</string>
     <string name="text_annotation_edit">하이라이트 편집</string>
     <string name="text_annotation_empty">아직 하이라이트가 없습니다. 본문에서 텍스트를 선택한 뒤 "하이라이트" 또는 "메모 추가" 를 선택하세요.</string>
+    <string name="text_annotation_export">내보내기</string>
+    <string name="text_annotation_export_empty">내보낼 내용이 없습니다</string>
+    <string name="text_annotation_export_failed">파일을 저장하지 못했습니다</string>
+    <string name="text_annotation_export_save">Markdown 파일로 저장</string>
+    <string name="text_annotation_export_saved">저장했습니다</string>
+    <string name="text_annotation_export_share">텍스트로 공유</string>
     <string name="text_annotation_full">하이라이트 한도 (%1$d) 에 도달했습니다</string>
     <string name="text_annotation_highlight">하이라이트</string>
     <string name="text_annotation_invalid">하이라이트할 선택 텍스트가 없습니다</string>

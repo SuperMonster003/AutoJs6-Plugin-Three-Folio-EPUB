@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">Highlight removed</string>
     <string name="text_annotation_edit">Edit highlight</string>
     <string name="text_annotation_empty">No highlights yet. Select text in the book and choose Highlight or Add note.</string>
+    <string name="text_annotation_export">Export</string>
+    <string name="text_annotation_export_empty">Nothing to export</string>
+    <string name="text_annotation_export_failed">Could not save the file</string>
+    <string name="text_annotation_export_save">Save as Markdown file</string>
+    <string name="text_annotation_export_saved">Saved</string>
+    <string name="text_annotation_export_share">Share as text</string>
     <string name="text_annotation_full">Highlight limit reached (%1$d)</string>
     <string name="text_annotation_highlight">Highlight</string>
     <string name="text_annotation_invalid">Nothing selected to highlight</string>

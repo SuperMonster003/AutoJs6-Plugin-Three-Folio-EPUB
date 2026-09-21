@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">تمت إزالة التمييز</string>
     <string name="text_annotation_edit">تعديل التمييز</string>
     <string name="text_annotation_empty">لا توجد تمييزات بعد. حدد نصا في الكتاب ثم اختر "تمييز" أو "إضافة ملاحظة".</string>
+    <string name="text_annotation_export">تصدير</string>
+    <string name="text_annotation_export_empty">لا يوجد ما يمكن تصديره</string>
+    <string name="text_annotation_export_failed">تعذر حفظ الملف</string>
+    <string name="text_annotation_export_save">حفظ كملف Markdown</string>
+    <string name="text_annotation_export_saved">تم الحفظ</string>
+    <string name="text_annotation_export_share">مشاركة كنص</string>
     <string name="text_annotation_full">تم بلوغ حد التمييزات (%1$d)</string>
     <string name="text_annotation_highlight">تمييز</string>
     <string name="text_annotation_invalid">لا يوجد نص محدد للتمييز</string>

@@ -21,6 +21,12 @@
     <string name="text_annotation_deleted">Surlignage supprimé</string>
     <string name="text_annotation_edit">Modifier le surlignage</string>
     <string name="text_annotation_empty">Aucun surlignage pour le moment. Sélectionnez du texte dans le livre puis choisissez "Surligner" ou "Ajouter une note".</string>
+    <string name="text_annotation_export">Exporter</string>
+    <string name="text_annotation_export_empty">Rien à exporter</string>
+    <string name="text_annotation_export_failed">Impossible d\'enregistrer le fichier</string>
+    <string name="text_annotation_export_save">Enregistrer en fichier Markdown</string>
+    <string name="text_annotation_export_saved">Enregistré</string>
+    <string name="text_annotation_export_share">Partager en texte</string>
     <string name="text_annotation_full">Limite de surlignages atteinte (%1$d)</string>
     <string name="text_annotation_highlight">Surligner</string>
     <string name="text_annotation_invalid">Aucun texte sélectionné à surligner</string>
