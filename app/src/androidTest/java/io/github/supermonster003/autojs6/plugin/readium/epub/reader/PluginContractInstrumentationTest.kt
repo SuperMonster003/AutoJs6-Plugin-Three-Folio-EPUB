@@ -239,7 +239,8 @@ class PluginContractInstrumentationTest {
             Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(context.packageName),
             0,
         )
-        assertEquals(listOf(LauncherActivity::class.java.name), launchers.map { it.activityInfo.name })
+        assertEquals(listOf(io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.LauncherIcons.current(context).component(context).className), launchers.map { it.activityInfo.name })
+        assertEquals(LauncherActivity::class.java.name, launchers.single().activityInfo.targetActivity)
 
         // The ACTION_VIEW door (roadmap P4.2 / D27): exported without a permission, the only activity a
         // content:// EPUB resolves to, and nothing resolves for the octet-stream / file:// fallbacks.

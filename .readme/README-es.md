@@ -43,7 +43,7 @@ Lectura con un toque: abra un archivo `.epub` directamente desde el administrado
 
 El complemento lee el libro directamente a través del descriptor de archivo temporal concedido por el anfitrión. Nunca recibe una ruta del sistema de archivos, nunca copia el libro y nunca lo extrae al almacenamiento.
 
-> 1.1.0 es la versión actual; 1.0.0 fue la primera. El lector abre libros EPUB 2 y EPUB 3 con un índice, recuerda la posición de lectura de cada libro, ofrece modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo, un panel de preferencias (tamaño del texto, fuente, espaciados, alineación, columnas y temas que pueden seguir el modo nocturno del anfitrión), fuentes TTF / OTF importadas, libros CJK verticales y de derecha a izquierda, libros de diseño fijo a página simple o doble, búsqueda de texto completo, marcadores, enlaces dentro del libro, notas e imágenes, y lectura en voz alta con el motor de texto a voz del sistema. El icono de la aplicación abre un lanzador con los libros recientes y el selector de documentos del sistema, otras aplicaciones entregan un EPUB mediante `ACTION_VIEW`, y la página de configuración cubre los valores predeterminados del lector, los datos guardados en el dispositivo y una comprobación manual de actualizaciones. La API de scripts `epub`, la sesión del lector del anfitrión y tres scripts de ejemplo se distribuyen con AutoJs6 6.8.0 (compilación 5282). 1.1.0 añade resaltados y notas (ROADMAP.md, P9): el texto seleccionado se puede resaltar o subrayar en cuatro colores y llevar una nota, los resaltados se dibujan en la página y se listan en un panel (ir, editar, eliminar), y los resaltados y notas de un libro se pueden exportar como Markdown mediante el menú de compartir del sistema o guardar en un archivo; los anfitriones que llevan la versión 2 del contrato EPUB (una compilación de AutoJs6 posterior a 5282) los leen con `book.annotations()` y reciben eventos `highlight` en la sesión del lector, mientras que AutoJs6 6.8.0 (compilación 5282) sigue funcionando con la versión 1 del contrato.
+> Esta compilación de desarrollo 1.2.0 añade cuatro opciones de icono del lanzador y aún no se ha publicado. 1.1.0 es la versión actual; 1.0.0 fue la primera. El lector abre libros EPUB 2 y EPUB 3 con un índice, recuerda la posición de lectura de cada libro, ofrece modo de desplazamiento, zonas de toque, teclas de volumen y modo inmersivo, un panel de preferencias (tamaño del texto, fuente, espaciados, alineación, columnas y temas que pueden seguir el modo nocturno del anfitrión), fuentes TTF / OTF importadas, libros CJK verticales y de derecha a izquierda, libros de diseño fijo a página simple o doble, búsqueda de texto completo, marcadores, enlaces dentro del libro, notas e imágenes, y lectura en voz alta con el motor de texto a voz del sistema. El icono de la aplicación abre un lanzador con los libros recientes y el selector de documentos del sistema, otras aplicaciones entregan un EPUB mediante `ACTION_VIEW`, y la página de configuración cubre los valores predeterminados del lector, los datos guardados en el dispositivo y una comprobación manual de actualizaciones. La API de scripts `epub`, la sesión del lector del anfitrión y tres scripts de ejemplo se distribuyen con AutoJs6 6.8.0 (compilación 5282). 1.1.0 añade resaltados y notas (ROADMAP.md, P9): el texto seleccionado se puede resaltar o subrayar en cuatro colores y llevar una nota, los resaltados se dibujan en la página y se listan en un panel (ir, editar, eliminar), y los resaltados y notas de un libro se pueden exportar como Markdown mediante el menú de compartir del sistema o guardar en un archivo; los anfitriones que llevan la versión 2 del contrato EPUB (una compilación de AutoJs6 posterior a 5282) los leen con `book.annotations()` y reciben eventos `highlight` en la sesión del lector, mientras que AutoJs6 6.8.0 (compilación 5282) sigue funcionando con la versión 1 del contrato.
 
 ******
 
@@ -101,6 +101,7 @@ Tomadas en un teléfono con los libros de muestra generados en `docs/fixtures` (
 - Sesión de lectura dirigida por el anfitrión: el anfitrión AutoJs6 puede abrir el lector sobre un libro a través del servicio `org.autojs.plugin.EPUB` y seguirlo (eventos de posición, marcador y cierre), saltar a un locator, href o progresión, pasar páginas o capítulos y ajustar las preferencias de lectura; el lector solo arranca mediante el lanzamiento explícito del anfitrión con un token de sesión de un solo uso, y cerrar la sesión deja el lector abierto para el usuario salvo que el anfitrión pida terminarlo.
 - Integración con el anfitrión: los menús y diálogos siguen el idioma y el modo oscuro de AutoJs6; el sobre de Explorer Action se valida estrictamente antes de abrir cualquier contenido.
 - Multilingüe: interfaz, instrucciones, README y changelog disponibles en 10 idiomas.
+- Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro (predeterminado), adaptable automático o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio.
 
 ******
 
@@ -304,6 +305,12 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 ### Historial de versiones
 
 ******
+
+#### v1.2.0
+
+_2026/09/29_
+
+- `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro (predeterminado), adaptable automático o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
 
 #### v1.1.0
 

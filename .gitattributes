@@ -4,3 +4,5 @@
 *.png binary
 *.aar binary
 *.jar binary
+# The launcher-variant generator verifies exact XML bytes on every platform.
+app/src/main/res/**/ic_launcher_system*.xml text eol=lf
