@@ -6,6 +6,9 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
 import android.text.format.DateUtils
 import android.text.format.Formatter
 import android.widget.Toast
@@ -99,7 +102,46 @@ internal class SettingsActivity : HostAppearanceActivity() {
 
     // ---- rows ----
 
+    private fun launcherIconLabel(mode: LauncherIconMode): Int = when (mode) {
+        LauncherIconMode.LIGHT -> R.string.launcher_icon_light
+        LauncherIconMode.DARK -> R.string.launcher_icon_dark
+        LauncherIconMode.AUTO -> R.string.launcher_icon_auto
+        LauncherIconMode.TRANSPARENT -> R.string.launcher_icon_transparent
+    }
+
+    private fun showLauncherIconDialog() {
+        val modes = LauncherIconMode.entries
+        val labels = modes.map { mode ->
+            val note = when (mode) {
+                LauncherIconMode.AUTO -> R.string.launcher_icon_auto_note
+                LauncherIconMode.TRANSPARENT -> R.string.launcher_icon_transparent_note
+                else -> null
+            }
+            val title = getString(launcherIconLabel(mode))
+            SpannableString(title + (note?.let { "\n" + getString(it) } ?: "")).apply {
+                if (note != null) setSpan(RelativeSizeSpan(0.8f), title.length + 1, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+        val chooser = AlertDialog.Builder(this)
+            .setTitle(R.string.launcher_icon_title)
+            .setSingleChoiceItems(labels.toTypedArray(), modes.indexOf(LauncherIcons.current(this))) { shown, which ->
+                val changed = runCatching { LauncherIcons.select(this, modes[which]) }.isSuccess
+                Toast.makeText(this, if (changed) R.string.launcher_icon_applied_note else R.string.launcher_icon_failed, Toast.LENGTH_LONG).show()
+                refresh()
+                shown.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+        dialog?.dismiss()
+        dialog = chooser
+        chooser.show()
+        // Long explanatory rows must not scroll the first choice off-screen.
+        chooser.listView?.setSelection(0)
+    }
+
     private fun buildRows() {
+        row(R.string.launcher_icon_title, summary = { getString(launcherIconLabel(LauncherIcons.current(this))) }) { showLauncherIconDialog() }
+
         header(R.string.text_settings_reading)
         row(R.string.text_settings_theme, summary = { getString(themeLabel(currentThemeMode())) }) { chooseThemeMode() }
         row(R.string.text_settings_reset_reading, summary = { getString(R.string.text_settings_reading_hint) }) {

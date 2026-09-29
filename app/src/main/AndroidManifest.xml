@@ -78,12 +78,55 @@
         <activity
             android:name=".launcher.LauncherActivity"
             android:exported="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" />
+
+        <activity-alias
+            android:name="${applicationId}.launcher.AdaptiveLightIconAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_system_light"
+            android:targetActivity=".launcher.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity-alias
+            android:name="${applicationId}.launcher.AdaptiveDarkIconAlias"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_system"
+            android:targetActivity=".launcher.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="${applicationId}.launcher.AdaptiveAutoIconAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_system_auto"
+            android:targetActivity=".launcher.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="${applicationId}.launcher.TransparentIconAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_transparent"
+            android:targetActivity=".launcher.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <!-- Roadmap P4.3: the settings page and the release history are reached from the launcher menu and the
              reader overflow only; neither takes data, neither is exported. -->

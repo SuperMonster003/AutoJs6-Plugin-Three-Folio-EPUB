@@ -43,7 +43,7 @@ One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, ei
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
-> 1.1.0 is the current release; 1.0.0 was the first. The reader opens EPUB 2 and EPUB 3 books with a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, a preferences panel (text size, font, spacing, alignment, columns and themes that can follow the host's night mode), imported TTF / OTF fonts, vertical CJK and right-to-left books, fixed-layout books as single pages or spreads, full-text search, bookmarks, in-book links, notes and images, and read-aloud with the system text-to-speech engine. The app icon opens a launcher with the recent books and the system document picker, other apps hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `epub` script API, the host reader session and three sample scripts ship with AutoJs6 6.8.0 (build 5282). 1.1.0 adds highlights and notes (ROADMAP.md, P9): selected text can be highlighted or underlined in four colors and carry a note, the highlights are drawn on the page and listed in a panel (jump, edit, delete), and the highlights and notes of a book can be exported as Markdown through the system share sheet or saved as a file; hosts that carry EPUB contract version 2 (an AutoJs6 build newer than 5282) read them with `book.annotations()` and receive `highlight` events on the reader session, while AutoJs6 6.8.0 (build 5282) keeps working with contract version 1.
+> This 1.2.0 development build adds four launcher icon choices; it has not been published. 1.1.0 is the current release; 1.0.0 was the first. The reader opens EPUB 2 and EPUB 3 books with a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, a preferences panel (text size, font, spacing, alignment, columns and themes that can follow the host's night mode), imported TTF / OTF fonts, vertical CJK and right-to-left books, fixed-layout books as single pages or spreads, full-text search, bookmarks, in-book links, notes and images, and read-aloud with the system text-to-speech engine. The app icon opens a launcher with the recent books and the system document picker, other apps hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `epub` script API, the host reader session and three sample scripts ship with AutoJs6 6.8.0 (build 5282). 1.1.0 adds highlights and notes (ROADMAP.md, P9): selected text can be highlighted or underlined in four colors and carry a note, the highlights are drawn on the page and listed in a panel (jump, edit, delete), and the highlights and notes of a book can be exported as Markdown through the system share sheet or saved as a file; hosts that carry EPUB contract version 2 (an AutoJs6 build newer than 5282) read them with `book.annotations()` and receive `highlight` events on the reader session, while AutoJs6 6.8.0 (build 5282) keeps working with contract version 1.
 
 ******
 
@@ -101,6 +101,7 @@ Taken on a phone from the sample books generated in `docs/fixtures` (no third-pa
 - Host reader session: the AutoJs6 host can open the reader on a book through the `org.autojs.plugin.EPUB` service and follow it (position, bookmark and close events), jump to a locator, href or progression, turn pages or chapters and set the reading preferences; the reader starts only through the host's own explicit launch with a one-time session token, and closing the session leaves the reader open for the user unless the host asks to finish it.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
+- Launcher icon choices in Settings: adaptive light, adaptive dark (default), adaptive automatic, or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change.
 
 ******
 
@@ -304,6 +305,12 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 ### Release History
 
 ******
+
+#### v1.2.0
+
+_2026/09/29_
+
+- `Feature` Launcher icon choices in Settings: adaptive light, adaptive dark (default), adaptive automatic, or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change
 
 #### v1.1.0
 

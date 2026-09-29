@@ -72,7 +72,7 @@ sed -i "s/^VERSION_BUILD=.*/VERSION_BUILD=$next/" version.properties
 
 ### 3.5 版本名称
 
-- `VERSION_NAME` 从 1.0.0 开始, 按语义化版本管理, 与提交数量不绑定; 1.0.0 在路线图 P8 发布, 之前的提交都属于 1.0.0 的开发构建; 1.1.0 在路线图 P9 发布 (2026-09-21), P9.1 至 P9.5 的提交都属于 1.1.0 的开发构建.
+- `VERSION_NAME` 从 1.0.0 开始, 按语义化版本管理, 与提交数量不绑定; 1.0.0 在路线图 P8 发布, 之前的提交都属于 1.0.0 的开发构建; 1.1.0 在路线图 P9 发布 (2026-09-21), P9.1 至 P9.5 的提交都属于 1.1.0 的开发构建. 1.2.0 为四种启动器图标选项的开发构建, 本次未发布.
 - 修改 `VERSION_NAME` 时同步更新全部 changelog JSON 的版本 key, README, 发布文件名断言与测试夹具, 再运行文档生成器.
 
 ## 4. 仓库结构
@@ -152,12 +152,12 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 - Manifest MUST 声明 `org.autojs.permission.PLUGIN`, `<queries>` 宿主包名, `org.autojs.plugin.WAKE_ACTIVITY` 与 `org.autojs.plugin.info.AUTHOR` meta-data, `NATIVE_PAGE_ALIGNMENT=0`.
 - `WakeActivity` MUST 为 `exported=true`, `Theme.NoDisplay`, `excludeFromRecents`, `finishOnTaskLaunch`, 受 PLUGIN 权限保护, 响应 `org.autojs.plugin.action.WAKE` + DEFAULT category, 启动后立即结束, 不做任何副作用.
-- `PluginInfoService`, `ExplorerActionService` 与 `EpubReaderActivity` MUST `exported=true` 且受 PLUGIN 权限保护; `EpubReaderActivity` 只响应 `org.autojs.plugin.EXPLORER_ACTION_EXECUTE` (以及自家朗读通知的显式组件 Intent `ACTION_RESUME_READ_ALOUD`: 不带数据, 只领回进程内托管的朗读会话, 无会话时直接关闭; 路线图 D26), 独立入口 (路线图 P4): `launcher.LauncherActivity` (`MAIN` / `LAUNCHER`, 导出且不带权限, 不接收任何数据) 是唯一的启动器 Activity, 它以自家显式动作 `EpubReaderIntentPolicy.ACTION_OPEN_RECENT` (带读授权标志的纯 `content://` 文档 + 显示名) 打开 `EpubReaderActivity` (自家组件不受 PLUGIN 权限限制; 该动作只接受显式组件 Intent, 没有 ClipData, 授权已失效时 `startActivity` 抛 `SecurityException` 由启动器标记不可用); `ExternalViewerActivity` (P4.2, D27) 承载 `ACTION_VIEW` + `content` scheme + `application/epub+zip` (不加 `application/octet-stream` / pathPattern 兜底), 导出且不带权限, 继承 `EpubReaderActivity` 只改入口校验 (`RequestReceiver.EXTERNAL_VIEWER`, 显示名先问 provider 的 `_display_name`), 不把执行 Activity 直接导出给任意应用; 该入口打开的书不入最近列表, 除非用户在溢出菜单选 `加入最近书籍` (`takePersistableUriPermission` 成功才 `RecentBooksStore.upsert`, 失败提示不入列).
+- `PluginInfoService`, `ExplorerActionService` 与 `EpubReaderActivity` MUST `exported=true` 且受 PLUGIN 权限保护; `EpubReaderActivity` 只响应 `org.autojs.plugin.EXPLORER_ACTION_EXECUTE` (以及自家朗读通知的显式组件 Intent `ACTION_RESUME_READ_ALOUD`: 不带数据, 只领回进程内托管的朗读会话, 无会话时直接关闭; 路线图 D26), 独立入口 (路线图 P4): `launcher.LauncherActivity` (`MAIN` / `LAUNCHER`, 导出且不带权限, 不接收任何数据) 作为四个图标别名的真实目标 Activity, 它以自家显式动作 `EpubReaderIntentPolicy.ACTION_OPEN_RECENT` (带读授权标志的纯 `content://` 文档 + 显示名) 打开 `EpubReaderActivity` (自家组件不受 PLUGIN 权限限制; 该动作只接受显式组件 Intent, 没有 ClipData, 授权已失效时 `startActivity` 抛 `SecurityException` 由启动器标记不可用); `ExternalViewerActivity` (P4.2, D27) 承载 `ACTION_VIEW` + `content` scheme + `application/epub+zip` (不加 `application/octet-stream` / pathPattern 兜底), 导出且不带权限, 继承 `EpubReaderActivity` 只改入口校验 (`RequestReceiver.EXTERNAL_VIEWER`, 显示名先问 provider 的 `_display_name`), 不把执行 Activity 直接导出给任意应用; 该入口打开的书不入最近列表, 除非用户在溢出菜单选 `加入最近书籍` (`takePersistableUriPermission` 成功才 `RecentBooksStore.upsert`, 失败提示不入列).
 - `service.ReadiumEpubReaderPluginService` (路线图 P5.2 / D10) MUST `exported=true` 且受 PLUGIN 权限保护, intent-filter 只含 `org.autojs.plugin.EPUB` + category `epub` (不加 DEFAULT category, 不响应 INFO / EXPLORER_ACTION), 由宿主按 action + category 发现; `CallerGuard` 在每次 Binder 调用分发前校验调用 uid 属于 `org.autojs.autojs6` 且签名与插件一致 (`checkSignatures`), 插件自身 uid 只在 debug 构建放行 (instrumentation 用); 服务不持有 URI 授权, 不从后台启动 Activity, 解绑时关闭全部书籍与阅读器会话.
 - `EpubReaderActivity` 自 P5.3 起多一个 intent-filter `org.autojs.plugin.EPUB_READER_OPEN` + DEFAULT (仍在 PLUGIN 权限之后): 只接受显式组件 + 32 位十六进制会话令牌 (`HostSessionPolicy`), 令牌以常量时间比较, 不匹配 / 已认领 / 已关闭的令牌只显示无效请求面板, 不读取任何数据; 该 Activity 只由宿主启动 (D12), 插件服务从不自行启动它.
-- 所有对外组件逐项审查 `android:exported`; 除契约入口 (含 P5.2 的 EPUB 服务), `LauncherActivity` 与 `ExternalViewerActivity` (P4) 外不得导出其他组件. `settings.SettingsActivity` 与 `settings.ReleaseHistoryActivity` (P4.3) 不导出, 不接收数据, 只从启动器菜单与阅读器溢出菜单进入.
+- 所有对外组件逐项审查 `android:exported`; 除契约入口 (含 P5.2 的 EPUB 服务), `LauncherActivity`, 指向它的四个图标 alias 与 `ExternalViewerActivity` (P4) 外不得导出其他组件. `settings.SettingsActivity` 与 `settings.ReleaseHistoryActivity` (P4.3) 不导出, 不接收数据, 只从启动器菜单与阅读器溢出菜单进入.
 - `android:usesCleartextTraffic="true"` 是维护者决定 (路线图 D31: 书内 `http://` 资源照常加载), Manifest 注释 MUST 保留该说明; 更新检查 (D28) 仍只走 HTTPS.
-- 权限清单为 `INTERNET`, PLUGIN 与 D15 三项 (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `POST_NOTIFICATIONS`); 不申请存储, 媒体, 无障碍或悬浮窗权限 (D19). 新增任何权限 (含普通权限) MUST 在本节显式记录豁免理由, 并同步 `PluginContractInstrumentationTest` 的权限集合断言, README 安全章节与 changelog. 导出组件审计同样在该用例 (P4.1 起断言 `LauncherActivity` 是唯一导出且无权限的 `MAIN` / `LAUNCHER` Activity; P4.2 起断言 `ExternalViewerActivity` 导出且无权限, `content://` + `application/epub+zip` 的 `ACTION_VIEW` 只解析到它, `application/octet-stream` / `file://` / `https://` 无解析; P4.3 起断言 `SettingsActivity` 与 `ReleaseHistoryActivity` 不导出; P5.2 起断言包内恰好四个服务, EPUB 服务导出且受权限保护, 只由 action + category 解析, 不解析 INFO / EXPLORER_ACTION).
+- 权限清单为 `INTERNET`, PLUGIN 与 D15 三项 (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `POST_NOTIFICATIONS`); 不申请存储, 媒体, 无障碍或悬浮窗权限 (D19). 新增任何权限 (含普通权限) MUST 在本节显式记录豁免理由, 并同步 `PluginContractInstrumentationTest` 的权限集合断言, README 安全章节与 changelog. 导出组件审计同样在该用例 (P4.1 起断言 当前启用的图标 alias 是唯一导出且无权限的 `MAIN` / `LAUNCHER` 入口且 targetActivity 为 `LauncherActivity`; P4.2 起断言 `ExternalViewerActivity` 导出且无权限, `content://` + `application/epub+zip` 的 `ACTION_VIEW` 只解析到它, `application/octet-stream` / `file://` / `https://` 无解析; P4.3 起断言 `SettingsActivity` 与 `ReleaseHistoryActivity` 不导出; P5.2 起断言包内恰好四个服务, EPUB 服务导出且受权限保护, 只由 action + category 解析, 不解析 INFO / EXPLORER_ACTION).
 - D15 权限豁免 (2026-09-20, 路线图 P3): `FOREGROUND_SERVICE` 与 `FOREGROUND_SERVICE_MEDIA_PLAYBACK` 仅用于用户显式开始朗读后的 `tts.TtsForegroundService` (不导出的 `mediaPlayback` 前台服务, 承载 media3 MediaSession 通知与耳机按键, 使熄屏后朗读继续); Android 13+ 的 `POST_NOTIFICATIONS` 仅在首次开始朗读时请求一次, 拒绝后照常朗读但没有通知控制, 不再重复请求. 服务只在朗读期间存在: 用户停止, 到达书末, 引擎出错或阅读器 Activity 销毁 (D26 关闭时) 即停止并释放; 它不持有 URI 授权, 不新增数据收集或网络用途 (语音合成由系统 TTS 引擎在其自身进程完成), `WAKE_LOCK` 仍然移除.
 
 ## 7. PluginInfo 与能力协商
@@ -207,8 +207,11 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 ### 11.1 启动器图标
 
-- `app/src/main/res/mipmap/ic_launcher*.png` (legacy 圆角 / 圆形, adaptive 前景 / 单色) 由 `.python/generate_launcher_icons.py` 确定性生成; 修改图标时修改脚本并重新生成, 不手工改 PNG. `mipmap-anydpi-v26/` 的 adaptive XML 引用这些图层与 `@color/ic_launcher_background`.
-- 图标语义为翻开的书 (两页 + 书脊 + 文本行), 不沿用其他插件的图案或颜色身份; 背景色与 `values/colors.xml` 的 `ic_launcher_background` 保持一致.
+- 原有绿色书本品牌资源及 `.python/generate_launcher_icons.py` 保持不变. 新启动器选项由 `.python/generate_launcher_variants.py` 复用同一 `draw_glyph` 造型生成独立的 14 份黑白资源, `--check` 只读校验. 不手工编辑 PNG, 不改变 README 或应用内品牌引用.
+- 设置页提供自适应亮色, 自适应暗色 (默认), 自适应自动, 透明背景四项. 固定亮色为 `#272727` / `#FAFAFA`, 暗色为 `#D8D8D8` / `#212121`; 自适应系统资源独立命名为 `ic_launcher_system*`, 透明选项为 `ic_launcher_transparent` 及其 night 变体. 自动选项必须有独立资源 ID: 默认暗色与 notnight 亮色 bitmap XML, 并配套 default / notnight 的 v26 adaptive XML. 禁止 values mipmap alias: PackageManager 在安装解析时会提前解引用并锁定图标 ID.
+- 四个稳定 `${applicationId}.launcher.*IconAlias` 指向原 `.launcher.LauncherActivity`, 原 Activity 保持启用并仅移除 MAIN / LAUNCHER filter. 任意时刻只有一个别名可在启动器解析. `LauncherIcons` 使用 PackageManager 持久化选择, 先启用目标再禁用旧入口, API 33+ 最终状态批量应用, DONT_KILL_APP, 失败回滚, 不轮询或清除启动器数据.
+- 设置项说明自动主题可能被启动器缓存, 透明背景可能被系统添加背景/遮罩, 切换后部分主屏幕快捷方式可能需要重新添加. 新选项覆盖旧启动器配色限制; 原书本造型及应用品牌仍保留.
+- `LauncherIconResourceTest` 和 `LauncherIconOptionsTest` 验证资源亮暗/API选择, 四别名目标与唯一入口, 实际切换与精确恢复原状态. 偏移与抗锯齿之后的真实非零 alpha 必须在 66 dp 自适应安全圆内. 不把资源测试当作所有启动器自动刷新保证.
 
 ## 12. README 与多语言生成
 

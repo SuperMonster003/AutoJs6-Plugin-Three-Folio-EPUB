@@ -1022,3 +1022,11 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 - 完整隔离运行发现高亮事件用例只向数据库插入标注, 缺少已阅读书籍的进度与指纹别名, 依赖其他用例残留记录才能避开既有淘汰清理. 修正该用例的前置数据, 显式准备完整书籍记录; 阅读器的保留策略与运行时代码不变.
 - 本地验证: 专用 API 24 Google APIs x86 AVD, 完整 `:app:connectedDebugAndroidTest` 成功, 共 106 个用例 (101 通过, 5 按原有 assumption 跳过, 0 失败); debug / androidTest APK 构建与 257 个 JVM 用例通过. 跳过项是外部书籍样本, shell 持久 URI 授权, 需显式启用的 30 分钟朗读与截图采集, 以及 API 26+ 音频焦点. 未为此次修复新增跳过条件.
 - API 35 继续由 CI 矩阵覆盖, 本轮未在本地重跑; GitHub Actions 尚未基于本地提交重新执行. 本次未执行 release 构建与 lint, 变更限于文案和测试执行配置, 未调整运行时依赖或阅读器实现.
+
+
+### 2026-09-29 (启动器图标选项)
+
+- 按维护者要求, 所有带启动器入口的插件统一提供自适应亮色, 暗色, 自动与透明背景四项; 本仓进入 1.2.0 开发构建, 默认暗色. 原绿色书本品牌资源保留, 新选项复用原书本造型并独立生成黑白资源.
+- 四个稳定 Activity alias 指向原启动器 Activity, 实际组件保持启用, 设置使用 PackageManager 状态并带失败回滚; 自动与透明项说明系统渲染限制, 切换后提醒部分主屏幕快捷方式可能需要重新添加. 无新增权限或阅读器行为变化.
+- 新增资源配置与别名切换 instrumentation, 原契约用例改为检查当前唯一 alias 与真实目标. API 24 / API 37.1 两台 AVD 各 11 项全部通过 (资源 2, 别名切换 2, 插件契约 7); 切换测试恢复原组件状态. 证据: 工作区 `.codex-audits/three-icons-20260929/final-launcher-avds.json` 及各 AVD 的 `readium-four-modes-final.{json,txt}`. 不把资源正确当作厂商启动器会自动刷新.
+- 本地验证: debug / androidTest APK 构建通过, 257 个 JVM 用例通过, lint 为 0 error / 73 warning; Python 10 项中 9 通过, 1 沿用原有跳过, 图标生成器与文档只读校验通过. 本轮未调整运行时依赖或阅读器内容实现, 未重跑整包阅读器 instrumentation 或 release 发布流水线. 1.2.0 尚未发布, 未推送.

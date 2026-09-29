@@ -43,7 +43,7 @@ Lecture en un geste : ouvrez un fichier `.epub` directement depuis le gestionnai
 
 Le plugin lit le livre directement à travers le descripteur de fichier temporaire accordé par l'hôte. Il ne reçoit jamais de chemin du système de fichiers, ne copie jamais le livre et ne l'extrait jamais vers le stockage.
 
-> 1.1.0 est la version actuelle ; 1.0.0 était la première. La liseuse ouvre les livres EPUB 2 et EPUB 3 avec une table des matières, mémorise la position de lecture de chaque livre, offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif, un panneau de préférences (taille du texte, police, espacements, alignement, colonnes et thèmes qui peuvent suivre le mode nuit de l'hôte), les polices TTF / OTF importées, les livres CJK verticaux et de droite à gauche, les livres à mise en page fixe en page simple ou en double page, la recherche plein texte, les signets, les liens dans le livre, les notes et les images, et la lecture à voix haute avec le moteur de synthèse vocale du système. L'icône de l'application ouvre un lanceur avec les livres récents et le sélecteur de documents du système, les autres applications transmettent un EPUB via `ACTION_VIEW`, et la page des paramètres couvre les valeurs par défaut de la liseuse, les données conservées sur l'appareil et une vérification manuelle des mises à jour. L'API de script `epub`, la session de liseuse de l'hôte et trois scripts d'exemple sont livrés avec AutoJs6 6.8.0 (build 5282). 1.1.0 ajoute les surlignages et les notes (ROADMAP.md, P9) : le texte sélectionné peut être surligné ou souligné dans quatre couleurs et porter une note, les surlignages sont dessinés sur la page et listés dans un panneau (aller, modifier, supprimer), et les surlignages et notes d'un livre peuvent être exportés en Markdown via le partage du système ou enregistrés dans un fichier ; les hôtes qui portent la version 2 du contrat EPUB (un build AutoJs6 plus récent que 5282) les lisent avec `book.annotations()` et reçoivent des événements `highlight` sur la session de liseuse, tandis qu'AutoJs6 6.8.0 (build 5282) continue de fonctionner avec la version 1 du contrat.
+> Cette version de développement 1.2.0 ajoute quatre choix d'icône du lanceur et n'est pas encore publiée. 1.1.0 est la version actuelle ; 1.0.0 était la première. La liseuse ouvre les livres EPUB 2 et EPUB 3 avec une table des matières, mémorise la position de lecture de chaque livre, offre le mode défilement, les zones d'appui, les touches de volume et le mode immersif, un panneau de préférences (taille du texte, police, espacements, alignement, colonnes et thèmes qui peuvent suivre le mode nuit de l'hôte), les polices TTF / OTF importées, les livres CJK verticaux et de droite à gauche, les livres à mise en page fixe en page simple ou en double page, la recherche plein texte, les signets, les liens dans le livre, les notes et les images, et la lecture à voix haute avec le moteur de synthèse vocale du système. L'icône de l'application ouvre un lanceur avec les livres récents et le sélecteur de documents du système, les autres applications transmettent un EPUB via `ACTION_VIEW`, et la page des paramètres couvre les valeurs par défaut de la liseuse, les données conservées sur l'appareil et une vérification manuelle des mises à jour. L'API de script `epub`, la session de liseuse de l'hôte et trois scripts d'exemple sont livrés avec AutoJs6 6.8.0 (build 5282). 1.1.0 ajoute les surlignages et les notes (ROADMAP.md, P9) : le texte sélectionné peut être surligné ou souligné dans quatre couleurs et porter une note, les surlignages sont dessinés sur la page et listés dans un panneau (aller, modifier, supprimer), et les surlignages et notes d'un livre peuvent être exportés en Markdown via le partage du système ou enregistrés dans un fichier ; les hôtes qui portent la version 2 du contrat EPUB (un build AutoJs6 plus récent que 5282) les lisent avec `book.annotations()` et reçoivent des événements `highlight` sur la session de liseuse, tandis qu'AutoJs6 6.8.0 (build 5282) continue de fonctionner avec la version 1 du contrat.
 
 ******
 
@@ -101,6 +101,7 @@ Prises sur un téléphone avec les livres d'exemple générés dans `docs/fixtur
 - Session de lecture pilotée par l'hôte : l'hôte AutoJs6 peut ouvrir le lecteur sur un livre via le service `org.autojs.plugin.EPUB` et le suivre (événements de position, de signet et de fermeture), sauter à un locator, un href ou une progression, tourner les pages ou les chapitres et régler les préférences de lecture ; le lecteur ne démarre que par le lancement explicite de l'hôte avec un jeton de session à usage unique, et fermer la session laisse le lecteur ouvert pour l'utilisateur sauf si l'hôte demande de le terminer.
 - Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.
 - Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.
+- Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre (par défaut), adaptative automatique ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement.
 
 ******
 
@@ -304,6 +305,12 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 ### Historique des versions
 
 ******
+
+#### v1.2.0
+
+_2026/09/29_
+
+- `Fonctionnalité` Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre (par défaut), adaptative automatique ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement
 
 #### v1.1.0
 
