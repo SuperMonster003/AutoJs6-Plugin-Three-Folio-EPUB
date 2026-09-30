@@ -45,7 +45,8 @@
     "Session de lecture pilotée par l'hôte : l'hôte AutoJs6 peut ouvrir le lecteur sur un livre via le service `org.autojs.plugin.EPUB` et le suivre (événements de position, de signet et de fermeture), sauter à un locator, un href ou une progression, tourner les pages ou les chapitres et régler les préférences de lecture ; le lecteur ne démarre que par le lancement explicite de l'hôte avec un jeton de session à usage unique, et fermer la session laisse le lecteur ouvert pour l'utilisateur sauf si l'hôte demande de le terminer.",
     "Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.",
     "Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.",
-    "Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre (par défaut), adaptative automatique ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement."
+    "Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre, adaptative automatique (par défaut) ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement.",
+    "Réglages unifiés de langue, mode nuit, couleur du thème et icône du lanceur, avec confirmation, 16 couleurs prédéfinies et aperçu HEX/RGB. Par défaut, l'apparence suit AutoJs6 et utilise un repli sûr si l'hôte est indisponible."
   ],
   "h3_installation": "Installation",
   "installation_steps": [

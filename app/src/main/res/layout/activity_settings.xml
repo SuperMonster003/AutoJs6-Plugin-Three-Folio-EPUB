@@ -14,7 +14,7 @@
         app:navigationContentDescription="@string/text_back"
         app:navigationIcon="@drawable/ic_arrow_back_24"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:title="@string/text_settings"
+        app:titleTextAppearance="@style/SettingsToolbarTitle" app:title="@string/text_settings"
         app:titleTextColor="@color/toolbar_text" />
 
     <ScrollView

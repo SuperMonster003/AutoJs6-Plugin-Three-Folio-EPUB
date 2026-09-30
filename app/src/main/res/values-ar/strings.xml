@@ -5,13 +5,13 @@
     <string name="dialog_button_close">إغلاق</string>
     <string name="dialog_button_confirm">تأكيد</string>
     <string name="launcher_icon_applied_note">قد يستغرق تحديث المشغل بضع ثوان. قد تحتاج إلى إضافة بعض اختصارات الشاشة الرئيسية مرة أخرى.</string>
-    <string name="launcher_icon_auto">متكيف تلقائي</string>
+    <string name="launcher_icon_auto">أيقونة تكيفية (تلقائية)</string>
     <string name="launcher_icon_auto_note">يحاول اتباع سمة النظام. بعض المشغلات تخزن الرموز مؤقتا أو تستخدم نظام ألوان واحدا فقط.</string>
-    <string name="launcher_icon_dark">متكيف داكن</string>
+    <string name="launcher_icon_dark">أيقونة تكيفية (داكنة)</string>
     <string name="launcher_icon_failed">تعذر تغيير رمز المشغل. يرجى المحاولة مرة أخرى.</string>
-    <string name="launcher_icon_light">متكيف فاتح</string>
+    <string name="launcher_icon_light">أيقونة تكيفية (فاتحة)</string>
     <string name="launcher_icon_title">رمز المشغل</string>
-    <string name="launcher_icon_transparent">خلفية شفافة</string>
+    <string name="launcher_icon_transparent">أيقونة بخلفية شفافة</string>
     <string name="launcher_icon_transparent_note">قد تضيف بعض المشغلات خلفية أو قناعا, لذلك قد لا يتم الحفاظ على الشفافية.</string>
     <string name="plugin_description">قراءة كتب EPUB مع التنقل والبحث والقراءة الصوتية والوصول من السكربتات</string>
     <string name="release_history">سجل الإصدارات</string>

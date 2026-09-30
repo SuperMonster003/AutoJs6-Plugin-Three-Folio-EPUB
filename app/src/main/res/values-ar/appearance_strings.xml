@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="autojs6_settings_unavailable">الوصول إلى الإعدادات غير متاح</string>
+    <string name="follow_autojs6">اتباع AutoJs6</string>
+    <string name="follow_autojs6_unavailable_value">يتعذر اتباع AutoJs6 ‏(%1$s) · البديل: %2$s</string>
+    <string name="follow_system">اتباع النظام</string>
+    <string name="night_mode_dark">داكن دائما</string>
+    <string name="night_mode_light">فاتح دائما</string>
+    <string name="setting_language">اللغة</string>
+    <string name="setting_night_mode">الوضع الليلي</string>
+    <string name="setting_theme_color">لون السمة</string>
+    <string name="settings_section_appearance">المظهر</string>
+</resources>

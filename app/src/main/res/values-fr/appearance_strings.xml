@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="autojs6_settings_unavailable">accès aux paramètres indisponible</string>
+    <string name="follow_autojs6">Suivre AutoJs6</string>
+    <string name="follow_autojs6_unavailable_value">Impossible de suivre AutoJs6 (%1$s) · repli : %2$s</string>
+    <string name="follow_system">Suivre le système</string>
+    <string name="night_mode_dark">Toujours sombre</string>
+    <string name="night_mode_light">Toujours clair</string>
+    <string name="setting_language">Langue</string>
+    <string name="setting_night_mode">Mode nuit</string>
+    <string name="setting_theme_color">Couleur du thème</string>
+    <string name="settings_section_appearance">Apparence</string>
+</resources>

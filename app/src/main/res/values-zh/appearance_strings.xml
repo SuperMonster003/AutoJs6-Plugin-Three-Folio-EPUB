@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="autojs6_settings_unavailable">设置访问不可用</string>
+    <string name="follow_autojs6">跟随 AutoJs6</string>
+    <string name="follow_autojs6_unavailable_value">无法跟随 AutoJs6 (%1$s) · 回退: %2$s</string>
+    <string name="follow_system">跟随系统</string>
+    <string name="night_mode_dark">总是使用暗色</string>
+    <string name="night_mode_light">总是使用亮色</string>
+    <string name="setting_language">语言</string>
+    <string name="setting_night_mode">夜间模式</string>
+    <string name="setting_theme_color">主题色</string>
+    <string name="settings_section_appearance">外观</string>
+</resources>

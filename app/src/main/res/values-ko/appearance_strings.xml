@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="autojs6_settings_unavailable">설정 접근 불가</string>
+    <string name="follow_autojs6">AutoJs6 따르기</string>
+    <string name="follow_autojs6_unavailable_value">AutoJs6를 따를 수 없음(%1$s) · 대체값: %2$s</string>
+    <string name="follow_system">시스템 따르기</string>
+    <string name="night_mode_dark">항상 어둡게</string>
+    <string name="night_mode_light">항상 밝게</string>
+    <string name="setting_language">언어</string>
+    <string name="setting_night_mode">야간 모드</string>
+    <string name="setting_theme_color">테마 색상</string>
+    <string name="settings_section_appearance">모양</string>
+</resources>

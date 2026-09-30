@@ -3,9 +3,9 @@
     android:id="@+id/header_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="20dp"
-    android:paddingTop="20dp"
-    android:paddingEnd="20dp"
-    android:paddingBottom="6dp"
+    android:paddingStart="24dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp"
     android:textAppearance="?attr/textAppearanceSubtitle2"
     android:textColor="?attr/colorSecondary" />
