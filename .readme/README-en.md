@@ -101,7 +101,8 @@ Taken on a phone from the sample books generated in `docs/fixtures` (no third-pa
 - Host reader session: the AutoJs6 host can open the reader on a book through the `org.autojs.plugin.EPUB` service and follow it (position, bookmark and close events), jump to a locator, href or progression, turn pages or chapters and set the reading preferences; the reader starts only through the host's own explicit launch with a one-time session token, and closing the session leaves the reader open for the user unless the host asks to finish it.
 - Host integration: menus and dialogs follow the AutoJs6 language and dark mode; the Explorer Action envelope is validated strictly before any content is opened.
 - Multilingual: interface, instructions, README, and changelog are available in 10 languages.
-- Launcher icon choices in Settings: adaptive light, adaptive dark (default), adaptive automatic, or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change.
+- Launcher icon choices in Settings: adaptive light, adaptive dark, adaptive automatic (default), or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change.
+- Unified language, night mode, theme color and launcher icon settings, with explicit confirmation, 16 color presets and HEX/RGB preview. App appearance follows AutoJs6 by default and falls back safely when the host is unavailable.
 
 ******
 
@@ -308,9 +309,12 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 #### v1.2.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Feature` Launcher icon choices in Settings: adaptive light, adaptive dark (default), adaptive automatic, or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change
+- `Feature` Launcher icon choices in Settings: adaptive light, adaptive dark, adaptive automatic (default), or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change
+- `Feature` Unified language, night mode, theme color and launcher icon settings, with explicit confirmation, 16 color presets and HEX/RGB preview. App appearance follows AutoJs6 by default and falls back safely when the host is unavailable
+- `Feature` App appearance settings remain independent of the reading color scheme
+- `Improvement` Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries
 
 #### v1.1.0
 

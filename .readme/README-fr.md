@@ -101,7 +101,8 @@ Prises sur un téléphone avec les livres d'exemple générés dans `docs/fixtur
 - Session de lecture pilotée par l'hôte : l'hôte AutoJs6 peut ouvrir le lecteur sur un livre via le service `org.autojs.plugin.EPUB` et le suivre (événements de position, de signet et de fermeture), sauter à un locator, un href ou une progression, tourner les pages ou les chapitres et régler les préférences de lecture ; le lecteur ne démarre que par le lancement explicite de l'hôte avec un jeton de session à usage unique, et fermer la session laisse le lecteur ouvert pour l'utilisateur sauf si l'hôte demande de le terminer.
 - Intégration à l'hôte : menus et dialogues suivent la langue et le mode sombre d'AutoJs6 ; l'enveloppe Explorer Action est validée strictement avant toute ouverture de contenu.
 - Multilingue : interface, instructions, README et changelog sont disponibles en 10 langues.
-- Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre (par défaut), adaptative automatique ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement.
+- Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre, adaptative automatique (par défaut) ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement.
+- Réglages unifiés de langue, mode nuit, couleur du thème et icône du lanceur, avec confirmation, 16 couleurs prédéfinies et aperçu HEX/RGB. Par défaut, l'apparence suit AutoJs6 et utilise un repli sûr si l'hôte est indisponible.
 
 ******
 
@@ -308,9 +309,12 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 
 #### v1.2.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Fonctionnalité` Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre (par défaut), adaptative automatique ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement
+- `Fonctionnalité` Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre, adaptative automatique (par défaut) ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement
+- `Fonctionnalité` Réglages unifiés de langue, mode nuit, couleur du thème et icône du lanceur, avec confirmation, 16 couleurs prédéfinies et aperçu HEX/RGB. Par défaut, l'apparence suit AutoJs6 et utilise un repli sûr si l'hôte est indisponible
+- `Fonctionnalité` L'apparence de l'application reste indépendante des couleurs de lecture
+- `Amélioration` Surfaces grises neutres et commandes et dialogues Material 3 lisibles aux couleurs du thème, avec espacement, icônes linéaires et séparateurs cohérents. L'icône automatique devient le choix par défaut; les mises à jour préservent les choix explicites et corrigent les entrées en double
 
 #### v1.1.0
 

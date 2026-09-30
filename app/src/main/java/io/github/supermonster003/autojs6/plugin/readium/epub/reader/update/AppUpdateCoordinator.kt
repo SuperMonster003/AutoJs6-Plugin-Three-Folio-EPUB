@@ -5,6 +5,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.HostAppearanceActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
@@ -101,7 +103,7 @@ internal class AppUpdateCoordinator(
             }
         }
         dialog?.dismiss()
-        dialog = AlertDialog.Builder(activity)
+        dialog = MaterialAlertDialogBuilder(activity)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton(R.string.text_update_open_release) { _, _ -> openReleasePage(release.htmlUrl) }
@@ -114,7 +116,9 @@ internal class AppUpdateCoordinator(
                 onChanged?.invoke()
             }
             .setOnDismissListener { dialog = null }
-            .show()
+            .create().also { dialog ->
+                (activity as? HostAppearanceActivity)?.showAppDialog(dialog) ?: dialog.show()
+            }
     }
 
     private fun openReleasePage(url: String) {
@@ -133,11 +137,13 @@ internal class AppUpdateCoordinator(
 
     private fun showProgress() {
         dismissProgress()
-        progress = AlertDialog.Builder(activity)
+        progress = MaterialAlertDialogBuilder(activity)
             .setMessage(R.string.text_update_checking)
             .setNegativeButton(android.R.string.cancel) { _, _ -> job?.cancel() }
             .setOnCancelListener { job?.cancel() }
-            .show()
+            .create().also { dialog ->
+                (activity as? HostAppearanceActivity)?.showAppDialog(dialog) ?: dialog.show()
+            }
     }
 
     private fun dismissProgress() {

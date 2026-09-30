@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -172,24 +173,24 @@ class LauncherActivity : HostAppearanceActivity() {
 
     private fun showBookMenu(book: RecentBook) {
         bookDialog?.dismiss()
-        bookDialog = AlertDialog.Builder(this)
+        bookDialog = MaterialAlertDialogBuilder(this)
             .setTitle(book.title ?: book.displayName)
             .setItems(arrayOf(getString(R.string.text_launcher_open), getString(R.string.text_launcher_remove))) { _, which ->
                 if (which == 0) openBook(book) else removeBook(book)
             }
             .setOnDismissListener { if (bookDialog === it) bookDialog = null }
-            .show()
+            .create().also { showAppDialog(it) }
     }
 
     private fun showUnavailable(book: RecentBook) {
         bookDialog?.dismiss()
-        bookDialog = AlertDialog.Builder(this)
+        bookDialog = MaterialAlertDialogBuilder(this)
             .setTitle(book.title ?: book.displayName)
             .setMessage(R.string.text_launcher_unavailable_message)
             .setPositiveButton(R.string.text_launcher_remove) { _, _ -> removeBook(book) }
             .setNegativeButton(R.string.dialog_button_cancel, null)
             .setOnDismissListener { if (bookDialog === it) bookDialog = null }
-            .show()
+            .create().also { showAppDialog(it) }
     }
 
     private fun markUnavailable(uri: Uri) {

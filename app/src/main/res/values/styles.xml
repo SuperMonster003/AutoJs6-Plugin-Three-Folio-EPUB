@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Plugin.ConfirmDialog</item>
         <item name="actionOverflowButtonStyle">@style/Widget.PluginOverflowButton</item>
-        <item name="materialAlertDialogTheme">@style/AppTheme.ReaderDialog</item>
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_primary_dark</item>
         <item name="colorSecondary">@color/color_secondary</item>
@@ -15,23 +15,9 @@
 
     <style name="AppTheme.Toolbar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3" />
 
-    <style name="AppTheme.ReaderDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorPrimary">@color/dialog_foreground</item>
-        <item name="colorSecondary">@color/dialog_foreground</item>
-        <item name="colorAccent">@color/dialog_foreground</item>
-        <item name="android:colorAccent">@color/dialog_foreground</item>
-        <item name="colorControlActivated">@color/dialog_foreground</item>
-        <item name="colorControlNormal">@color/dialog_foreground</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.Reader.DialogButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Widget.Reader.DialogButton</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.Reader.DialogButton</item>
-    </style>
-
-    <style name="Widget.Reader.DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/dialog_foreground</item>
-    </style>
+    <style name="AppTheme.ReaderDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
 
     <style name="Widget.Reader.PreferenceLabel" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">match_parent</item>
@@ -56,4 +42,7 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="SettingsToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

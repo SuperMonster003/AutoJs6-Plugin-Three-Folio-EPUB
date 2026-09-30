@@ -101,7 +101,8 @@ Tomadas en un teléfono con los libros de muestra generados en `docs/fixtures` (
 - Sesión de lectura dirigida por el anfitrión: el anfitrión AutoJs6 puede abrir el lector sobre un libro a través del servicio `org.autojs.plugin.EPUB` y seguirlo (eventos de posición, marcador y cierre), saltar a un locator, href o progresión, pasar páginas o capítulos y ajustar las preferencias de lectura; el lector solo arranca mediante el lanzamiento explícito del anfitrión con un token de sesión de un solo uso, y cerrar la sesión deja el lector abierto para el usuario salvo que el anfitrión pida terminarlo.
 - Integración con el anfitrión: los menús y diálogos siguen el idioma y el modo oscuro de AutoJs6; el sobre de Explorer Action se valida estrictamente antes de abrir cualquier contenido.
 - Multilingüe: interfaz, instrucciones, README y changelog disponibles en 10 idiomas.
-- Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro (predeterminado), adaptable automático o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio.
+- Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio.
+- Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible.
 
 ******
 
@@ -308,9 +309,12 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 
 #### v1.2.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro (predeterminado), adaptable automático o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
+- `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
+- `Función` Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible
+- `Función` La apariencia de la aplicación es independiente del esquema de colores de lectura
+- `Mejora` Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas
 
 #### v1.1.0
 

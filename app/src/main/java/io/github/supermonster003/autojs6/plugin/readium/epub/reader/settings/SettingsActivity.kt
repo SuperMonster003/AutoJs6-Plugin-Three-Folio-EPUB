@@ -6,6 +6,18 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import java.util.Locale
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.HostAppearance
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.theme.AppThemeDialogStyler
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.theme.AppThemePicker
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.theme.AppThemePaletteGenerator
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.theme.ThemePreferenceStore
+import io.github.supermonster003.autojs6.plugin.readium.epub.reader.theme.ThemeSourceMode
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
@@ -119,27 +131,35 @@ internal class SettingsActivity : HostAppearanceActivity() {
             }
             val title = getString(launcherIconLabel(mode))
             SpannableString(title + (note?.let { "\n" + getString(it) } ?: "")).apply {
-                if (note != null) setSpan(RelativeSizeSpan(0.8f), title.length + 1, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (note != null) {
+                    setSpan(RelativeSizeSpan(14f / 16f), title.length + 1, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    setSpan(android.text.style.ForegroundColorSpan(appPalette.onSurfaceVariant), title.length + 1, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
             }
         }
-        val chooser = AlertDialog.Builder(this)
+        var pending = LauncherIcons.current(this)
+        val chooser = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.launcher_icon_title)
-            .setSingleChoiceItems(labels.toTypedArray(), modes.indexOf(LauncherIcons.current(this))) { shown, which ->
-                val changed = runCatching { LauncherIcons.select(this, modes[which]) }.isSuccess
+            .setSingleChoiceItems(labels.toTypedArray(), modes.indexOf(pending)) { _, which -> pending = modes[which] }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val changed = runCatching { LauncherIcons.select(this, pending) }.isSuccess
                 Toast.makeText(this, if (changed) R.string.launcher_icon_applied_note else R.string.launcher_icon_failed, Toast.LENGTH_LONG).show()
                 refresh()
-                shown.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
         dialog?.dismiss()
         dialog = chooser
-        chooser.show()
+        showAppDialog(chooser)
         // Long explanatory rows must not scroll the first choice off-screen.
         chooser.listView?.setSelection(0)
     }
 
     private fun buildRows() {
+        header(R.string.settings_section_appearance)
+        row(R.string.setting_language, summary = ::languageSummary) { showLanguageDialog() }
+        row(R.string.setting_night_mode, summary = ::nightModeSummary) { showNightModeDialog() }
+        row(R.string.setting_theme_color, summary = ::themeColorSummary) { AppThemePicker(this) { recreate() }.show() }
         row(R.string.launcher_icon_title, summary = { getString(launcherIconLabel(LauncherIcons.current(this))) }) { showLauncherIconDialog() }
 
         header(R.string.text_settings_reading)
@@ -206,14 +226,39 @@ internal class SettingsActivity : HostAppearanceActivity() {
     }
 
     private fun header(@StringRes title: Int) {
-        ItemSettingHeaderBinding.inflate(layoutInflater, binding.content, true).headerTitle.setText(title)
+        ItemSettingHeaderBinding.inflate(layoutInflater, binding.content, true).headerTitle.apply {
+            setText(title)
+            setTextColor(appPalette.onSurfaceVariant)
+        }
     }
 
     /** One row; its root carries the title resource as tag so tests can find it. */
     private fun row(@StringRes title: Int, summary: () -> CharSequence? = { null }, onClick: (() -> Unit)? = null): ItemSettingRowBinding {
         val row = ItemSettingRowBinding.inflate(layoutInflater, binding.content, true)
         row.rowTitle.setText(title)
+        AppThemeDialogStyler.styleTree(row.root, appPalette)
+        row.rowSummary.setTextColor(appPalette.onSurfaceVariant)
         row.root.tag = title
+        val icon = when (title) {
+            R.string.setting_language -> R.drawable.ic_settings_language
+            R.string.setting_night_mode -> R.drawable.ic_settings_night
+            R.string.setting_theme_color -> R.drawable.ic_settings_theme
+            R.string.launcher_icon_title -> R.drawable.ic_settings_launcher
+            else -> R.drawable.ic_settings_tune
+        }
+        row.rowIcon.setImageResource(icon)
+        row.rowIcon.imageTintList = android.content.res.ColorStateList.valueOf(appPalette.onSurfaceVariant)
+        row.rowChevron.imageTintList = android.content.res.ColorStateList.valueOf(appPalette.onSurfaceVariant)
+        row.rowChevron.isVisible = onClick != null
+        val previous = binding.content.getChildAt(binding.content.childCount - 2)
+        if (previous?.tag is Int) {
+            val divider = View(this).apply { setBackgroundColor(appPalette.outlineVariant) }
+            binding.content.addView(divider, binding.content.childCount - 1,
+                android.widget.LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)).apply {
+                    marginStart = dp(64)
+                    marginEnd = dp(24)
+                })
+        }
         if (onClick != null) row.root.setOnClickListener { onClick() } else row.root.isClickable = false
         refreshers += {
             val text = summary()
@@ -226,6 +271,16 @@ internal class SettingsActivity : HostAppearanceActivity() {
     private fun switchRow(@StringRes title: Int, @StringRes summary: Int? = null, read: () -> Boolean, write: (Boolean) -> Unit) {
         val row = row(title, summary = { summary?.let(::getString) }) {}
         row.rowSwitch.isVisible = true
+        row.rowChevron.isVisible = false
+        row.rowSwitch.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        androidx.core.view.ViewCompat.setAccessibilityDelegate(row.root, object : androidx.core.view.AccessibilityDelegateCompat() {
+            override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
+                super.onInitializeAccessibilityNodeInfo(host, info)
+                info.className = android.widget.Switch::class.java.name
+                info.isCheckable = true
+                info.isChecked = read()
+            }
+        })
         row.root.setOnClickListener {
             write(!read())
             refresh()
@@ -251,6 +306,82 @@ internal class SettingsActivity : HostAppearanceActivity() {
                 isVisible = text.isNotEmpty()
             }
         }
+    }
+
+    private fun languageSummary(): String {
+        val value = AppPreferenceStore(this).language()
+        return when (value.mode) {
+            AppLanguageMode.AUTOJS6 -> followHostSummary()
+            AppLanguageMode.SYSTEM -> getString(R.string.follow_system)
+            AppLanguageMode.SPECIFIC -> displayLanguageName(value.languageTag ?: "en")
+        }
+    }
+
+    private fun nightModeSummary(): String = when (AppPreferenceStore(this).nightMode()) {
+        AppNightMode.AUTOJS6 -> followHostSummary()
+        AppNightMode.SYSTEM -> getString(R.string.follow_system)
+        AppNightMode.LIGHT -> getString(R.string.night_mode_light)
+        AppNightMode.DARK -> getString(R.string.night_mode_dark)
+    }
+
+    private fun followHostSummary(): String = if (HostAppearance.read(this) != null) getString(R.string.follow_autojs6)
+        else getString(R.string.follow_autojs6_unavailable_value, getString(R.string.autojs6_settings_unavailable), getString(R.string.follow_system))
+
+    private fun themeColorSummary(): String {
+        val value = ThemePreferenceStore(this).load()
+        return if (value.mode == ThemeSourceMode.AUTOJS6) getString(R.string.follow_autojs6)
+        else AppThemePaletteGenerator.colorHex(appPalette.source)
+    }
+
+    private fun displayLanguageName(tag: String): String = Locale.forLanguageTag(tag).let { it.getDisplayName(it) }
+
+    private fun showLanguageDialog() {
+        val store = AppPreferenceStore(this)
+        val current = store.language()
+        val tags = AppPreferenceStore.SUPPORTED_LANGUAGE_TAGS
+        val labels = listOf(getString(R.string.follow_autojs6), getString(R.string.follow_system)) + tags.map(::displayLanguageName)
+        val selected = when (current.mode) {
+            AppLanguageMode.AUTOJS6 -> 0
+            AppLanguageMode.SYSTEM -> 1
+            AppLanguageMode.SPECIFIC -> (tags.indexOf(current.languageTag) + 2).coerceAtLeast(1)
+        }
+        appearanceChoice(R.string.setting_language, labels, selected) { which ->
+            val preference = when (which) {
+                0 -> AppLanguagePreference(AppLanguageMode.AUTOJS6)
+                1 -> AppLanguagePreference(AppLanguageMode.SYSTEM)
+                else -> AppLanguagePreference(AppLanguageMode.SPECIFIC, tags[which - 2])
+            }
+            if (store.saveLanguage(preference)) recreate()
+        }
+    }
+
+    private fun showNightModeDialog() {
+        val store = AppPreferenceStore(this)
+        val values = listOf(AppNightMode.AUTOJS6, AppNightMode.SYSTEM, AppNightMode.LIGHT, AppNightMode.DARK)
+        val labels = listOf(R.string.follow_autojs6, R.string.follow_system, R.string.night_mode_light, R.string.night_mode_dark).map(::getString)
+        appearanceChoice(R.string.setting_night_mode, labels, values.indexOf(store.nightMode())) { which ->
+            if (store.saveNightMode(values[which])) recreate()
+        }
+    }
+
+    private fun appearanceChoice(@StringRes title: Int, labels: List<String>, checked: Int, commit: (Int) -> Unit) {
+        var pending = checked
+        val hostAvailable = HostAppearance.read(this) != null
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice, labels) {
+            override fun areAllItemsEnabled() = hostAvailable
+            override fun isEnabled(position: Int) = position != 0 || hostAvailable
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                super.getView(position, convertView, parent).also { row ->
+                    AppThemeDialogStyler.styleChoiceRow(row, appPalette, isEnabled(position))
+                    (row as? TextView)?.textSize = 16f
+                }
+        }
+        dialog?.dismiss()
+        dialog = MaterialAlertDialogBuilder(this).setTitle(title)
+            .setSingleChoiceItems(adapter, checked) { _, which -> pending = which }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ -> commit(pending) }
+            .create().also { showAppDialog(it) }
     }
 
     // ---- reading ----
@@ -305,12 +436,12 @@ internal class SettingsActivity : HostAppearanceActivity() {
         view.value.text = getString(R.string.text_percent_value, view.slider.value.roundToInt())
         view.slider.addOnChangeListener { _, value, _ -> view.value.text = getString(R.string.text_percent_value, value.roundToInt()) }
         dialog?.dismiss()
-        dialog = AlertDialog.Builder(this)
+        dialog = MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setView(view.root)
             .setPositiveButton(android.R.string.ok) { _, _ -> commit(view.slider.value.roundToInt()) }
             .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create().also { showAppDialog(it) }
     }
 
     internal fun setReadAloudSpeed(percent: Int) = io { ttsStore.write(ttsPreferences().copy(speed = rate(percent, MAX_SPEED_PERCENT))) }
@@ -398,24 +529,24 @@ internal class SettingsActivity : HostAppearanceActivity() {
 
     private fun choose(@StringRes title: Int, labels: List<String>, checked: Int, onChosen: (Int) -> Unit) {
         dialog?.dismiss()
-        dialog = AlertDialog.Builder(this)
+        dialog = MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setSingleChoiceItems(labels.toTypedArray(), checked) { shown, which ->
                 shown.dismiss()
                 onChosen(which)
             }
             .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create().also { showAppDialog(it) }
     }
 
     private fun confirm(@StringRes title: Int, @StringRes message: Int, action: () -> Unit) {
         dialog?.dismiss()
-        dialog = AlertDialog.Builder(this)
+        dialog = MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton(android.R.string.ok) { _, _ -> action() }
             .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create().also { showAppDialog(it) }
     }
 
     /** Runs the store work off the main thread, then refreshes the summaries (and says so when [cleared]). */

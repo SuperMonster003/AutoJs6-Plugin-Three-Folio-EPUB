@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="autojs6_settings_unavailable">нет доступа к настройкам</string>
+    <string name="follow_autojs6">Как в AutoJs6</string>
+    <string name="follow_autojs6_unavailable_value">Настройки AutoJs6 недоступны (%1$s) · резерв: %2$s</string>
+    <string name="follow_system">Как в системе</string>
+    <string name="night_mode_dark">Всегда тёмный</string>
+    <string name="night_mode_light">Всегда светлый</string>
+    <string name="setting_language">Язык</string>
+    <string name="setting_night_mode">Ночной режим</string>
+    <string name="setting_theme_color">Цвет темы</string>
+    <string name="settings_section_appearance">Оформление</string>
+</resources>
