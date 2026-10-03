@@ -33,12 +33,13 @@ internal data class HostAppearance(
     val themeColorAccent: Int = AppThemePaletteGenerator.AUTOJS6_FALLBACK_SOURCE,
 ) {
     fun wrap(context: Context): Context {
-        val configuration = Configuration(context.resources.configuration)
+        // Override appearance only. Copying the complete configuration freezes
+        // orientation, window dimensions and density in this resource context.
+        val configuration = Configuration()
         val locale = Locale.forLanguageTag(languageTag)
         configuration.setLocales(LocaleList(locale))
         configuration.setLayoutDirection(locale)
-        configuration.uiMode = (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
-            if (darkMode) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+        configuration.uiMode = if (darkMode) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
         return context.createConfigurationContext(configuration)
     }
 

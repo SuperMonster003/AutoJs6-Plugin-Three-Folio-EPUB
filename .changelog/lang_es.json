@@ -7,17 +7,20 @@
   "$data": {
     "v2.0.0": {
       "released_date": "2026/10/03",
+      "hint": [
+        "Nuevo nombre 3-Folio EPUB y paquete io.github.supermonster003.autojs6.plugin.three.folio.epub. Es una instalación independiente; los ajustes, libros recientes y anotaciones de Readium EPUB Reader no se migran automáticamente. Requiere AutoJs6 5318 o posterior"
+      ],
       "feature": [
         "Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio",
         "Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible",
         "La apariencia de la aplicación es independiente del esquema de colores de lectura"
       ],
+      "fix": [
+        "Los ajustes de apariencia ya no fijan la orientación ni el tamaño de la ventana del lector, por lo que el diseño horizontal y la vista automática de dos páginas se actualizan al girar"
+      ],
       "improvement": [
         "Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas",
         "Tamaño visual uniforme de los iconos del lanzador y del Centro de complementos, con fondos transparentes y diseños en blanco, negro o grises neutros"
-      ],
-      "hint": [
-        "Nuevo nombre 3-Folio EPUB y paquete io.github.supermonster003.autojs6.plugin.three.folio.epub. Es una instalación independiente; los ajustes, libros recientes y anotaciones de Readium EPUB Reader no se migran automáticamente. Requiere AutoJs6 5318 o posterior"
       ]
     },
     "v1.1.0": {
