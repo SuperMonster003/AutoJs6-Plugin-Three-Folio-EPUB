@@ -180,7 +180,11 @@ class EpubReaderPreferencesInstrumentationTest {
 
         val activity = instrumentation.startActivitySync(request("minimal-epub3.epub")) as EpubReaderActivity
         try {
-            await("scrolled from the legacy toggle") { activity.navigatorReady && navigator(activity).settings.value.scroll }
+            await("scrolled from the legacy toggle", detail = {
+                "destroyed=${activity.isDestroyed} open=${activity.readerModel.state.value} " +
+                    "ready=${activity.navigatorReady} preferences=${activity.readerModel.preferences.value} " +
+                    "file=${stored()?.let(PreferencesCodec::encode)}"
+            }) { activity.navigatorReady && navigator(activity).settings.value.scroll }
             await("migrated to the file") { stored()?.readium?.optBoolean("scroll") == true }
             main { activity.setScrollMode(false) }
             await("paginated again") { !navigator(activity).settings.value.scroll }

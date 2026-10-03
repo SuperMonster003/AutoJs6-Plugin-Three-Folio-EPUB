@@ -12,6 +12,7 @@
 * `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
 * `Función` Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible
 * `Función` La apariencia de la aplicación es independiente del esquema de colores de lectura
+* `Corrección` Los ajustes de apariencia ya no fijan la orientación ni el tamaño de la ventana del lector, por lo que el diseño horizontal y la vista automática de dos páginas se actualizan al girar
 * `Mejora` Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas
 * `Mejora` Tamaño visual uniforme de los iconos del lanzador y del Centro de complementos, con fondos transparentes y diseños en blanco, negro o grises neutros
 
