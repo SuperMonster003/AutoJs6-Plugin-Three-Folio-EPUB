@@ -1,3 +1,5 @@
+# AutoJs6 3-Folio EPUB
+
 在 AutoJs6 文件管理器中使用 3-Folio EPUB:
 
 1. 安装并启用 `3-Folio EPUB` 插件.

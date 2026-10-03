@@ -1,3 +1,5 @@
+# AutoJs6 3-Folio EPUB
+
 AutoJs6 のファイルマネージャーから 3-Folio EPUB を使う:
 
 1. `3-Folio EPUB` プラグインをインストールして有効化します.

@@ -1,6 +1,6 @@
-# AutoJs6 Readium EPUB Reader 插件 Roadmap
+# AutoJs6 3-Folio EPUB 插件 Roadmap
 
-本文是 `AutoJs6-Plugin-Readium-EPUB-Reader` (基础电子书阅读器: 文件管理器与独立入口打开 EPUB, 脚本侧全局对象 `epub` 提供只读提取与阅读器控制) 的可执行状态表.
+本文是 `AutoJs6-Plugin-Three-Folio-EPUB` (基础电子书阅读器: 文件管理器与独立入口打开 EPUB, 脚本侧全局对象 `epub` 提供只读提取与阅读器控制) 的可执行状态表.
 以 2026-09-18 的宿主本地代码快照 (`AutoJs6 master@1db2d9b87`, `VERSION_NAME=6.8.0`, `VERSION_BUILD=5282`),
 Readium Kotlin Toolkit `3.4.0` (2026-09-11, BSD-3-Clause, minSdk 24), 平台版本插件 `1.8.2` 为起点, 每个条目均可独立 Check 并落地, 后续会话按阶段逐步推进.
 
