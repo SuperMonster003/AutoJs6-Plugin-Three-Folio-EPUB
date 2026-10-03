@@ -228,7 +228,7 @@ def opf(title: str, epub3: bool, manifest_extra: list[tuple[str, str, str, str]]
         f"    <dc:identifier id=\"uid\">urn:uuid:autojs6-readium-fixture-{identifier or ('epub3' if epub3 else 'epub2')}</dc:identifier>\n"
         f"    <dc:title>{title}</dc:title>\n"
         f"    <dc:language>{locale.lang}</dc:language>\n"
-        "    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>"
+        "    <dc:creator>AutoJs6 3-Folio EPUB fixtures</dc:creator>"
         f"{modified}\n"
         "  </metadata>\n"
         f"  <manifest>\n{manifest}\n  </manifest>\n"
@@ -359,7 +359,7 @@ def fxl_opf(title: str) -> str:
         '    <dc:identifier id="uid">urn:uuid:autojs6-readium-fixture-fixed-layout</dc:identifier>\n'
         f"    <dc:title>{title}</dc:title>\n"
         "    <dc:language>en</dc:language>\n"
-        "    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>\n"
+        "    <dc:creator>AutoJs6 3-Folio EPUB fixtures</dc:creator>\n"
         '    <meta property="dcterms:modified">2026-09-19T00:00:00Z</meta>\n'
         '    <meta property="rendition:layout">pre-paginated</meta>\n'
         '    <meta property="rendition:orientation">auto</meta>\n'
@@ -425,7 +425,7 @@ def epub_entries(epub3: bool, title: str, *, ncx_well_formed: bool = True, opf_n
 
 # The canary the XXE fixture points at: a file the instrumentation test writes under the plugin's own
 # files directory; its content must never surface through the parsed book.
-XXE_CANARY_PATH = "/data/data/io.github.supermonster003.autojs6.plugin.readium.epub.reader/files/xxe-canary.txt"
+XXE_CANARY_PATH = "/data/data/io.github.supermonster003.autojs6.plugin.three.folio.epub/files/xxe-canary.txt"
 
 
 def xxe_doctype(root: str) -> str:
@@ -671,7 +671,7 @@ def perf_book(title: str, identifier: str, chapters: int, image_bytes: int = 0) 
         '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         f'    <dc:identifier id="uid">urn:uuid:autojs6-readium-perf-{identifier}</dc:identifier>\n'
         f"    <dc:title>{title}</dc:title>\n    <dc:language>en</dc:language>\n"
-        '    <dc:creator>AutoJs6 Readium EPUB Reader fixtures</dc:creator>\n'
+        '    <dc:creator>AutoJs6 3-Folio EPUB fixtures</dc:creator>\n'
         '    <meta property="dcterms:modified">2026-09-21T00:00:00Z</meta>\n  </metadata>\n'
         "  <manifest>\n" + "\n".join(items) + "\n  </manifest>\n  <spine>\n" + "\n".join(spine) + "\n  </spine>\n</package>\n"
     )

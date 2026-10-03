@@ -5,7 +5,7 @@
   "h3_languages_with_ascii": "Languages",
   "p_languages_all_supported_for_readme": "The current README.md supports the following languages",
   "h3_introduction": "Introduction",
-  "p_introduction_what": "One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, either with the primary `Readium EPUB Reader` button or from the overflow menu. The reader is built on the [Readium Kotlin Toolkit]({{ readium_url }}) {{ readium_version }}, the same open-source engine used by many commercial readers.",
+  "p_introduction_what": "One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, either with the primary `3-Folio EPUB` button or from the overflow menu. The reader is built on the [Readium Kotlin Toolkit]({{ readium_url }}) {{ readium_version }}, the same open-source engine used by many commercial readers.",
   "p_introduction_how": "The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.",
   "p_status": "This 1.2.0 development build adds four launcher icon choices; it has not been published. 1.1.0 is the current release; 1.0.0 was the first. The reader opens EPUB 2 and EPUB 3 books with a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, a preferences panel (text size, font, spacing, alignment, columns and themes that can follow the host's night mode), imported TTF / OTF fonts, vertical CJK and right-to-left books, fixed-layout books as single pages or spreads, full-text search, bookmarks, in-book links, notes and images, and read-aloud with the system text-to-speech engine. The app icon opens a launcher with the recent books and the system document picker, other apps hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `epub` script API, the host reader session and three sample scripts ship with AutoJs6 6.8.0 (build {{ audited_host_build }}). 1.1.0 adds highlights and notes (ROADMAP.md, P9): selected text can be highlighted or underlined in four colors and carry a note, the highlights are drawn on the page and listed in a panel (jump, edit, delete), and the highlights and notes of a book can be exported as Markdown through the system share sheet or saved as a file; hosts that carry EPUB contract version 2 (an AutoJs6 build newer than {{ audited_host_build }}) read them with `book.annotations()` and receive `highlight` events on the reader session, while AutoJs6 6.8.0 (build {{ audited_host_build }}) keeps working with contract version 1.",
   "h3_screenshots": "Screenshots",
@@ -50,15 +50,15 @@
   ],
   "h3_installation": "Installation",
   "installation_steps": [
-    "From the plugin center: open `Plugins` in AutoJs6, pick `Readium EPUB Reader` from the official list and tap install; the plugin center downloads the signed APK, installs it and lets you enable the plugin.",
+    "From the plugin center: open `Plugins` in AutoJs6, pick `3-Folio EPUB` from the official list and tap install; the plugin center downloads the signed APK, installs it and lets you enable the plugin.",
     "From GitHub: download the APK from the [Releases]({{ repo_url }}/releases) page (the file name carries a CRC32 and `SHA256SUMS` lists the checksum), install it, then enable the plugin in the plugin center.",
     "Requirements: AutoJs6 internal build {{ required_host_build }} or later for the file manager entry, AutoJs6 6.8.0 (build {{ audited_host_build }}) or later for the `epub` script API, Android 7.0 or later, and a system WebView."
   ],
   "h3_usage": "How to Use",
   "usage_steps": [
     "Download the latest plugin APK from the [Releases]({{ repo_url }}/releases) page and install it on your device.",
-    "Open the AutoJs6 plugin center and enable the `Readium EPUB Reader` plugin.",
-    "In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Readium EPUB Reader`.",
+    "Open the AutoJs6 plugin center and enable the `3-Folio EPUB` plugin.",
+    "In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`.",
     "Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.",
     "Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.",
     "From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.",
@@ -152,5 +152,6 @@
   "text_link_readium": "Readium Kotlin Toolkit",
   "text_link_epub_api_docs": "`epub` script API reference",
   "text_link_third_party_notices": "Third-party notices",
-  "text_link_16kb": "16 KB page alignment and build verification"
+  "text_link_16kb": "16 KB page alignment and build verification",
+  "p_acknowledgements": "Thanks to [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), and the [original AutoJs6 integration references]({{ third_party_notices_url }}#initial-project-references). See [rights and cooperation]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) for attribution concerns."
 }

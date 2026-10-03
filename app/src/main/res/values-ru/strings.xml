@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="action_readium_epub_reader">Читать EPUB</string>
+    <string name="action_three_folio_epub">Читать EPUB</string>
     <string name="dialog_button_cancel">Отмена</string>
     <string name="dialog_button_close">Закрыть</string>
     <string name="dialog_button_confirm">Подтвердить</string>

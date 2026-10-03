@@ -50,14 +50,14 @@
   ],
   "h3_installation": "インストール",
   "installation_steps": [
-    "プラグインセンターから: AutoJs6 で `プラグイン` を開き, 公式リストから `Readium EPUB Reader` を選んでインストールをタップします. プラグインセンターが署名済み APK をダウンロードしてインストールし, プラグインを有効化できます.",
+    "プラグインセンターから: AutoJs6 で `プラグイン` を開き, 公式リストから `3-Folio EPUB` を選んでインストールをタップします. プラグインセンターが署名済み APK をダウンロードしてインストールし, プラグインを有効化できます.",
     "GitHub から: [Releases]({{ repo_url }}/releases) ページから APK をダウンロードし (ファイル名に CRC32 が付き, `SHA256SUMS` にチェックサムがあります), インストールしてからプラグインセンターでプラグインを有効化します.",
     "要件: ファイルマネージャーの入口には AutoJs6 内部ビルド {{ required_host_build }} 以降, `epub` スクリプト API には AutoJs6 6.8.0 (ビルド {{ audited_host_build }}) 以降, Android 7.0 以降, そしてシステム WebView が必要です."
   ],
   "h3_usage": "使い方",
   "usage_steps": [
     "[Releases]({{ repo_url }}/releases) ページから最新のプラグイン APK をダウンロードして端末にインストールします.",
-    "AutoJs6 のプラグインセンターを開き, `Readium EPUB Reader` プラグインを有効化します.",
+    "AutoJs6 のプラグインセンターを開き, `3-Folio EPUB` プラグインを有効化します.",
     "AutoJs6 のファイルマネージャーで `.epub` ファイルをタップするか, メニュー (その他の操作) を開いて `EPUB を読む` を選びます.",
     "ツールバーの目次ボタンで章を移動し, 設定ボタンで文字とテーマを調整します. ページの左右 3 分の 1 をタップするか音量キーでページをめくり, 中央をタップしてツールバーを隠したり表示したりします. 戻るキーでリーダーを閉じると位置が記憶されます.",
     "ファイルマネージャーを使わない場合はアプリアイコンをタップします. ランチャーが最近の本を一覧し, `EPUB を開く` でシステムのドキュメントピッカーから本を選べます. この方法で開いた本は表紙と進捗付きでリストに残ります.",
@@ -152,5 +152,6 @@
   "text_link_readium": "Readium Kotlin Toolkit",
   "text_link_epub_api_docs": "`epub` スクリプト API リファレンス",
   "text_link_third_party_notices": "サードパーティ通知",
-  "text_link_16kb": "16 KB ページアライメントとビルド検証"
+  "text_link_16kb": "16 KB ページアライメントとビルド検証",
+  "p_acknowledgements": "[Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), [初期実装の参考プロジェクト]({{ third_party_notices_url }}#initial-project-references)の開発者に感謝します. 権利や表記に関する連絡は[協力方針]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)をご覧ください."
 }

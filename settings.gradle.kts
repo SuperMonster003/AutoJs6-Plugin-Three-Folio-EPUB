@@ -1,6 +1,6 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "autojs6-plugin-readium-epub-reader"
+rootProject.name = "autojs6-plugin-three-folio-epub"
 
 pluginManagement {
     providers.gradleProperty("autojs.buildPlugins.includeBuild").orNull?.let { includeBuild(it) }

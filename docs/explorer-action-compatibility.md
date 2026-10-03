@@ -1,7 +1,6 @@
 # Explorer Action compatibility matrix
 
-This document records the Explorer Action contract intentionally implemented by Readium EPUB
-Reader. It is an audit boundary, not a promise that the plugin adopts every capability exposed by
+This document records the Explorer Action contract intentionally implemented by 3-Folio EPUB. It is an audit boundary, not a promise that the plugin adopts every capability exposed by
 the host.
 
 ## Audited contract
@@ -9,12 +8,12 @@ the host.
 | Item | Value |
 | --- | --- |
 | Declared plugin protocol | v2 |
-| Minimum host version code | 5269 |
-| Maximum audited host version code | 5282 |
+| Minimum host version code | 5318 |
+| Maximum audited host version code | 5318 |
 | Maximum audited host protocol | v22 |
 | Vendored API | `libs/explorer-action-api.aar` |
 | Vendored API SHA-256 | `40836C05B1D5FB532B21B916E57211C472225CF17E4CEE0E9F5FC7AA48E21B45` |
-| Host source audit revision | `1db2d9b87` (AutoJs6 6.8.0, build 5282) |
+| Host identity checkpoint | AutoJs6 6.8.0, build 5318; 3-Folio EPUB package and plugin ID |
 
 The machine-readable values live in
 `gradle/explorer-action-compatibility.properties`. Android builds verify the AAR digest before
@@ -22,16 +21,11 @@ compilation and expose the protocol and host boundaries through generated `Build
 
 ## Host compatibility
 
-| Host version code | Host protocol checkpoint | Readium EPUB Reader behavior | Audit status |
+| Host version code | Host protocol checkpoint | 3-Folio EPUB behavior | Audit status |
 | --- | --- | --- | --- |
-| `< 5268` | Explorer Action unavailable | Rejected | Unsupported |
-| `5268` | v1, overflow only | Rejected; primary placement needs v2 | Unsupported |
-| `5269` | v2-v3, primary placement and output transactions | v2 legacy envelope | Audited |
-| `5276` | v4-v21, multi-target, directory, host-session, archive, and transaction extensions | v2 legacy envelope; new capabilities are not declared | Audited |
-| `5277` | v22, bounded related-file descriptors | v2 legacy envelope; related files are not declared | Audited |
-| `5279` | v22, host source and device metadata in the envelope | v2 primary and overflow actions | Audited |
-| `5282` | v22, current host source (`1db2d9b87`) | v2 primary and overflow actions | Audited |
-| `> 5282` | Later protocol | Accepted only when the host still honors a v2 catalog and envelope | Forward-compatible, not yet audited |
+| `< 5318` | Older official EPUB installation identity | Rejected for 3-Folio EPUB | Unsupported |
+| `5318` | v22, new official Folio identity | v2 primary and overflow actions | Audited identity checkpoint |
+| `> 5318` | Later protocol | Accepted only while the host honors a v2 catalog and envelope | Forward-compatible, not yet audited |
 
 The v22 host declares `MIN_SUPPORTED_VERSION = 1`. Its catalog policy supplies the historical
 single-target and Activity defaults for pre-v4 descriptors, and its launcher branches on the
@@ -49,8 +43,10 @@ descendant) but never accessed.
 
 Protocol v2 adds primary placement without changing the v1 Binder descriptor or two-URI envelope.
 The frozen v1 AAR remains valid for these descriptors; the additive primary placement value is
-explicitly declared by the plugin. Both `readium-epub-reader.primary` (primary) and
-`readium-epub-reader` (overflow) launch the same Activity.
+explicitly declared by the plugin. Both `three-folio-epub.primary` (primary) and
+`three-folio-epub` (overflow) launch the same Activity.
+
+The earlier protocol checkpoints below record when the wire capabilities appeared. They do not lower the renamed application's host minimum.
 
 ## Protocol capability checkpoints
 
@@ -72,8 +68,8 @@ explicitly declared by the plugin. Both `readium-epub-reader.primary` (primary) 
 
 The execution Activity fails closed unless all of the following remain true:
 
-- the action ID is `readium-epub-reader.primary` or `readium-epub-reader` and the protocol is exactly v2;
-- `HOST_VERSION_CODE` is present and at least 5269;
+- the action ID is `three-folio-epub.primary` or `three-folio-epub` and the protocol is exactly v2;
+- `HOST_VERSION_CODE` is present and at least 5318;
 - the source surface is the main file manager;
 - read and prefix grants are both present;
 - the data URI, first ClipData item, and display metadata describe one EPUB file (`.epub` extension or `application/epub+zip`);

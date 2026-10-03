@@ -4,10 +4,11 @@
 
 ******
 
-# v1.2.0
+# v2.0.0
 
-###### 2026/09/30
+###### 2026/10/03
 
+* `Aviso` Nuevo nombre 3-Folio EPUB y paquete io.github.supermonster003.autojs6.plugin.three.folio.epub. Es una instalación independiente; los ajustes, libros recientes y anotaciones de Readium EPUB Reader no se migran automáticamente. Requiere AutoJs6 5318 o posterior
 * `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
 * `Función` Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible
 * `Función` La apariencia de la aplicación es independiente del esquema de colores de lectura

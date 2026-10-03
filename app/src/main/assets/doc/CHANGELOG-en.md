@@ -4,10 +4,11 @@
 
 ******
 
-# v1.2.0
+# v2.0.0
 
-###### 2026/09/30
+###### 2026/10/03
 
+* `Hint` Renamed to 3-Folio EPUB with the new installation identity io.github.supermonster003.autojs6.plugin.three.folio.epub. Android treats it as a separate app; Readium EPUB Reader settings, recent books and annotations are not migrated automatically. AutoJs6 5318 or later is required
 * `Feature` Launcher icon choices in Settings: adaptive light, adaptive dark, adaptive automatic (default), or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change
 * `Feature` Unified language, night mode, theme color and launcher icon settings, with explicit confirmation, 16 color presets and HEX/RGB preview. App appearance follows AutoJs6 by default and falls back safely when the host is unavailable
 * `Feature` App appearance settings remain independent of the reading color scheme

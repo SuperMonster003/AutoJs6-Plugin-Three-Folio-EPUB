@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="action_readium_epub_reader">Readium EPUB Reader</string>
+    <string name="action_three_folio_epub">3-Folio EPUB</string>
     <string name="dialog_button_cancel">Cancel</string>
     <string name="dialog_button_close">Close</string>
     <string name="dialog_button_confirm">Confirm</string>

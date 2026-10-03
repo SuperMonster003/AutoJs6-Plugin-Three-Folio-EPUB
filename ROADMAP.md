@@ -1030,3 +1030,8 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 - 四个稳定 Activity alias 指向原启动器 Activity, 实际组件保持启用, 设置使用 PackageManager 状态并带失败回滚; 自动与透明项说明系统渲染限制, 切换后提醒部分主屏幕快捷方式可能需要重新添加. 无新增权限或阅读器行为变化.
 - 新增资源配置与别名切换 instrumentation, 原契约用例改为检查当前唯一 alias 与真实目标. API 24 / API 37.1 两台 AVD 各 11 项全部通过 (资源 2, 别名切换 2, 插件契约 7); 切换测试恢复原组件状态. 证据: 工作区 `.codex-audits/three-icons-20260929/final-launcher-avds.json` 及各 AVD 的 `readium-four-modes-final.{json,txt}`. 不把资源正确当作厂商启动器会自动刷新.
 - 本地验证: debug / androidTest APK 构建通过, 257 个 JVM 用例通过, lint 为 0 error / 73 warning; Python 10 项中 9 通过, 1 沿用原有跳过, 图标生成器与文档只读校验通过. 本轮未调整运行时依赖或阅读器内容实现, 未重跑整包阅读器 instrumentation 或 release 发布流水线. 1.2.0 尚未发布, 未推送.
+
+
+### 2026-10-03: 3-Folio EPUB rename
+
+The maintainer selected repository AutoJs6-Plugin-Three-Folio-EPUB, display name 3-Folio EPUB, dotted package io.github.supermonster003.autojs6.plugin.three.folio.epub, and major version 2.0.0. Existing book artwork is retained. Previous installation data is preserved and is not migrated automatically. Host identity, the pinned EPUB API and the official index must be synchronized. Release and CI evidence will be recorded after validation; earlier roadmap entries retain their historical product names.
