@@ -50,14 +50,14 @@
   ],
   "h3_installation": "安裝",
   "installation_steps": [
-    "從外掛中心: 在 AutoJs6 中開啟 `外掛`, 在官方列表中找到 `Readium EPUB Reader` 並點按安裝; 外掛中心會下載已簽署的 APK, 完成安裝並提供啟用開關.",
+    "從外掛中心: 在 AutoJs6 中開啟 `外掛`, 在官方列表中找到 `3-Folio EPUB` 並點按安裝; 外掛中心會下載已簽署的 APK, 完成安裝並提供啟用開關.",
     "從 GitHub: 在 [Releases]({{ repo_url }}/releases) 頁面下載 APK (檔名帶 CRC32, `SHA256SUMS` 列出校驗值), 安裝後在外掛中心啟用外掛.",
     "需求: 檔案管理器入口需要 AutoJs6 內部版本號 {{ required_host_build }} 及以上, `epub` 指令碼 API 需要 AutoJs6 6.8.0 (版本號 {{ audited_host_build }}) 及以上, Android 7.0 及以上, 以及系統 WebView."
   ],
   "h3_usage": "使用方法",
   "usage_steps": [
     "從 [Releases]({{ repo_url }}/releases) 頁面下載最新的外掛程式 APK 並安裝到裝置.",
-    "開啟 AutoJs6 的外掛程式中心, 啟用 `Readium EPUB Reader` 外掛程式.",
+    "開啟 AutoJs6 的外掛程式中心, 啟用 `3-Folio EPUB` 外掛程式.",
     "在 AutoJs6 檔案管理器中點按 `.epub` 檔案, 或開啟其溢位選單 (更多操作) 並選擇 `閱讀 EPUB`.",
     "使用工具列上的目錄按鈕在章節間跳轉, 使用偏好按鈕調整文字與主題; 點按頁面左右三分之一或按音量鍵翻頁, 點按中央隱藏或顯示工具列; 按返回鍵關閉閱讀器, 閱讀位置會被記住.",
     "不經檔案管理器時, 點按應用程式圖示: 啟動器列出最近書籍, `開啟 EPUB` 透過系統文件選擇器選書; 這樣開啟的書籍會帶著封面與進度留在清單中.",
@@ -152,5 +152,6 @@
   "text_link_readium": "Readium Kotlin Toolkit",
   "text_link_epub_api_docs": "`epub` 指令碼 API 參考",
   "text_link_third_party_notices": "第三方聲明",
-  "text_link_16kb": "16 KB 頁對齊與建構驗證"
+  "text_link_16kb": "16 KB 頁對齊與建構驗證",
+  "p_acknowledgements": "感謝 [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css) 及[初始專案參考項目]({{ third_party_notices_url }}#initial-project-references)的開發者. 署名或權利相關問題可參閱[權利與配合說明]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)."
 }

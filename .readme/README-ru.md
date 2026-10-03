@@ -2,15 +2,15 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="readium-epub-reader-ic-launcher" border="0" width="128" />
+    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="three-folio-epub-ic-launcher" border="0" width="128" />
   </p>
 
   <p>Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</p>
 
   <p>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?label=Release"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=534BAE&label=License"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?label=Release"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?color=A24232&label=Issues"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?color=534BAE&label=License"/></a>
   </p>
 </div>
 
@@ -22,16 +22,16 @@
 
 Текущий README.md поддерживает следующие языки:
 
-- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hans.md)
-- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-HK.md)
-- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-TW.md)
-- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-en.md)
-- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-fr.md)
-- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-es.md)
-- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ja.md)
-- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ko.md)
+- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-zh-Hans.md)
+- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-zh-Hant-HK.md)
+- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-zh-Hant-TW.md)
+- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-en.md)
+- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-fr.md)
+- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-es.md)
+- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ja.md)
+- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ko.md)
 - Русский [ru] # текущий
-- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ar.md)
+- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ar.md)
 
 ******
 
@@ -43,7 +43,7 @@
 
 Плагин читает книгу напрямую через временный файловый дескриптор, выданный хостом. Он никогда не получает путь в файловой системе, никуда не копирует книгу и не распаковывает ее в хранилище.
 
-> Эта сборка для разработки 1.2.0 добавляет четыре варианта значка запуска и пока не опубликована. 1.1.0 - текущий выпуск, 1.0.0 - первый. Читалка открывает книги EPUB 2 и EPUB 3 с оглавлением, запоминает позицию чтения каждой книги, предлагает режим прокрутки, зоны касания, клавиши громкости и режим погружения, панель настроек (размер текста, шрифт, интервалы, выравнивание, колонки и темы, которые могут следовать ночному режиму хоста), импортированные шрифты TTF / OTF, вертикальные CJK и книги справа налево, книги с фиксированной версткой одной страницей или разворотом, полнотекстовый поиск, закладки, ссылки внутри книги, примечания и изображения, а также чтение вслух системным движком синтеза речи. Значок приложения открывает лаунчер с недавними книгами и системным выбором документов, другие приложения передают EPUB через `ACTION_VIEW`, а страница настроек охватывает значения читалки по умолчанию, данные, хранящиеся на устройстве, и ручную проверку обновлений. Скриптовый API `epub`, сеанс читалки на хосте и три примера скриптов поставляются с AutoJs6 6.8.0 (сборка 5282). 1.1.0 добавляет выделения и заметки (ROADMAP.md, P9): выделенный текст можно подсветить или подчеркнуть одним из четырех цветов и снабдить заметкой, выделения рисуются на странице и перечисляются в панели (переход, правка, удаление), а выделения и заметки книги можно экспортировать как Markdown через системное меню поделиться или сохранить в файл; хосты с версией 2 контракта EPUB (сборка AutoJs6 новее 5282) читают их через `book.annotations()` и получают события `highlight` в сеансе читалки, а AutoJs6 6.8.0 (сборка 5282) продолжает работать с версией 1 контракта.
+> Эта сборка для разработки 1.2.0 добавляет четыре варианта значка запуска и пока не опубликована. 1.1.0 - текущий выпуск, 1.0.0 - первый. Читалка открывает книги EPUB 2 и EPUB 3 с оглавлением, запоминает позицию чтения каждой книги, предлагает режим прокрутки, зоны касания, клавиши громкости и режим погружения, панель настроек (размер текста, шрифт, интервалы, выравнивание, колонки и темы, которые могут следовать ночному режиму хоста), импортированные шрифты TTF / OTF, вертикальные CJK и книги справа налево, книги с фиксированной версткой одной страницей или разворотом, полнотекстовый поиск, закладки, ссылки внутри книги, примечания и изображения, а также чтение вслух системным движком синтеза речи. Значок приложения открывает лаунчер с недавними книгами и системным выбором документов, другие приложения передают EPUB через `ACTION_VIEW`, а страница настроек охватывает значения читалки по умолчанию, данные, хранящиеся на устройстве, и ручную проверку обновлений. Скриптовый API `epub`, сеанс читалки на хосте и три примера скриптов поставляются с AutoJs6 6.8.0 (сборка 5318). 1.1.0 добавляет выделения и заметки (ROADMAP.md, P9): выделенный текст можно подсветить или подчеркнуть одним из четырех цветов и снабдить заметкой, выделения рисуются на странице и перечисляются в панели (переход, правка, удаление), а выделения и заметки книги можно экспортировать как Markdown через системное меню поделиться или сохранить в файл; хосты с версией 2 контракта EPUB (сборка AutoJs6 новее 5318) читают их через `book.annotations()` и получают события `highlight` в сеансе читалки, а AutoJs6 6.8.0 (сборка 5318) продолжает работать с версией 1 контракта.
 
 ******
 
@@ -55,22 +55,22 @@
 
 <table>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>Чтение</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>Оглавление</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>Настройки чтения</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>Полнотекстовый поиск</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>Чтение</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>Оглавление</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>Настройки чтения</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>Полнотекстовый поиск</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>Закладки</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>Чтение вслух</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>Темная тема</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>Тема сепия</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>Закладки</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>Чтение вслух</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>Темная тема</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>Тема сепия</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>Вертикальный японский</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>Фиксированная верстка</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>Недавние книги</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>Настройки</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>Вертикальный японский</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>Фиксированная верстка</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>Недавние книги</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>Настройки</td>
   </tr>
 </table>
 
@@ -110,9 +110,9 @@
 
 ******
 
-1. Из центра плагинов: откройте `Плагины` в AutoJs6, выберите `Readium EPUB Reader` в официальном списке и нажмите установить; центр плагинов скачает подписанный APK, установит его и позволит включить плагин.
-2. С GitHub: скачайте APK со страницы [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) (имя файла содержит CRC32, а `SHA256SUMS` перечисляет контрольные суммы), установите его, затем включите плагин в центре плагинов.
-3. Требования: внутренняя сборка AutoJs6 5269 или новее для входа из файлового менеджера, AutoJs6 6.8.0 (сборка 5282) или новее для скриптового API `epub`, Android 7.0 или новее и системный WebView.
+1. Из центра плагинов: откройте `Плагины` в AutoJs6, выберите `3-Folio EPUB` в официальном списке и нажмите установить; центр плагинов скачает подписанный APK, установит его и позволит включить плагин.
+2. С GitHub: скачайте APK со страницы [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) (имя файла содержит CRC32, а `SHA256SUMS` перечисляет контрольные суммы), установите его, затем включите плагин в центре плагинов.
+3. Требования: внутренняя сборка AutoJs6 5318 или новее для входа из файлового менеджера, AutoJs6 6.8.0 (сборка 5318) или новее для скриптового API `epub`, Android 7.0 или новее и системный WebView.
 
 ******
 
@@ -120,8 +120,8 @@
 
 ******
 
-1. Скачайте свежий APK плагина со страницы [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) и установите его на устройство.
-2. Откройте центр плагинов AutoJs6 и включите плагин `Readium EPUB Reader`.
+1. Скачайте свежий APK плагина со страницы [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) и установите его на устройство.
+2. Откройте центр плагинов AutoJs6 и включите плагин `3-Folio EPUB`.
 3. В файловом менеджере AutoJs6 нажмите на файл `.epub` или откройте его меню (другие действия) и выберите `Читать EPUB`.
 4. Переходите между главами кнопкой оглавления в панели инструментов и настраивайте текст и тему кнопкой настроек, касайтесь левой или правой трети страницы или нажимайте кнопки громкости для перелистывания, касайтесь центра, чтобы скрыть или показать панель; нажмите Назад, чтобы закрыть читалку, позиция будет запомнена.
 5. Без файлового менеджера нажмите значок приложения: лаунчер показывает недавние книги, а `Открыть EPUB` выбирает книгу через системный выбор документов; открытые так книги остаются в списке с обложкой и прогрессом.
@@ -129,7 +129,7 @@
 7. Откройте `Настройки` из меню лаунчера или меню переполнения читалки, чтобы задать тему, перелистывание, значения по умолчанию для чтения вслух и ссылки, очистить хранимые плагином данные, прочитать историю выпусков или проверить обновления (проверка обращается к GitHub только по нажатию).
 8. Из скрипта: `epub.open(path)` читает книгу (метаданные, оглавление, текст, поиск), а `epub.read(path)` открывает эту читалку и сообщает ее позицию; см. раздел "Скрипты" ниже и примеры `Электронные книги` в AutoJs6.
 
-> Если плагин не появился в центре плагинов, сначала обновите AutoJs6 до свежей версии (внутренняя сборка 5269 или новее). Explorer Action v2 поддерживает основную кнопку и контекстное меню одного файла с временным доступом на чтение документа и родительского каталога.
+> Если плагин не появился в центре плагинов, сначала обновите AutoJs6 до свежей версии (внутренняя сборка 5318 или новее). Explorer Action v2 поддерживает основную кнопку и контекстное меню одного файла с временным доступом на чтение документа и родительского каталога.
 
 ******
 
@@ -205,7 +205,7 @@ epub
 
 Что нужно плагину, на чем он проверен и что остается вне области:
 
-- AutoJs6: внутренняя сборка 5269 или новее для входа из файлового менеджера (Explorer Action v2); скриптовому API `epub`, сеансу читалки на хосте и примерам скриптов нужна AutoJs6 6.8.0 (сборка 5282), последняя сборка хоста, проверенная для этого выпуска.
+- AutoJs6: внутренняя сборка 5318 или новее для входа из файлового менеджера (Explorer Action v2); скриптовому API `epub`, сеансу читалки на хосте и примерам скриптов нужна AutoJs6 6.8.0 (сборка 5318), последняя сборка хоста, проверенная для этого выпуска.
 - Android 7.0 (API 24) до Android 16 (API 37, целевая версия); страницы отрисовываются в WebView устройства, поэтому ожидается свежий Android System WebView или Chrome. У плагина нет нативных библиотек, и он без изменений работает на устройствах с 16 KB страницами.
 - Проверено на AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) и Xiaomi Pad 6 (Android 15, сторона службы); матрица устройство x сценарий, отклонения и версии WebView находятся в `docs/dev/compatibility-matrix.md`.
 - Книги: EPUB 2 и EPUB 3, переформатируемые и с фиксированной версткой, вертикальные CJK и справа налево. Книги под DRM (LCP, Adobe ADEPT) сообщаются как защищенные и никогда не отрисовываются; PDF, MOBI, AZW, CBZ и аудиокниги вне области.
@@ -275,21 +275,21 @@ epub
 Следующая информация предназначена для разработчиков; хост обнаруживает и запускает плагин по этим идентификаторам:
 
 ```text
-application id: io.github.supermonster003.autojs6.plugin.readium.epub.reader
+application id: io.github.supermonster003.autojs6.plugin.three.folio.epub
 service action: org.autojs.plugin.EXPLORER_ACTION
 execute action: org.autojs.plugin.EXPLORER_ACTION_EXECUTE
-plugin id: readium-epub-reader
+plugin id: three-folio-epub
 engine: explorer-action
 variant: default
 protocol version: 2
-minimum host build: 5269
-audited host build: 5282
+minimum host build: 5318
+audited host build: 5318
 audited host protocol: 22
 ```
 
-Explorer Action v2 поддерживает основную кнопку и контекстное меню одного файла с временным доступом на чтение документа и родительского каталога. Требуется AutoJs6 build 5269 или новее.
+Explorer Action v2 поддерживает основную кнопку и контекстное меню одного файла с временным доступом на чтение документа и родительского каталога. Требуется AutoJs6 build 5318 или новее.
 
-- [Открыть матрицу совместимости Explorer Action](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/explorer-action-compatibility.md)
+- [Открыть матрицу совместимости Explorer Action](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/explorer-action-compatibility.md)
 
 ******
 
@@ -299,7 +299,7 @@ Explorer Action v2 поддерживает основную кнопку и к�
 
 ROADMAP.md отслеживает каждую веху как список с флажками, критериями приемки и доказательствами: P0 - P9 (читалка, настройки и шрифты, поиск и закладки, чтение вслух, самостоятельный вход, контракт хоста, скриптовый API `epub`, устойчивость, выпускной gate 1.0.0 и выделения, заметки и экспорт 1.1.0) отмечены. Неотмеченные пункты описывают планы, а не поставленные возможности. Отзывы через Issues приветствуются.
 
-- [Открыть ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
+- [Открыть ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/ROADMAP.md)
 
 ******
 
@@ -307,10 +307,11 @@ ROADMAP.md отслеживает каждую веху как список с �
 
 ******
 
-#### v1.2.0
+#### v2.0.0
 
-_2026/09/30_
+_2026/10/03_
 
+- `Подсказка` Новое имя 3-Folio EPUB и пакет io.github.supermonster003.autojs6.plugin.three.folio.epub. Это отдельное приложение, настройки, недавние книги и аннотации Readium EPUB Reader автоматически не переносятся. Требуется AutoJs6 5318 или новее
 - `Функция` Выбор значка запуска в настройках: адаптивный светлый, адаптивный тёмный, адаптивный автоматический (по умолчанию) или прозрачный фон. Автоматические цвета и прозрачность зависят от лаунчера: он может кешировать значки или добавлять фон. После смены некоторые ярлыки на главном экране может потребоваться добавить заново
 - `Функция` Единые настройки языка, ночного режима, цвета темы и значка запуска с подтверждением, 16 готовыми цветами и предпросмотром HEX/RGB. По умолчанию оформление следует AutoJs6 и безопасно использует резервные настройки при недоступности хоста
 - `Функция` Оформление приложения не зависит от цветовой схемы чтения
@@ -373,7 +374,7 @@ _2026/09/21_
 
 ##### Дополнительная история выпусков
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/assets/doc/CHANGELOG-ru.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/app/src/main/assets/doc/CHANGELOG-ru.md)
 
 ******
 
@@ -419,7 +420,9 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-Плагин распространяется под лицензией [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE). Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 и Jsoup, библиотеки контрактов AutoJs6 и другие компоненты, входящие в APK, перечислены с версиями, контрольными суммами и лицензиями в [уведомлениях о сторонних компонентах](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md).
+Плагин распространяется под лицензией [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/LICENSE). Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 и Jsoup, библиотеки контрактов AutoJs6 и другие компоненты, входящие в APK, перечислены с версиями, контрольными суммами и лицензиями в [уведомлениях о сторонних компонентах](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md).
+
+Благодарим разработчиков [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css) и [исходных проектов-примеров](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). Вопросы об авторстве и правах описаны в [порядке взаимодействия](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
 
 ******
 
@@ -431,5 +434,5 @@ app/src/main/res/raw-*/plugin_instruction.md
 - Справочник скриптового API `epub`: https://docs.autojs6.com/#/epub
 - Спецификация EPUB 3.3: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-- Уведомления о сторонних компонентах: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
-- Выравнивание страниц 16 KB и проверка сборки: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md
+- Уведомления о сторонних компонентах: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md
+- Выравнивание страниц 16 KB и проверка сборки: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/16kb.md

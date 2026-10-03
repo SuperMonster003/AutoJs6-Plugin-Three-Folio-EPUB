@@ -10,7 +10,7 @@
         <!-- Debug-only export; lint ExportedContentProvider is expected here (read-only cache fixtures). -->
         <provider
             android:name=".EpubReaderTestContentProvider"
-            android:authorities="io.github.supermonster003.autojs6.plugin.readium.epub.reader.test.documents"
+            android:authorities="io.github.supermonster003.autojs6.plugin.three.folio.epub.test.documents"
             android:exported="true"
             android:grantUriPermissions="true"
             tools:ignore="ExportedContentProvider" />

@@ -50,14 +50,14 @@
   ],
   "h3_installation": "Installation",
   "installation_steps": [
-    "Depuis le centre de plugins : ouvrez `Plugins` dans AutoJs6, choisissez `Readium EPUB Reader` dans la liste officielle et appuyez sur installer ; le centre de plugins télécharge l'APK signé, l'installe et vous laisse activer le plugin.",
+    "Depuis le centre de plugins : ouvrez `Plugins` dans AutoJs6, choisissez `3-Folio EPUB` dans la liste officielle et appuyez sur installer ; le centre de plugins télécharge l'APK signé, l'installe et vous laisse activer le plugin.",
     "Depuis GitHub : téléchargez l'APK depuis la page [Releases]({{ repo_url }}/releases) (le nom du fichier porte un CRC32 et `SHA256SUMS` liste la somme de contrôle), installez-le, puis activez le plugin dans le centre de plugins.",
     "Prérequis : build interne AutoJs6 {{ required_host_build }} ou ultérieur pour l'entrée du gestionnaire de fichiers, AutoJs6 6.8.0 (build {{ audited_host_build }}) ou ultérieur pour l'API de script `epub`, Android 7.0 ou ultérieur et un WebView système."
   ],
   "h3_usage": "Mode d'emploi",
   "usage_steps": [
     "Téléchargez le dernier APK du plugin depuis la page [Releases]({{ repo_url }}/releases) et installez-le sur votre appareil.",
-    "Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `Readium EPUB Reader`.",
+    "Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `3-Folio EPUB`.",
     "Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`.",
     "Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre et le bouton de préférences pour ajuster le texte et le thème ; touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.",
     "Sans le gestionnaire de fichiers, touchez l'icône de l'application : le lanceur liste vos livres récents et `Ouvrir un EPUB` choisit un livre avec le sélecteur de documents du système ; les livres ouverts ainsi restent dans la liste avec leur couverture et leur progression.",
@@ -152,5 +152,6 @@
   "text_link_readium": "Readium Kotlin Toolkit",
   "text_link_epub_api_docs": "Référence de l'API de script `epub`",
   "text_link_third_party_notices": "Mentions tierces",
-  "text_link_16kb": "Alignement des pages de 16 KB et vérification du build"
+  "text_link_16kb": "Alignement des pages de 16 KB et vérification du build",
+  "p_acknowledgements": "Merci aux développeurs de [Readium Kotlin Toolkit]({{ readium_url }}), de [Readium CSS](https://github.com/readium/readium-css) et des [références initiales]({{ third_party_notices_url }}#initial-project-references). Voir la [coopération sur les droits]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) pour toute question."
 }

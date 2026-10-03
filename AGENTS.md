@@ -1,4 +1,4 @@
-# AutoJs6-Plugin-Readium-EPUB-Reader AGENTS.md
+# AutoJs6-Plugin-Three-Folio-EPUB AGENTS.md
 
 本文件是本仓库的工程约定, 由 `docs/development/repository-standard.md` (AutoJs6 新插件仓库参考规范, 与 `AUTOJS6_PLUGIN_NEW_REPO_AGENTS.md` 同源) 裁剪而来, 只保留对本仓库真实有效的条款. 路线图与阶段性决策见 `ROADMAP.md`; 本文件描述的是 "怎样改仓库", 路线图描述的是 "改什么".
 
@@ -11,17 +11,17 @@
 
 ## 2. 仓库身份
 
-下列值在 Gradle (`resValue`), Manifest, Kotlin 常量 (`ReadiumEpubReaderPlugin`), 资源, 文档 (`.readme/common.json`), 测试和宿主注册信息中 MUST 完全一致. 修改任一值时同步修改全部位置, 并运行 `EpubReaderExplorerCompatibilityTest` 与 `PluginContractInstrumentationTest`.
+下列值在 Gradle (`resValue`), Manifest, Kotlin 常量 (`ThreeFolioEpubPlugin`), 资源, 文档 (`.readme/common.json`), 测试和宿主注册信息中 MUST 完全一致. 修改任一值时同步修改全部位置, 并运行 `EpubReaderExplorerCompatibilityTest` 与 `PluginContractInstrumentationTest`.
 
 | 项目 | 值 |
 |---|---|
-| 仓库与目录名 | `AutoJs6-Plugin-Readium-EPUB-Reader` |
-| `rootProject.name` | `autojs6-plugin-readium-epub-reader` |
-| 应用标题 (不可翻译) | `Readium EPUB Reader` |
-| `applicationId` / namespace | `io.github.supermonster003.autojs6.plugin.readium.epub.reader` |
-| 插件 ID / engine / variant | `readium-epub-reader` / `explorer-action` / `default` |
-| Explorer Action 动作 ID | `readium-epub-reader.primary` (主按钮, placement 2) 与 `readium-epub-reader` (溢出菜单) |
-| 动作标签资源 / 兜底文案 | `action_readium_epub_reader` / `Readium EPUB Reader` |
+| 仓库与目录名 | `AutoJs6-Plugin-Three-Folio-EPUB` |
+| `rootProject.name` | `autojs6-plugin-three-folio-epub` |
+| 应用标题 (不可翻译) | `3-Folio EPUB` |
+| `applicationId` / namespace | `io.github.supermonster003.autojs6.plugin.three.folio.epub` |
+| 插件 ID / engine / variant | `three-folio-epub` / `explorer-action` / `default` |
+| Explorer Action 动作 ID | `three-folio-epub.primary` (主按钮, placement 2) 与 `three-folio-epub` (溢出菜单) |
+| 动作标签资源 / 兜底文案 | `action_three_folio_epub` / `3-Folio EPUB` |
 | 执行 Activity | `EpubReaderActivity`, action `org.autojs.plugin.EXPLORER_ACTION_EXECUTE` |
 | 发现服务 | `ExplorerActionService` (`org.autojs.plugin.EXPLORER_ACTION`), `PluginInfoService` (`org.autojs.plugin.INFO`) |
 | 声明协议 / 最低宿主 / 审计宿主 | v2 / 5269 / 5282 (协议 v22), 单点定义于 `gradle/explorer-action-compatibility.properties` |
@@ -30,7 +30,7 @@
 | 阅读引擎 | Readium Kotlin Toolkit `3.4.0` (`readium-shared` / `readium-streamer` / `readium-navigator` / `readium-navigator-media-tts`, 路线图 D2 / D18) |
 | 持久化 (高亮 / 笔记) | Room `2.8.1` (`room-runtime` 运行时, `room-compiler` 经 KSP; KSP 插件版本来自平台版本插件的 `gradle.ksp.version`; schema 导出到 `app/schemas/`, 路线图 D4 / P9) |
 | 平台版本插件 | `io.github.supermonster003.autojs6-platform-versions` 1.8.3 |
-| 发布文件名 | `autojs6-plugin-readium-epub-reader-v{VERSION_NAME}-{CRC32}.apk` (单 APK) |
+| 发布文件名 | `autojs6-plugin-three-folio-epub-v{VERSION_NAME}-{CRC32}.apk` (单 APK) |
 
 ## 3. 工作区与提交
 
@@ -78,7 +78,7 @@ sed -i "s/^VERSION_BUILD=.*/VERSION_BUILD=$next/" version.properties
 ## 4. 仓库结构
 
 ```text
-AutoJs6-Plugin-Readium-EPUB-Reader/
+AutoJs6-Plugin-Three-Folio-EPUB/
 |-- .changelog/                 lang_*.json x 10 + template_changelog.md (文案源)
 |-- .github/workflows/          build.yml, markdown.yml
 |-- .python/                    generate_markdown.py (+ .bat), check_markdown.bat, generate_launcher_icons.py, generate_fixtures.py, tests/
@@ -132,7 +132,7 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 - `sign.properties` 与 `app/sm003.jks` 从宿主复制到相同相对路径, MUST 保持被 Git 忽略 (`git check-ignore` 验证). 仓库中不得出现密码, token, 私钥或开发者绝对路径; `local.properties` 同样忽略.
 - 保留 `org.autojs.build.signs`, `signingConfigs` 与 release 签名选择逻辑.
-- `appendDigestToReleasedFiles` 任务 MUST 保留该名称, 依赖 `assembleRelease` 与 `verifySignedReleaseArtifacts`, 在签名缺失时失败, 校验实际 APK 集合恰为 `autojs6-plugin-readium-epub-reader-v{VERSION_NAME}.apk`, 并追加 CRC32 生成 `autojs6-plugin-readium-epub-reader-v{VERSION_NAME}-{CRC32}.apk` 到 `app/releases/` (不入库).
+- `appendDigestToReleasedFiles` 任务 MUST 保留该名称, 依赖 `assembleRelease` 与 `verifySignedReleaseArtifacts`, 在签名缺失时失败, 校验实际 APK 集合恰为 `autojs6-plugin-three-folio-epub-v{VERSION_NAME}.apk`, 并追加 CRC32 生成 `autojs6-plugin-three-folio-epub-v{VERSION_NAME}-{CRC32}.apk` 到 `app/releases/` (不入库).
 
 ### 5.4 不启用 ABI 拆分的理由
 
@@ -153,7 +153,7 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 - Manifest MUST 声明 `org.autojs.permission.PLUGIN`, `<queries>` 宿主包名, `org.autojs.plugin.WAKE_ACTIVITY` 与 `org.autojs.plugin.info.AUTHOR` meta-data, `NATIVE_PAGE_ALIGNMENT=0`.
 - `WakeActivity` MUST 为 `exported=true`, `Theme.NoDisplay`, `excludeFromRecents`, `finishOnTaskLaunch`, 受 PLUGIN 权限保护, 响应 `org.autojs.plugin.action.WAKE` + DEFAULT category, 启动后立即结束, 不做任何副作用.
 - `PluginInfoService`, `ExplorerActionService` 与 `EpubReaderActivity` MUST `exported=true` 且受 PLUGIN 权限保护; `EpubReaderActivity` 只响应 `org.autojs.plugin.EXPLORER_ACTION_EXECUTE` (以及自家朗读通知的显式组件 Intent `ACTION_RESUME_READ_ALOUD`: 不带数据, 只领回进程内托管的朗读会话, 无会话时直接关闭; 路线图 D26), 独立入口 (路线图 P4): `launcher.LauncherActivity` (`MAIN` / `LAUNCHER`, 导出且不带权限, 不接收任何数据) 作为四个图标别名的真实目标 Activity, 它以自家显式动作 `EpubReaderIntentPolicy.ACTION_OPEN_RECENT` (带读授权标志的纯 `content://` 文档 + 显示名) 打开 `EpubReaderActivity` (自家组件不受 PLUGIN 权限限制; 该动作只接受显式组件 Intent, 没有 ClipData, 授权已失效时 `startActivity` 抛 `SecurityException` 由启动器标记不可用); `ExternalViewerActivity` (P4.2, D27) 承载 `ACTION_VIEW` + `content` scheme + `application/epub+zip` (不加 `application/octet-stream` / pathPattern 兜底), 导出且不带权限, 继承 `EpubReaderActivity` 只改入口校验 (`RequestReceiver.EXTERNAL_VIEWER`, 显示名先问 provider 的 `_display_name`), 不把执行 Activity 直接导出给任意应用; 该入口打开的书不入最近列表, 除非用户在溢出菜单选 `加入最近书籍` (`takePersistableUriPermission` 成功才 `RecentBooksStore.upsert`, 失败提示不入列).
-- `service.ReadiumEpubReaderPluginService` (路线图 P5.2 / D10) MUST `exported=true` 且受 PLUGIN 权限保护, intent-filter 只含 `org.autojs.plugin.EPUB` + category `epub` (不加 DEFAULT category, 不响应 INFO / EXPLORER_ACTION), 由宿主按 action + category 发现; `CallerGuard` 在每次 Binder 调用分发前校验调用 uid 属于 `org.autojs.autojs6` 且签名与插件一致 (`checkSignatures`), 插件自身 uid 只在 debug 构建放行 (instrumentation 用); 服务不持有 URI 授权, 不从后台启动 Activity, 解绑时关闭全部书籍与阅读器会话.
+- `service.ThreeFolioEpubPluginService` (路线图 P5.2 / D10) MUST `exported=true` 且受 PLUGIN 权限保护, intent-filter 只含 `org.autojs.plugin.EPUB` + category `epub` (不加 DEFAULT category, 不响应 INFO / EXPLORER_ACTION), 由宿主按 action + category 发现; `CallerGuard` 在每次 Binder 调用分发前校验调用 uid 属于 `org.autojs.autojs6` 且签名与插件一致 (`checkSignatures`), 插件自身 uid 只在 debug 构建放行 (instrumentation 用); 服务不持有 URI 授权, 不从后台启动 Activity, 解绑时关闭全部书籍与阅读器会话.
 - `EpubReaderActivity` 自 P5.3 起多一个 intent-filter `org.autojs.plugin.EPUB_READER_OPEN` + DEFAULT (仍在 PLUGIN 权限之后): 只接受显式组件 + 32 位十六进制会话令牌 (`HostSessionPolicy`), 令牌以常量时间比较, 不匹配 / 已认领 / 已关闭的令牌只显示无效请求面板, 不读取任何数据; 该 Activity 只由宿主启动 (D12), 插件服务从不自行启动它.
 - 所有对外组件逐项审查 `android:exported`; 除契约入口 (含 P5.2 的 EPUB 服务), `LauncherActivity`, 指向它的四个图标 alias 与 `ExternalViewerActivity` (P4) 外不得导出其他组件. `settings.SettingsActivity` 与 `settings.ReleaseHistoryActivity` (P4.3) 不导出, 不接收数据, 只从启动器菜单与阅读器溢出菜单进入.
 - `android:usesCleartextTraffic="true"` 是维护者决定 (路线图 D31: 书内 `http://` 资源照常加载), Manifest 注释 MUST 保留该说明; 更新检查 (D28) 仍只走 HTTPS.
@@ -162,14 +162,14 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 ## 7. PluginInfo 与能力协商
 
-- `PluginRuntimeInfo.kt` 的 `readiumEpubReaderPluginInfo()` 负责 Android 侧读取 (包版本, 本地化描述, `@raw/plugin_instruction`, 构建日期); 身份常量集中在 `ReadiumEpubReaderPlugin`, 审计数值集中在 `EpubReaderExplorerCompatibility` (来自 BuildConfig). `readiumEpubPluginInfo()` 与 `epubCapabilities()` (P5.2) 构造 EPUB 服务的身份: 与 Explorer 身份共用同一构造函数, 只换 `engine` (`EpubIds.ENGINE`) 与 `capabilities` (`EpubCapabilityKeys` 五键: 宿主版本, 契约版本基线 `epubContractVersion` = 1, 最新版本 `epubMaxContractVersion` = 2 (P9.4, `service/ContractVersions`), 特性数组, Readium 版本); `ReadiumEpubReaderPlugin.EPUB_FEATURES` 是特性数组的唯一来源 (P5.2: `search`, `cover`, `resource-export`, `markdown`; P5.3: `reader-session`; 不声明 `tts`, 因为契约 v1 没有朗读控制面, 声明了宿主也无从调用).
+- `PluginRuntimeInfo.kt` 的 `threeFolioEpubPluginInfo()` 负责 Android 侧读取 (包版本, 本地化描述, `@raw/plugin_instruction`, 构建日期); 身份常量集中在 `ThreeFolioEpubPlugin`, 审计数值集中在 `EpubReaderExplorerCompatibility` (来自 BuildConfig). `threeFolioEpubPluginInfo()` 与 `epubCapabilities()` (P5.2) 构造 EPUB 服务的身份: 与 Explorer 身份共用同一构造函数, 只换 `engine` (`EpubIds.ENGINE`) 与 `capabilities` (`EpubCapabilityKeys` 五键: 宿主版本, 契约版本基线 `epubContractVersion` = 1, 最新版本 `epubMaxContractVersion` = 2 (P9.4, `service/ContractVersions`), 特性数组, Readium 版本); `ThreeFolioEpubPlugin.EPUB_FEATURES` 是特性数组的唯一来源 (P5.2: `search`, `cover`, `resource-export`, `markdown`; P5.3: `reader-session`; 不声明 `tts`, 因为契约 v1 没有朗读控制面, 声明了宿主也无从调用).
 - `name` 与不可翻译的 `app_name` 一致; `description` 来自当前 locale 的 `plugin_description`; `versionName` / `versionCode` 来自 `PackageInfo`; `versionDate` 来自 `plugin_version_date` (`MMM d, yyyy`, `GMT+08:00`); `id` / `engine` / `variant` 与第 2 节一致.
 - `capabilities` 包含 `PluginCapabilityKeys.REQUIRES_HOST_VERSION` (Long) 与 `ExplorerActionCapabilityKeys.PROTOCOL_VERSION` (Int); 路线图 P5 的 `epub` 服务另有 `EpubCapabilityKeys`, 两个服务的 `id` / `variant` / 版本字段 MUST 一致, 只有 `engine` 与 `capabilities` 不同 (D10).
 
 ## 8. Explorer Action 契约与 Binder
 
-- 公共常量, key, 动作 ID 与 placement MUST 来自 `explorer-action-api` AAR 与 `ReadiumEpubReaderPlugin`, 禁止散落字符串字面量.
-- 目录 (`readiumEpubReaderActionCatalog()`) 声明恰好两个动作 (主按钮 + 溢出), `TARGET_FILE`, `ACCESS_READ_ONLY`, MIME `application/epub+zip`, 扩展名 `epub`; 目录键集合由 instrumentation 测试精确断言.
+- 公共常量, key, 动作 ID 与 placement MUST 来自 `explorer-action-api` AAR 与 `ThreeFolioEpubPlugin`, 禁止散落字符串字面量.
+- 目录 (`threeFolioEpubActionCatalog()`) 声明恰好两个动作 (主按钮 + 溢出), `TARGET_FILE`, `ACCESS_READ_ONLY`, MIME `application/epub+zip`, 扩展名 `epub`; 目录键集合由 instrumentation 测试精确断言.
 - `EpubReaderIntentPolicy.resolve(intent, receiver, suppliedName)` 是唯一的入口校验: 先把 Intent 压成 Android-free 的 `RequestShape` 交给 `EpubRequestPolicy.admit` (P4.2: 接收组件决定可用动作, 阅读器只开 Explorer 信封与 `ACTION_OPEN_RECENT`, 外部查看器只开 `ACTION_VIEW`; 所有入口都要求纯 `content://` 文档 (非空叶段, 无 query / fragment) + 读授权 + 显示名清洗 + EPUB 格式门 `isSupportedEpub`; Explorer 另需前缀授权与两项 ClipData, 启动器动作需显式组件且无 ClipData, 外部入口拒绝 `tree/<id>` 目录 URI 与 `vnd.android.document/directory`), 再补 Explorer 信封的 Android 侧字段: 动作 ID, 协议版本恰为 v2, 宿主版本 >= 5269, 主界面来源, 父目录与父子关系 (`EpubReaderPathPolicy.isDescendant`), ClipData 两项内容. 任何一项不满足即拒绝, 不猜测.
 - 父目录 URI 只做校验, 永不访问 (EPUB 自包含, D9).
 - `org.autojs.plugin.EPUB` 服务 (`service/` 包, P5.2 起): 已发布 AIDL 演进只在末尾追加方法并通过契约版本协商 (P9.4: 能力里 `epubContractVersion` 恒为基线 1 以保持旧宿主接纳, `epubMaxContractVersion` 为最新 2; 宿主把协商结果写进 `openBook` / `openReader` 的 options, `ContractVersions.of` 取出后作为该书籍 / 会话整个生命期内每个应答与事件的 `KEY_CONTRACT_VERSION` (缺失或更低为 1, 更高钳制为最新); 版本 2 追加 `IEpubBook.getAnnotations` (分页, 阅读顺序, `MAX_ANNOTATIONS_PAGE` / `MAX_ANNOTATIONS_BYTES` 截断, 版本 1 的书籍答 `INVALID_ARGUMENT`) 与会话的 `highlight` 事件 (`added` / `updated` / `removed`, 只发给版本 2 宿主)); 请求 / 响应为 `Bundle` 固定 key 下的 JSON (`book/BookJson` 生成元数据, 目录, 阅读顺序与搜索命中文档), 每个 Bundle 答复都带 `KEY_CONTRACT_VERSION`, 失败以 `KEY_ERROR_CODE` / `KEY_ERROR_MESSAGE` 返回, 非 Bundle 方法 (`openBook`, `openResource`, `openReader`) 抛以错误码开头的 `IllegalArgumentException` / `IllegalStateException` (`Answers`); 所有 Binder 输入经 `Limits` 边界校验, 上限常量只来自 `EpubContract` (与路线图附录 B.5 一致), 错误详情按 UTF-8 字节截断; `openBook` 先校验 options 的 parcel 大小, 描述符为普通文件 (`fstat`) 与 8 本并发上限再解析, 打开超时 30 s, 失败时关闭自己的描述符副本; `BookRegistry` 执行 8 本上限与 5 分钟空闲回收, 解绑与销毁关闭全部; `getText` 用 jsoup 遍历该资源的 XHTML DOM (`book/HtmlBlockExtractor`: 标题级别, 引用, 脚注, 列表项, 代码块, 图片与 figcaption, 表格行; Readium 的 content 迭代器把所有文本标为 Body, 因此不用它; jsoup 在版本目录中与 Readium 3.4.0 的传递版本对齐), `book/TextExtractor` 渲染纯文本或轻量 Markdown 并按 `KEY_MAX_CHARS` 分块 (不切代理对); `openResource` 只解析 manifest 内资源, 校验 64 MiB 上限后经可靠管道流式返回 (`DescriptorIo`, 读失败 `closeWithError`); `search` 复用 `SearchResultPager` (`offset + limit <= 500`); 阅读器会话经宿主两步启动 (D12, P5.3), 插件服务不从后台启动 Activity.
@@ -266,7 +266,7 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 ### 15.2 Android instrumentation (`app/src/androidTest`)
 
-- `PluginContractInstrumentationTest` MUST 覆盖: 两个服务的显式绑定, `getInfo()` 身份与能力, `resValue` 身份与 Kotlin 常量一致, 目录形状与键集合, Manifest 导出 / 权限 / intent-filter (发现, INFO, 执行, Wake), 权限集合精确; P5.2 起: EPUB 服务导出 / 权限 / 只由 action + category 解析, 包内服务集合精确 (五个: 三个导出的插件门, 不导出的 `tts.TtsForegroundService`, 以及 P9.1 起 Room 运行时清单声明的不导出 `androidx.room.MultiInstanceInvalidationService`), `readiumEpubPluginInfo()` 与 Explorer 身份除 `engine` / `capabilities` 外逐字段一致, 能力键集合精确 (五键; P9.4 起 `epubContractVersion` = 1, `epubMaxContractVersion` = 2).
+- `PluginContractInstrumentationTest` MUST 覆盖: 两个服务的显式绑定, `getInfo()` 身份与能力, `resValue` 身份与 Kotlin 常量一致, 目录形状与键集合, Manifest 导出 / 权限 / intent-filter (发现, INFO, 执行, Wake), 权限集合精确; P5.2 起: EPUB 服务导出 / 权限 / 只由 action + category 解析, 包内服务集合精确 (五个: 三个导出的插件门, 不导出的 `tts.TtsForegroundService`, 以及 P9.1 起 Room 运行时清单声明的不导出 `androidx.room.MultiInstanceInvalidationService`), `threeFolioEpubPluginInfo()` 与 Explorer 身份除 `engine` / `capabilities` 外逐字段一致, 能力键集合精确 (五键; P9.4 起 `epubContractVersion` = 1, `epubMaxContractVersion` = 2).
 - `service/PluginServiceInstrumentationTest` (P5.2): 经 `ServiceTestRule` 绑定 EPUB 服务并用 remote-only Binder 包装强制走生成的 Proxy / Parcel 路径 (书籍 Binder 同样包装); 身份与能力; `minimal-epub3.epub` 往返 (元数据含位置数, 目录深度, 阅读顺序, 按索引 / href / 带片段的 href 取文本一致, 7 字符分页拼回全文, 越界 offset 为空, Markdown 标题与 `![]()` 图片, 资源管道返回 XHTML 与 PNG 签名, 搜索命中与 offset / limit 分页一致, 关闭幂等且之后为 `SESSION_CLOSED`, `/proc/self/fd` 计数不增); 错误码 (非 ZIP, LCP 加密, 空描述符, 管道描述符, 超大 options, 未知 href / 索引, 越界 offset / maxChars / limit / 查询长度, 未知格式, 空查询, 空 / 过短 href, `openReader` 无回调为 INVALID_ARGUMENT); 第 9 本被拒, 关一本后可再开, 解绑后全部 `SESSION_CLOSED`; P9.4: 不带版本键打开的书籍所有应答标 1 且 `getAnnotations` 为 `INVALID_ARGUMENT`, 以版本 2 打开的书籍空页 / 直接写入 Room (完整指纹) 后按阅读顺序列出 / offset 回显与 `hasMore` 分页 / 越界 limit 为 `LIMIT_EXCEEDED` / 关闭后 `SESSION_CLOSED`; 证据 `files/p2-evidence/service-*-api<N>.txt`.
 - `service/ReaderSessionInstrumentationTest` (P5.3): `openReader` 经 remote-only Binder, 认领前 `getState` 只有令牌与 `visible=false`, 未知偏好键的 `error` 事件, 认领前 `navigate` 为 `READER_NOT_VISIBLE`; 以令牌显式启动 `EpubReaderActivity` 后 `open` 事件 (visible, 书名, 起始 href, 位置数) 与 `getState` (href / index / title) 一致, `openReader` 偏好已生效; `navigate` 跳章与 `goTo` (href / 进度 / locator) 各自产生对应 `progress`; `setPreferences` 生效 (字号, 主题, 行高关闭出版商样式) 且未知键上报; 书签增删各一事件且 `getBookmarks` 一致; `close(finish)` 产生 `close(host)` 并结束 Activity, 之后 `SESSION_CLOSED`; 全程同一 generation 且 seq 严格递增. 生命周期: 新会话替换旧会话 (`replaced`), 错误 / 已替换令牌只显示无效请求面板, 不带 finish 的 `close` 保留阅读器, 缩短的认领超时产生 `timeout`. 拒绝: 空回调, 坏 locator, 未知 href, 越界进度, 坏偏好, 非 ZIP, 认领后的非法方向 / 空目标 / 外部 locator / 非法主题 / 缺失偏好, 描述符计数不增. P9.4 (`highlightsReachAVersionTwoHostOnly`): 认领前已存在的高亮是基线 (无事件), 视图模型添加 / 编辑 / 删除各产生一条 `highlight` 事件 (`added` / `updated` / `removed`, 携带契约 JSON), 不带版本键打开的会话所有事件与应答标 1 且从不收到 `highlight`; 证据 `files/p2-evidence/reader-session-*-api<N>.txt`.
 - `EpubReaderIntentPolicyInstrumentationTest`: 完整 v2 信封被接受, 协议 / 身份 / 宿主版本 / 来源 / 授权 / ClipData / 父子关系 / 格式门的每条拒绝路径.
@@ -374,5 +374,13 @@ Release 前额外执行 `.\gradlew.bat :app:appendDigestToReleasedFiles`, 检查
 - Derive size from the equal-weight combination of visible bounding-box area (alpha >= 16) and alpha-weighted ink area. Target visible size is 0.52 of the canvas, with only documented optical corrections in 0.94-1.06. The adaptive ratio is always the UI ratio multiplied by 72/108. This supersedes older hardcoded UI/adaptive widths in historical notes. Preserve aspect ratio, optical placement and final nonzero-alpha safety checks.
 - Current derived widths: UI 0.6562, adaptive 0.4375 (rounded documentation values, not generation constants). Readium uses optical scale=0.94 and zero offsets.
 - Generate `mipmap/ic_plugin_center.png` and its night counterpart from the same geometry as the transparent UI/launcher mode. They are transparent neutral artwork for installed and catalog entries, independent of the active launcher alias. Keep them through `raw/keep_plugin_center_icon.xml`. Existing separate brand assets retain their original purpose.
-- The default glyph colors are #272727 / #D8D8D8. Stamp Mail is the maintainer-approved grayscale exception: preserve the envelope folds, use neutral R=G=B values, and retain identical day/night alpha. Do not introduce a filled background into the Plugin Center assets.
+- Black, white and neutral grayscale are allowed for every plugin without per-plugin approval. Pure silhouettes default to #272727 / #D8D8D8; shaded artwork may preserve meaningful tonal details with R=G=B and matching day/night alpha. Stamp Mail is one example, not an exception. Keep light-theme artwork dark enough and dark-theme artwork light enough to remain legible. Do not introduce a filled background into the Plugin Center assets.
 - Run the icon generator and its read-only `--check`, `.python/tests/test_icon_geometry.py`, existing icon regressions, and review the full set at 36/48/64 px in both themes and in launcher masks. `.github/workflows/icons.yml` verifies Windows/Linux reproducibility. Synthetic previews do not replace actual launcher verification.
+
+## 3-Folio EPUB identity and publication (2026-10-03)
+
+The maintainer explicitly selected `io.github.supermonster003.autojs6.plugin.three.folio.epub`, version 2.0.0, repository `AutoJs6-Plugin-Three-Folio-EPUB`, and display name `3-Folio EPUB`. This is a new Android installation identity. Preserve the old Readium app and its data; settings, recent books and annotations are not automatically migrated. Host build 5318 or later recognizes the official identity. Keep the EPUB engine, Binder descriptors, protocol versions and Readium dependency names unchanged.
+
+All existing book icon PNGs and the code-native open-book artwork are preserved byte-for-byte. Folio retains the existing `ic_launcher_transparent` / `ic_plugin_center` resource convention and the old application-brand resource names; the rename does not redesign the book. The shared icon standard must allow this established naming.
+
+GitHub repository rename, push, version 2.0.0 publication and official-index replacement are authorized for this task. The AutoJs6 host stays local. README and plugin instructions include a compact acknowledgement paragraph; the initial references are detailed in THIRD_PARTY_NOTICES.md and RIGHTS_AND_TAKEDOWN.md. Do not invent a closed-source design reference absent from the original project notes. Preserve historical changelog and roadmap evidence.

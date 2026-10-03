@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="action_readium_epub_reader">阅读 EPUB</string>
+    <string name="action_three_folio_epub">阅读 EPUB</string>
     <string name="dialog_button_cancel">取消</string>
     <string name="dialog_button_close">关闭</string>
     <string name="dialog_button_confirm">确认</string>

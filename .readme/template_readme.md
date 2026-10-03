@@ -280,6 +280,8 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 {{ p_license }}
 
+{{ p_acknowledgements }}
+
 ******
 
 ### {{ h3_links }}

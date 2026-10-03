@@ -14,7 +14,7 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-val globalApplicationId = "io.github.supermonster003.autojs6.plugin.readium.epub.reader"
+val globalApplicationId = "io.github.supermonster003.autojs6.plugin.three.folio.epub"
 
 val buildTypeDebug = "debug"
 val buildTypeRelease = "release"
@@ -172,10 +172,10 @@ android {
         )
 
         // Identity values read by the official plugin index (roadmap D1 / D10); the Kotlin
-        // constants in ReadiumEpubReaderPlugin must stay identical.
+        // constants in ThreeFolioEpubPlugin must stay identical.
         resValue("string", "plugin_author", "SuperMonster003")
         resValue("string", "plugin_engine", "explorer-action")
-        resValue("string", "plugin_id", "readium-epub-reader")
+        resValue("string", "plugin_id", "three-folio-epub")
         resValue("string", "plugin_requires_host_version", explorerActionMinimumHostVersionCode.toString())
         resValue("string", "plugin_variant", "default")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))

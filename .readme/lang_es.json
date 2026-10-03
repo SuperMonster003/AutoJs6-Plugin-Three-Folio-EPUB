@@ -50,14 +50,14 @@
   ],
   "h3_installation": "Instalación",
   "installation_steps": [
-    "Desde el centro de complementos: abra `Complementos` en AutoJs6, elija `Readium EPUB Reader` en la lista oficial y toque instalar; el centro de complementos descarga el APK firmado, lo instala y le permite habilitar el complemento.",
+    "Desde el centro de complementos: abra `Complementos` en AutoJs6, elija `3-Folio EPUB` en la lista oficial y toque instalar; el centro de complementos descarga el APK firmado, lo instala y le permite habilitar el complemento.",
     "Desde GitHub: descargue el APK de la página [Releases]({{ repo_url }}/releases) (el nombre del archivo lleva un CRC32 y `SHA256SUMS` lista la suma de comprobación), instálelo y luego habilite el complemento en el centro de complementos.",
     "Requisitos: compilación interna de AutoJs6 {{ required_host_build }} o posterior para la entrada del administrador de archivos, AutoJs6 6.8.0 (compilación {{ audited_host_build }}) o posterior para la API de scripts `epub`, Android 7.0 o posterior y un WebView del sistema."
   ],
   "h3_usage": "Cómo se usa",
   "usage_steps": [
     "Descargue el APK más reciente del complemento desde la página [Releases]({{ repo_url }}/releases) e instálelo en el dispositivo.",
-    "Abra el centro de complementos de AutoJs6 y active el complemento `Readium EPUB Reader`.",
+    "Abra el centro de complementos de AutoJs6 y active el complemento `3-Folio EPUB`.",
     "En el administrador de archivos de AutoJs6, toque un archivo `.epub`, o abra su menú (más acciones) y elija `Leer EPUB`.",
     "Use el botón de índice de la barra de herramientas para saltar entre capítulos y el botón de preferencias para ajustar el texto y el tema; toque el tercio izquierdo o derecho de la página o pulse las teclas de volumen para pasar páginas, y toque el centro para ocultar o mostrar la barra de herramientas; pulse Atrás para cerrar el lector, la posición se recuerda.",
     "Sin el administrador de archivos, toque el icono de la aplicación: el lanzador muestra sus libros recientes y `Abrir EPUB` elige un libro con el selector de documentos del sistema; los libros abiertos así permanecen en la lista con su portada y su progreso.",
@@ -152,5 +152,6 @@
   "text_link_readium": "Readium Kotlin Toolkit",
   "text_link_epub_api_docs": "Referencia de la API de scripts `epub`",
   "text_link_third_party_notices": "Avisos de terceros",
-  "text_link_16kb": "Alineación de páginas de 16 KB y verificación de la compilación"
+  "text_link_16kb": "Alineación de páginas de 16 KB y verificación de la compilación",
+  "p_acknowledgements": "Gracias a los desarrolladores de [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css) y las [referencias iniciales]({{ third_party_notices_url }}#initial-project-references). Consulte la [cooperación sobre derechos]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)."
 }

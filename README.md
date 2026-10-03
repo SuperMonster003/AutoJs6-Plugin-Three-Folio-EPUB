@@ -2,15 +2,15 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="readium-epub-reader-ic-launcher" border="0" width="128" />
+    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="three-folio-epub-ic-launcher" border="0" width="128" />
   </p>
 
   <p>阅读 EPUB 电子书并提供目录, 搜索, 朗读与脚本提取能力</p>
 
   <p>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?label=Release"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader?color=534BAE&label=License"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?label=Release"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?color=A24232&label=Issues"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB?color=534BAE&label=License"/></a>
   </p>
 </div>
 
@@ -23,15 +23,15 @@
 当前 README.md 支持以下语言:
 
 - 简体中文 [zh-Hans] # 当前
-- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-HK.md)
-- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-zh-Hant-TW.md)
-- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-en.md)
-- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-fr.md)
-- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-es.md)
-- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ja.md)
-- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ko.md)
-- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ru.md)
-- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/.readme/README-ar.md)
+- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-zh-Hant-HK.md)
+- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-zh-Hant-TW.md)
+- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-en.md)
+- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-fr.md)
+- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-es.md)
+- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ja.md)
+- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ko.md)
+- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ru.md)
+- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/.readme/README-ar.md)
 
 ******
 
@@ -43,7 +43,7 @@
 
 插件直接通过宿主授予的临时文件描述符读取书籍, 不会拿到文件系统路径, 不会把书籍复制到任何位置, 也不会解压到存储.
 
-> 当前 1.2.0 开发构建增加四种启动器图标选项, 尚未发布. 1.1.0 是当前版本, 1.0.0 是首个正式版本. 阅读器打开 EPUB 2 与 EPUB 3 书籍并提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 偏好面板 (字号, 字体, 间距, 对齐, 列数与可跟随宿主夜间模式的主题), 导入的 TTF / OTF 字体, CJK 竖排与从右到左的书籍, 以单页或双页显示的固定版式书籍, 全文搜索, 书签, 书内链接, 注释与图片, 以及使用系统文字转语音引擎的朗读. 应用图标打开带最近书籍与系统文档选择器的启动器, 其它应用可通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `epub` 脚本 API, 宿主阅读器会话与三份示例脚本随 AutoJs6 6.8.0 (版本号 5282) 提供. 1.1.0 新增高亮与笔记 (ROADMAP.md, P9): 选中的文本可以用四种颜色高亮或加下划线并附上笔记, 高亮绘制在页面上并在面板中列出 (跳转, 编辑, 删除), 一本书的高亮与笔记可以经系统分享导出为 Markdown 或保存为文件; 携带 EPUB 契约版本 2 的宿主 (比 5282 更新的 AutoJs6 构建) 通过 `book.annotations()` 读取它们并在阅读器会话上收到 `highlight` 事件, AutoJs6 6.8.0 (版本号 5282) 仍以契约版本 1 正常工作.
+> 当前 1.2.0 开发构建增加四种启动器图标选项, 尚未发布. 1.1.0 是当前版本, 1.0.0 是首个正式版本. 阅读器打开 EPUB 2 与 EPUB 3 书籍并提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 偏好面板 (字号, 字体, 间距, 对齐, 列数与可跟随宿主夜间模式的主题), 导入的 TTF / OTF 字体, CJK 竖排与从右到左的书籍, 以单页或双页显示的固定版式书籍, 全文搜索, 书签, 书内链接, 注释与图片, 以及使用系统文字转语音引擎的朗读. 应用图标打开带最近书籍与系统文档选择器的启动器, 其它应用可通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. `epub` 脚本 API, 宿主阅读器会话与三份示例脚本随 AutoJs6 6.8.0 (版本号 5318) 提供. 1.1.0 新增高亮与笔记 (ROADMAP.md, P9): 选中的文本可以用四种颜色高亮或加下划线并附上笔记, 高亮绘制在页面上并在面板中列出 (跳转, 编辑, 删除), 一本书的高亮与笔记可以经系统分享导出为 Markdown 或保存为文件; 携带 EPUB 契约版本 2 的宿主 (比 5318 更新的 AutoJs6 构建) 通过 `book.annotations()` 读取它们并在阅读器会话上收到 `highlight` 事件, AutoJs6 6.8.0 (版本号 5318) 仍以契约版本 1 正常工作.
 
 ******
 
@@ -55,22 +55,22 @@
 
 <table>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>阅读</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>目录</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>阅读偏好</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>全文搜索</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/reader.png?raw=true" alt="reader" width="180" /><br/>阅读</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/table-of-contents.png?raw=true" alt="table-of-contents" width="180" /><br/>目录</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/preferences.png?raw=true" alt="preferences" width="180" /><br/>阅读偏好</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/search.png?raw=true" alt="search" width="180" /><br/>全文搜索</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>书签</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>朗读</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>深色主题</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>羊皮纸主题</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/bookmarks.png?raw=true" alt="bookmarks" width="180" /><br/>书签</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/read-aloud.png?raw=true" alt="read-aloud" width="180" /><br/>朗读</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/dark-theme.png?raw=true" alt="dark-theme" width="180" /><br/>深色主题</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/sepia-theme.png?raw=true" alt="sepia-theme" width="180" /><br/>羊皮纸主题</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>日文竖排</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>固定版式</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>最近书籍</td>
-    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>设置</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/vertical-ja.png?raw=true" alt="vertical-ja" width="180" /><br/>日文竖排</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/fixed-layout.png?raw=true" alt="fixed-layout" width="180" /><br/>固定版式</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/launcher.png?raw=true" alt="launcher" width="180" /><br/>最近书籍</td>
+    <td align="center"><img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/images/screenshots/settings.png?raw=true" alt="settings" width="180" /><br/>设置</td>
   </tr>
 </table>
 
@@ -110,9 +110,9 @@
 
 ******
 
-1. 从插件中心: 在 AutoJs6 中打开 `插件`, 在官方列表中找到 `Readium EPUB Reader` 并点按安装; 插件中心会下载已签名的 APK, 完成安装并提供启用开关.
-2. 从 GitHub: 在 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) 页面下载 APK (文件名带 CRC32, `SHA256SUMS` 列出校验值), 安装后在插件中心启用插件.
-3. 要求: 文件管理器入口需要 AutoJs6 内部版本号 5269 及以上, `epub` 脚本 API 需要 AutoJs6 6.8.0 (版本号 5282) 及以上, Android 7.0 及以上, 以及系统 WebView.
+1. 从插件中心: 在 AutoJs6 中打开 `插件`, 在官方列表中找到 `3-Folio EPUB` 并点按安装; 插件中心会下载已签名的 APK, 完成安装并提供启用开关.
+2. 从 GitHub: 在 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) 页面下载 APK (文件名带 CRC32, `SHA256SUMS` 列出校验值), 安装后在插件中心启用插件.
+3. 要求: 文件管理器入口需要 AutoJs6 内部版本号 5318 及以上, `epub` 脚本 API 需要 AutoJs6 6.8.0 (版本号 5318) 及以上, Android 7.0 及以上, 以及系统 WebView.
 
 ******
 
@@ -120,8 +120,8 @@
 
 ******
 
-1. 从 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/releases) 页面下载最新的插件 APK 并安装到设备.
-2. 打开 AutoJs6 的插件中心, 启用 `Readium EPUB Reader` 插件.
+1. 从 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) 页面下载最新的插件 APK 并安装到设备.
+2. 打开 AutoJs6 的插件中心, 启用 `3-Folio EPUB` 插件.
 3. 在 AutoJs6 文件管理器中点按 `.epub` 文件, 或打开其溢出菜单 (更多操作) 并选择 `阅读 EPUB`.
 4. 使用工具栏上的目录按钮在章节间跳转, 使用偏好按钮调整文字与主题; 点按页面左右三分之一或按音量键翻页, 点按中央隐藏或显示工具栏; 按返回键关闭阅读器, 阅读位置会被记住.
 5. 不经文件管理器时, 点按应用图标: 启动器列出最近书籍, `打开 EPUB` 通过系统文档选择器选书; 这样打开的书籍会带着封面与进度留在列表中.
@@ -129,7 +129,7 @@
 7. 在启动器菜单或阅读器溢出菜单中打开 `设置`, 可设置主题, 翻页, 朗读默认值与链接, 清除插件保存的数据, 阅读发行历史或检查更新 (只有点按时才会联系 GitHub).
 8. 从脚本: `epub.open(path)` 读取书籍 (元数据, 目录, 文本, 搜索), `epub.read(path)` 打开本阅读器并报告阅读位置; 见下文 "脚本调用" 与 AutoJs6 中的 `电子书` 示例.
 
-> 若插件中心未显示该插件, 请先将 AutoJs6 升级到较新版本 (内部版本号 5269 及以上). Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录.
+> 若插件中心未显示该插件, 请先将 AutoJs6 升级到较新版本 (内部版本号 5318 及以上). Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录.
 
 ******
 
@@ -205,7 +205,7 @@ epub
 
 插件的运行要求, 已验证的环境与不在范围内的内容:
 
-- AutoJs6: 文件管理器入口 (Explorer Action v2) 需要内部版本号 5269 及以上; `epub` 脚本 API, 宿主阅读器会话与示例脚本需要 AutoJs6 6.8.0 (版本号 5282), 这也是本次发布审计过的最高宿主版本.
+- AutoJs6: 文件管理器入口 (Explorer Action v2) 需要内部版本号 5318 及以上; `epub` 脚本 API, 宿主阅读器会话与示例脚本需要 AutoJs6 6.8.0 (版本号 5318), 这也是本次发布审计过的最高宿主版本.
 - Android 7.0 (API 24) 至 Android 16 (API 37, 目标版本); 页面在设备的 WebView 中渲染, 需要较新的 Android System WebView 或 Chrome. 插件不含原生库, 在 16 KB 页设备上无需改动即可运行.
 - 已在 AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) 与 Xiaomi Pad 6 (Android 15, 服务侧) 上验证; 设备 x 场景矩阵, 偏差与 WebView 版本见 `docs/dev/compatibility-matrix.md`.
 - 书籍: EPUB 2 与 EPUB 3, 可重排与固定版式, CJK 竖排与从右到左. 受 DRM 保护的书籍 (LCP, Adobe ADEPT) 会提示受保护而不会渲染; PDF, MOBI, AZW, CBZ 与有声书不在范围内.
@@ -275,21 +275,21 @@ spine 声明从右到左翻页且语言为日文或中文的书籍会竖排渲�
 以下信息面向开发者, 宿主通过这些标识发现并执行插件:
 
 ```text
-application id: io.github.supermonster003.autojs6.plugin.readium.epub.reader
+application id: io.github.supermonster003.autojs6.plugin.three.folio.epub
 service action: org.autojs.plugin.EXPLORER_ACTION
 execute action: org.autojs.plugin.EXPLORER_ACTION_EXECUTE
-plugin id: readium-epub-reader
+plugin id: three-folio-epub
 engine: explorer-action
 variant: default
 protocol version: 2
-minimum host build: 5269
-audited host build: 5282
+minimum host build: 5318
+audited host build: 5318
 audited host protocol: 22
 ```
 
-Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录. 需要 AutoJs6 构建 5269 或更高版本.
+Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临时只读授权访问文档及其父目录. 需要 AutoJs6 构建 5318 或更高版本.
 
-- [查看 Explorer Action 兼容矩阵](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/explorer-action-compatibility.md)
+- [查看 Explorer Action 兼容矩阵](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/explorer-action-compatibility.md)
 
 ******
 
@@ -299,7 +299,7 @@ Explorer Action v2 同时支持单文件的主按钮和溢出菜单, 通过临�
 
 ROADMAP.md 以可勾选的列表跟踪每个里程碑, 附验收标准与证据: P0 至 P9 (阅读器, 偏好与字体, 搜索与书签, 朗读, 独立入口, 宿主契约, `epub` 脚本 API, 健壮性, 1.0.0 发布 gate 与 1.1.0 的高亮, 笔记与导出) 已勾选. 未勾选的条目是计划而非已交付的能力. 欢迎通过 Issues 反馈.
 
-- [查看 ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/ROADMAP.md)
+- [查看 ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/ROADMAP.md)
 
 ******
 
@@ -307,10 +307,11 @@ ROADMAP.md 以可勾选的列表跟踪每个里程碑, 附验收标准与证据:
 
 ******
 
-#### v1.2.0
+#### v2.0.0
 
-_2026/09/30_
+_2026/10/03_
 
+- `提示` 更名为 3-Folio EPUB, 新安装包名为 io.github.supermonster003.autojs6.plugin.three.folio.epub. Android 将其视为独立应用, 原 Readium EPUB Reader 的设置, 最近书籍与批注不会自动迁移. 需要 AutoJs6 5318 或更高版本
 - `新增` 设置页提供自适应亮色, 自适应暗色, 自适应自动 (默认)与透明背景四种启动器图标. 自动配色与透明效果取决于启动器, 部分系统可能缓存图标或添加背景. 切换后部分主屏幕快捷方式可能需要重新添加
 - `新增` 统一语言, 夜间模式, 主题色与启动器图标设置, 选择后须确认保存, 支持 16 种预设色与 HEX/RGB 局部预览. 应用外观默认跟随 AutoJs6, 宿主不可用时安全回退
 - `新增` 应用外观设置与阅读内容配色相互独立
@@ -373,7 +374,7 @@ _2026/09/21_
 
 ##### 更多发行历史可参阅
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/app/src/main/assets/doc/CHANGELOG-zh-Hans.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/app/src/main/assets/doc/CHANGELOG-zh-Hans.md)
 
 ******
 
@@ -419,7 +420,9 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-插件以 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/LICENSE) 授权. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 与 Jsoup, AutoJs6 契约库以及 APK 中附带的其它组件的版本, 校验值与许可证列于 [第三方声明](https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md).
+插件以 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/LICENSE) 授权. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 与 Jsoup, AutoJs6 契约库以及 APK 中附带的其它组件的版本, 校验值与许可证列于 [第三方声明](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md).
+
+感谢 [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css) 及[起始工程参考项目](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references)的开发者. 署名或权利相关问题可参阅[权利与配合说明](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
 
 ******
 
@@ -431,5 +434,5 @@ app/src/main/res/raw-*/plugin_instruction.md
 - `epub` 脚本 API 参考: https://docs.autojs6.com/#/epub
 - EPUB 3.3 规范: https://www.w3.org/TR/epub-33/
 - Readium Kotlin Toolkit: https://github.com/readium/kotlin-toolkit
-- 第三方声明: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/THIRD_PARTY_NOTICES.md
-- 16 KB 页对齐与构建验证: https://github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader/blob/master/docs/16kb.md
+- 第三方声明: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md
+- 16 KB 页对齐与构建验证: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/docs/16kb.md

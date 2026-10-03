@@ -199,7 +199,7 @@
              and discovered by action + category, like the host's other capability services; CallerGuard
              additionally limits callers to the AutoJs6 host package. -->
         <service
-            android:name=".service.ReadiumEpubReaderPluginService"
+            android:name=".service.ThreeFolioEpubPluginService"
             android:exported="true"
             android:permission="org.autojs.permission.PLUGIN">
             <intent-filter>
@@ -220,7 +220,7 @@
         </service>
 
         <receiver
-            android:name="io.github.supermonster003.autojs6.plugin.readium.epub.reader.settings.LauncherIconUpdateReceiver"
+            android:name="io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.LauncherIconUpdateReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />

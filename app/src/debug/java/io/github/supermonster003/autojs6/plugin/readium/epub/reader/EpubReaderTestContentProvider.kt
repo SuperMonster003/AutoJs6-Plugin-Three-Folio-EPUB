@@ -1,4 +1,4 @@
-package io.github.supermonster003.autojs6.plugin.readium.epub.reader
+package io.github.supermonster003.autojs6.plugin.three.folio.epub
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -31,7 +31,7 @@ class EpubReaderTestContentProvider : ContentProvider() {
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
-    override fun getType(uri: Uri): String = ReadiumEpubReaderPlugin.EPUB_MIME_TYPE
+    override fun getType(uri: Uri): String = ThreeFolioEpubPlugin.EPUB_MIME_TYPE
 
     override fun query(
         uri: Uri,
@@ -70,7 +70,7 @@ class EpubReaderTestContentProvider : ContentProvider() {
     ): Int = throw UnsupportedOperationException("The test provider is read-only")
 
     companion object {
-        const val AUTHORITY = "io.github.supermonster003.autojs6.plugin.readium.epub.reader.test.documents"
+        const val AUTHORITY = "io.github.supermonster003.autojs6.plugin.three.folio.epub.test.documents"
 
         private val SAFE_FILE_NAME = Regex("[A-Za-z0-9._-]+")
 

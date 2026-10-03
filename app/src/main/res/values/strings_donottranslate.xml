@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Readium EPUB Reader</string>
+    <string name="app_name" translatable="false">3-Folio EPUB</string>
     <string name="text_column_count_one" translatable="false">1</string>
     <string name="text_column_count_two" translatable="false">2</string>
     <string name="text_font_family_accessible_dfa" translatable="false">AccessibleDfA</string>
@@ -11,7 +11,7 @@
     <string name="text_progress_position_and_percent" translatable="false">%1$d / %2$d (%3$d%%)</string>
     <string name="text_settings_license_summary" translatable="false">MPL-2.0</string>
     <string name="text_settings_readium" translatable="false">Readium Kotlin Toolkit</string>
-    <string name="text_settings_source_summary" translatable="false">github.com/SuperMonster003/AutoJs6-Plugin-Readium-EPUB-Reader</string>
+    <string name="text_settings_source_summary" translatable="false">github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB</string>
     <string name="text_symbol_minus" translatable="false">-</string>
     <string name="text_symbol_plus" translatable="false">+</string>
 </resources>

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Render the Readium EPUB Reader launcher icons.
+"""Render the 3-Folio EPUB launcher icons.
 
 Outputs (all RGBA PNG, regenerated deterministically from this script):
   app/src/main/res/mipmap/ic_launcher.png              432 x 432 legacy icon (rounded square)
