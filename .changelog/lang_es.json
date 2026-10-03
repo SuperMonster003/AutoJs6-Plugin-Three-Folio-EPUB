@@ -16,7 +16,8 @@
         "La apariencia de la aplicación es independiente del esquema de colores de lectura"
       ],
       "fix": [
-        "Los ajustes de apariencia ya no fijan la orientación ni el tamaño de la ventana del lector, por lo que el diseño horizontal y la vista automática de dos páginas se actualizan al girar"
+        "Los ajustes de apariencia ya no fijan la orientación ni el tamaño de la ventana del lector, por lo que el diseño horizontal y la vista automática de dos páginas se actualizan al girar",
+        "Volver al lector mientras se guardan las preferencias ya no sustituye la selección pendiente por los valores anteriores del disco, incluida la migración del modo de desplazamiento antiguo"
       ],
       "improvement": [
         "Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas",

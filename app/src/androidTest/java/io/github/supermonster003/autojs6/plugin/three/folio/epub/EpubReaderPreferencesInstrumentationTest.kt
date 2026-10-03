@@ -20,6 +20,8 @@ import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.BookDataS
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.ReaderPreferencesStore
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.ReaderSettings
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
 import org.autojs.plugin.explorer.api.ExplorerActionIntentExtras
 import org.autojs.plugin.explorer.api.ExplorerActionIntentValues
 import org.autojs.plugin.explorer.api.ExplorerActionPluginActions
@@ -189,6 +191,38 @@ class EpubReaderPreferencesInstrumentationTest {
             main { activity.setScrollMode(false) }
             await("paginated again") { !navigator(activity).settings.value.scroll }
             await("file updated") { stored()?.readium?.optBoolean("scroll", true) == false }
+        } finally {
+            main { activity.finish() }
+            instrumentation.waitForIdleSync()
+        }
+    }
+
+    @Test
+    fun resumingWhilePreferencesAreBeingWrittenKeepsThePendingChoice() {
+        val activity = instrumentation.startActivitySync(request("minimal-epub3.epub")) as EpubReaderActivity
+        try {
+            await("navigator ready") { activity.navigatorReady }
+            val model = activity.readerModel
+            // Hold the existing storage gate to reproduce slow disk writes
+            // deterministically, rather than relying on a busy CI emulator.
+            val diskGate = EpubReaderViewModel::class.java.getDeclaredField("preferencesMutex")
+                .apply { isAccessible = true }.get(model) as Mutex
+            runBlocking { diskGate.lock() }
+            try {
+                main {
+                    model.editPreferences { it.copy(scroll = true) }
+                    model.flushPreferences()
+                    model.reloadPreferences()
+                    assertTrue("An unfinished disk write must not reset the visible choice", model.preferences.value.epub.scroll == true)
+                }
+            } finally {
+                diskGate.unlock()
+            }
+            await("choice persisted after storage resumes") { stored()?.readium?.optBoolean("scroll") == true }
+            main {
+                model.reloadPreferences()
+                assertTrue(model.preferences.value.epub.scroll == true)
+            }
         } finally {
             main { activity.finish() }
             instrumentation.waitForIdleSync()

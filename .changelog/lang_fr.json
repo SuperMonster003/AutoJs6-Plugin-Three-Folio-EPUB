@@ -16,7 +16,8 @@
         "L'apparence de l'application reste indépendante des couleurs de lecture"
       ],
       "fix": [
-        "Les réglages d'apparence ne figent plus l'orientation et la taille de la fenêtre du lecteur, ce qui permet la mise à jour du mode paysage et des doubles pages automatiques lors de la rotation"
+        "Les réglages d'apparence ne figent plus l'orientation et la taille de la fenêtre du lecteur, ce qui permet la mise à jour du mode paysage et des doubles pages automatiques lors de la rotation",
+        "Revenir au lecteur pendant l'enregistrement des préférences ne remplace plus le choix en attente par les anciennes valeurs du disque, y compris lors de la migration du mode de défilement"
       ],
       "improvement": [
         "Surfaces grises neutres et commandes et dialogues Material 3 lisibles aux couleurs du thème, avec espacement, icônes linéaires et séparateurs cohérents. L'icône automatique devient le choix par défaut; les mises à jour préservent les choix explicites et corrigent les entrées en double",
