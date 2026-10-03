@@ -1,9 +1,9 @@
 name: Icon geometry
 on:
   push:
-    paths: ['.python/**', 'app/src/main/res/**', '.github/workflows/icons.yml']
+    paths: ['.gitattributes', '.python/**', 'app/src/main/res/**', '.github/workflows/icons.yml']
   pull_request:
-    paths: ['.python/**', 'app/src/main/res/**', '.github/workflows/icons.yml']
+    paths: ['.gitattributes', '.python/**', 'app/src/main/res/**', '.github/workflows/icons.yml']
   workflow_dispatch:
 permissions:
   contents: read

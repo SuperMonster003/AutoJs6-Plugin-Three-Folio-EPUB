@@ -1,3 +1,5 @@
+# AutoJs6 3-Folio EPUB
+
 在 AutoJs6 檔案管理器中使用 3-Folio EPUB:
 
 1. 安裝並啟用 `3-Folio EPUB` 外掛程式.

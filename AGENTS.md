@@ -24,7 +24,7 @@
 | 动作标签资源 / 兜底文案 | `action_three_folio_epub` / `3-Folio EPUB` |
 | 执行 Activity | `EpubReaderActivity`, action `org.autojs.plugin.EXPLORER_ACTION_EXECUTE` |
 | 发现服务 | `ExplorerActionService` (`org.autojs.plugin.EXPLORER_ACTION`), `PluginInfoService` (`org.autojs.plugin.INFO`) |
-| 声明协议 / 最低宿主 / 审计宿主 | v2 / 5269 / 5282 (协议 v22), 单点定义于 `gradle/explorer-action-compatibility.properties` |
+| 声明协议 / 最低宿主 / 审计宿主 | v2 / 5318 / 5318 (协议 v22), 单点定义于 `gradle/explorer-action-compatibility.properties` |
 | 脚本全局对象 | `epub` (宿主侧, 路线图 D1 / P6, 尚未落地) |
 | 专用 API | `epub-api` (宿主 `plugin-api/epub-api`, 契约版本 1 与 2: 对外基线 1, 最新 2 (P9.4); P5.1 起以 `libs/epub-api.aar` 锁定, 来源宿主提交见 `libs/README.md`) |
 | 阅读引擎 | Readium Kotlin Toolkit `3.4.0` (`readium-shared` / `readium-streamer` / `readium-navigator` / `readium-navigator-media-tts`, 路线图 D2 / D18) |
@@ -72,7 +72,7 @@ sed -i "s/^VERSION_BUILD=.*/VERSION_BUILD=$next/" version.properties
 
 ### 3.5 版本名称
 
-- `VERSION_NAME` 从 1.0.0 开始, 按语义化版本管理, 与提交数量不绑定; 1.0.0 在路线图 P8 发布, 之前的提交都属于 1.0.0 的开发构建; 1.1.0 在路线图 P9 发布 (2026-09-21), P9.1 至 P9.5 的提交都属于 1.1.0 的开发构建. 1.2.0 为四种启动器图标选项的开发构建, 本次未发布.
+- `VERSION_NAME` 从 1.0.0 开始, 按语义化版本管理, 与提交数量不绑定; 1.0.0 在路线图 P8 发布, 之前的提交都属于 1.0.0 的开发构建; 1.1.0 在路线图 P9 发布 (2026-09-21), P9.1 至 P9.5 的提交都属于 1.1.0 的开发构建. 未发布的 1.2.0 开发内容随本次改名纳入 2.0.0; 新安装身份与 5318 宿主下限见文末身份决策.
 - 修改 `VERSION_NAME` 时同步更新全部 changelog JSON 的版本 key, README, 发布文件名断言与测试夹具, 再运行文档生成器.
 
 ## 4. 仓库结构
@@ -162,7 +162,7 @@ AutoJs6-Plugin-Three-Folio-EPUB/
 
 ## 7. PluginInfo 与能力协商
 
-- `PluginRuntimeInfo.kt` 的 `threeFolioEpubPluginInfo()` 负责 Android 侧读取 (包版本, 本地化描述, `@raw/plugin_instruction`, 构建日期); 身份常量集中在 `ThreeFolioEpubPlugin`, 审计数值集中在 `EpubReaderExplorerCompatibility` (来自 BuildConfig). `threeFolioEpubPluginInfo()` 与 `epubCapabilities()` (P5.2) 构造 EPUB 服务的身份: 与 Explorer 身份共用同一构造函数, 只换 `engine` (`EpubIds.ENGINE`) 与 `capabilities` (`EpubCapabilityKeys` 五键: 宿主版本, 契约版本基线 `epubContractVersion` = 1, 最新版本 `epubMaxContractVersion` = 2 (P9.4, `service/ContractVersions`), 特性数组, Readium 版本); `ThreeFolioEpubPlugin.EPUB_FEATURES` 是特性数组的唯一来源 (P5.2: `search`, `cover`, `resource-export`, `markdown`; P5.3: `reader-session`; 不声明 `tts`, 因为契约 v1 没有朗读控制面, 声明了宿主也无从调用).
+- `PluginRuntimeInfo.kt` 的 `threeFolioExplorerPluginInfo()` 负责 Explorer Action 身份的 Android 侧读取 (包版本, 本地化描述, `@raw/plugin_instruction`, 构建日期); 身份常量集中在 `ThreeFolioEpubPlugin`, 审计数值集中在 `EpubReaderExplorerCompatibility` (来自 BuildConfig). `threeFolioEpubPluginInfo()` 与 `epubCapabilities()` (P5.2) 构造 EPUB 服务的身份: 与 Explorer 身份共用同一构造函数, 只换 `engine` (`EpubIds.ENGINE`) 与 `capabilities` (`EpubCapabilityKeys` 五键: 宿主版本, 契约版本基线 `epubContractVersion` = 1, 最新版本 `epubMaxContractVersion` = 2 (P9.4, `service/ContractVersions`), 特性数组, Readium 版本); `ThreeFolioEpubPlugin.EPUB_FEATURES` 是特性数组的唯一来源 (P5.2: `search`, `cover`, `resource-export`, `markdown`; P5.3: `reader-session`; 不声明 `tts`, 因为契约 v1 没有朗读控制面, 声明了宿主也无从调用).
 - `name` 与不可翻译的 `app_name` 一致; `description` 来自当前 locale 的 `plugin_description`; `versionName` / `versionCode` 来自 `PackageInfo`; `versionDate` 来自 `plugin_version_date` (`MMM d, yyyy`, `GMT+08:00`); `id` / `engine` / `variant` 与第 2 节一致.
 - `capabilities` 包含 `PluginCapabilityKeys.REQUIRES_HOST_VERSION` (Long) 与 `ExplorerActionCapabilityKeys.PROTOCOL_VERSION` (Int); 路线图 P5 的 `epub` 服务另有 `EpubCapabilityKeys`, 两个服务的 `id` / `variant` / 版本字段 MUST 一致, 只有 `engine` 与 `capabilities` 不同 (D10).
 

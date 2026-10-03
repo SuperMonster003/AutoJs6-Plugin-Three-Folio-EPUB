@@ -1,3 +1,5 @@
+# AutoJs6 3-Folio EPUB
+
 Utiliser 3-Folio EPUB depuis le gestionnaire de fichiers d'AutoJs6 :
 
 1. Installez et activez le plugin `3-Folio EPUB`.
