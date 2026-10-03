@@ -207,7 +207,7 @@ AutoJs6-Plugin-Readium-EPUB-Reader/
 
 ### 11.1 启动器图标
 
-- 原有绿色书本品牌资源及 `.python/generate_launcher_icons.py` 保持不变. 新启动器选项由 `.python/generate_launcher_variants.py` 复用同一 `draw_glyph` 造型生成独立的 14 份黑白资源, `--check` 只读校验. 不手工编辑 PNG, 不改变 README 或应用内品牌引用.
+- 原有绿色书本品牌资源及 `.python/generate_launcher_icons.py` 保持不变. 新启动器选项由 `.python/generate_launcher_variants.py` 复用同一 `draw_glyph` 造型生成独立的启动器与插件中心黑白资源, `--check` 只读校验. 不手工编辑 PNG, 不改变 README 或应用内品牌引用.
 - 设置页提供自适应亮色, 自适应暗色, 自适应自动 (默认), 透明背景四项. 固定亮色为 `#272727` / `#FAFAFA`, 暗色为 `#D8D8D8` / `#212121`; 自适应系统资源独立命名为 `ic_launcher_system*`, 透明选项为 `ic_launcher_transparent` 及其 night 变体. 自动选项必须有独立资源 ID: 默认暗色与 notnight 亮色 bitmap XML, 并配套 default / notnight 的 v26 adaptive XML. 禁止 values mipmap alias: PackageManager 在安装解析时会提前解引用并锁定图标 ID.
 - 四个稳定 `${applicationId}.launcher.*IconAlias` 指向原 `.launcher.LauncherActivity`, 原 Activity 保持启用并仅移除 MAIN / LAUNCHER filter. 任意时刻只有一个别名可在启动器解析. `LauncherIcons` 使用 PackageManager 持久化选择, 先启用目标再禁用旧入口, API 33+ 最终状态批量应用, DONT_KILL_APP, 失败回滚, 不轮询或清除启动器数据.
 - 设置项说明自动主题可能被启动器缓存, 透明背景可能被系统添加背景/遮罩, 切换后部分主屏幕快捷方式可能需要重新添加. 新选项覆盖旧启动器配色限制; 原书本造型及应用品牌仍保留.
@@ -367,3 +367,12 @@ Release 前额外执行 `.\gradlew.bat :app:appendDigestToReleasedFiles`, 检查
 - Validate custom-color control tint, dialog scrolling, Cancel/OK semantics, API 24/modern launcher-state migration and device rendering. Keep about/developer rounded containers with transparent inner Three glyphs. Never infer release or device evidence from compilation alone.
 
 - Reading content colors remain a separate semantic exception: application locale/night/theme preferences must not rewrite `reader-preferences.json`, and HOST reading mode resolves the actual host/system night mode, independently of the app night selection.
+
+## Optical icon standard (2026-10-03)
+
+- Follow `../AUTOJS6_PLUGIN_BLACK_N_WHITE_ADAPTIVE_ICON_AGENTS.md` for every standalone plugin, including the Plugin Center. `.python/icon_geometry.py` v1 is a self-contained copy of the common geometry algorithm; keep its implementation identical across the standalone plugins. Never read sibling checkouts during a build.
+- Derive size from the equal-weight combination of visible bounding-box area (alpha >= 16) and alpha-weighted ink area. Target visible size is 0.52 of the canvas, with only documented optical corrections in 0.94-1.06. The adaptive ratio is always the UI ratio multiplied by 72/108. This supersedes older hardcoded UI/adaptive widths in historical notes. Preserve aspect ratio, optical placement and final nonzero-alpha safety checks.
+- Current derived widths: UI 0.6562, adaptive 0.4375 (rounded documentation values, not generation constants). Readium uses optical scale=0.94 and zero offsets.
+- Generate `mipmap/ic_plugin_center.png` and its night counterpart from the same geometry as the transparent UI/launcher mode. They are transparent neutral artwork for installed and catalog entries, independent of the active launcher alias. Keep them through `raw/keep_plugin_center_icon.xml`. Existing separate brand assets retain their original purpose.
+- The default glyph colors are #272727 / #D8D8D8. Stamp Mail is the maintainer-approved grayscale exception: preserve the envelope folds, use neutral R=G=B values, and retain identical day/night alpha. Do not introduce a filled background into the Plugin Center assets.
+- Run the icon generator and its read-only `--check`, `.python/tests/test_icon_geometry.py`, existing icon regressions, and review the full set at 36/48/64 px in both themes and in launcher masks. `.github/workflows/icons.yml` verifies Windows/Linux reproducibility. Synthetic previews do not replace actual launcher verification.

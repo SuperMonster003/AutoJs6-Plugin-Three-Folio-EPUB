@@ -13,7 +13,8 @@
         "App appearance settings remain independent of the reading color scheme"
       ],
       "improvement": [
-        "Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries"
+        "Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries",
+        "Consistent visual sizing for launcher and Plugin Center icons, with transparent backgrounds and neutral black, white or grayscale artwork"
       ]
     },
     "v1.1.0": {
