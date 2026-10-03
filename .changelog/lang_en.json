@@ -16,7 +16,8 @@
         "App appearance settings remain independent of the reading color scheme"
       ],
       "fix": [
-        "Following the app appearance no longer freezes the reader window configuration when rotating, so landscape layouts and automatic two-page spreads update correctly"
+        "Following the app appearance no longer freezes the reader window configuration when rotating, so landscape layouts and automatic two-page spreads update correctly",
+        "Returning to the reader while preferences are still being saved no longer replaces the pending choice with old disk values, including the legacy scroll-mode migration"
       ],
       "improvement": [
         "Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries",

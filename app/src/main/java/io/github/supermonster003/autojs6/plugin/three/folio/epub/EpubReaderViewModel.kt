@@ -167,6 +167,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
     val preferences: StateFlow<ReaderPreferencesState> get() = _preferences
 
     private var preferencesDirty = false
+    private val pendingPreferencesWrites = java.util.concurrent.atomic.AtomicInteger(0)
     private var delayedPreferencesFlush: Job? = null
 
     private val fontStore = FontStore.forFilesDirectory(application.filesDir)
@@ -648,7 +649,7 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
      * the reader comes back, unless an edit of this reader is still waiting to be flushed.
      */
     fun reloadPreferences() {
-        if (preferencesDirty) return
+        if (preferencesDirty || pendingPreferencesWrites.get() > 0) return
         val stored = preferencesStore.read()?.let(ReaderPreferencesState::fromStored) ?: ReaderPreferencesState.DEFAULT
         if (stored != _preferences.value) _preferences.value = stored
     }
@@ -668,8 +669,15 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
         if (!preferencesDirty) return
         preferencesDirty = false
         val stored = _preferences.value.toStored()
+        // onStart may reload before the IO coroutine reaches the file. Keep the
+        // in-memory choice until every queued write has released the storage gate.
+        pendingPreferencesWrites.incrementAndGet()
         persistScope.launch {
-            preferencesMutex.withLock { runCatching { preferencesStore.write(stored) } }
+            try {
+                preferencesMutex.withLock { runCatching { preferencesStore.write(stored) } }
+            } finally {
+                pendingPreferencesWrites.decrementAndGet()
+            }
         }
     }
 

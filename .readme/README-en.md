@@ -316,6 +316,7 @@ _2026/10/03_
 - `Feature` Unified language, night mode, theme color and launcher icon settings, with explicit confirmation, 16 color presets and HEX/RGB preview. App appearance follows AutoJs6 by default and falls back safely when the host is unavailable
 - `Feature` App appearance settings remain independent of the reading color scheme
 - `Fix` Following the app appearance no longer freezes the reader window configuration when rotating, so landscape layouts and automatic two-page spreads update correctly
+- `Fix` Returning to the reader while preferences are still being saved no longer replaces the pending choice with old disk values, including the legacy scroll-mode migration
 - `Improvement` Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries
 - `Improvement` Consistent visual sizing for launcher and Plugin Center icons, with transparent backgrounds and neutral black, white or grayscale artwork
 
