@@ -309,9 +309,10 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 
 #### v2.0.1
 
-_2026/10/04_
+_2026/10/05_
 
 - `Amélioration` Les icônes du centre de plugins utilisent les tailles, positions, images claires et sombres et fonds circulaires réglés dans Icon Studio, avec les sources et paramètres permettant de les reproduire
+- `Amélioration` Les icônes des informations d'application Android utilisent les illustrations et les fonds clairs et sombres d'Icon Studio, en conservant les images transparentes du centre de plugins et les choix du lanceur
 
 #### v2.0.0
 
