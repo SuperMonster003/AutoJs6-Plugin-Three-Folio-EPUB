@@ -309,8 +309,9 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 #### v2.0.1
 
-_2026/10/05_
+_2026/10/17_
 
+- `Fix` In the Arabic interface, 3-Folio EPUB no longer appears reversed as Folio EPUB-3
 - `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
 - `Improvement` Android App info icons share Icon Studio artwork and light/dark backgrounds while preserving transparent Plugin Center artwork and existing launcher choices
 
