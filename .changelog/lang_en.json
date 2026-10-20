@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Improvement",
   "changelog_label_dependency": "Dependency",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/21",
+      "feature": [
+        "EPUB book and reader access for independently signed runtime applications"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/17",
       "fix": [

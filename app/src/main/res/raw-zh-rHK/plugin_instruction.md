@@ -19,3 +19,5 @@
 Explorer Action v2 同時支援單檔案的主按鈕與溢出選單. 需要 AutoJs6 組建 5318 或更新版本.
 
 感謝 [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css) 及[起始工程參考項目](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references)的開發者. 署名或權利相關問題可參閱[權利與配合說明](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
+
+2.1.0 開發版本: 執行階段應用程式: 獨立簽署的 Node.js/Bun 應用程式透過獨立服務與閱讀器入口存取, 受一般權限 `org.autojs.plugin.epub.permission.RUNTIME` 保護. 傳回的書籍與閱讀器控制代碼按建立 UID 驗證. 原宿主簽章入口仍受保護, 閱讀偏好與書籍資料仍由本插件共用儲存.

@@ -1035,3 +1035,7 @@ OpenCC 简繁转换 (对 `epub.text()` 输出或阅读器内文本), Three-Stone
 ### 2026-10-03: 3-Folio EPUB rename
 
 The maintainer selected repository AutoJs6-Plugin-Three-Folio-EPUB, display name 3-Folio EPUB, dotted package io.github.supermonster003.autojs6.plugin.three.folio.epub, and major version 2.0.0. Existing book artwork is retained. Previous installation data is preserved and is not migrated automatically. Host identity, the pinned EPUB API and the official index must be synchronized. Release and CI evidence will be recorded after validation; earlier roadmap entries retain their historical product names.
+
+### 2026-10-21: Runtime EPUB clients and independently signed applications
+
+Version 2.1.0 adds a separate service and reader alias protected by org.autojs.plugin.epub.permission.RUNTIME. The original host signature entries stay protected. Returned book and reader-control Binders check their creating UID; service teardown closes only its own reader sessions. Host Node/Bun/Worker APIs reuse the existing parser, resource export and reader. The EPUB protocol, Readium version and user-data schema are unchanged. Local compilation/JVM/lint checks pass; physical provider, host and generated-application acceptance is pending.

@@ -263,6 +263,7 @@ Le plugin conserve le comportement par défaut de Readium pour le contenu des li
 - Les liens externes sont affichés en entier et ouverts dans le navigateur système uniquement après confirmation ; les schémas autres que `http` et `https` sont refusés.
 - Les données de lecture restent locales : les positions sont indexées par une empreinte du contenu et aucun chemin ni nom de fichier n'est écrit sur le stockage.
 - La lecture à voix haute s'exécute dans un service de lecture multimédia non exporté qui n'existe que pendant la lecture et s'arrête quand vous l'arrêtez, à la fin du livre ou à la fermeture de la liseuse (ou, si `Continuer en arrière-plan` est activé, quand vous l'arrêtez depuis la notification) ; le texte est confié au moteur de synthèse vocale choisi dans les réglages du système, et le plugin ne détient aucun verrou de réveil.
+- Applications runtime: les applications Node.js/Bun signées indépendamment utilisent un service et une entrée du lecteur séparés, protégés par la permission normale `org.autojs.plugin.epub.permission.RUNTIME`. Les objets de livre et de commande vérifient leur UID créateur. La protection par signature du point initial reste active, et les préférences et données des livres restent partagées dans le module.
 
 Le manifeste demande l'autorisation réseau, l'autorisation de plugin AutoJs6 et, pour la lecture à voix haute, les autorisations de service de premier plan (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) ainsi que `POST_NOTIFICATIONS` sur Android 13+, demandée une seule fois au démarrage de la lecture et refusable (la lecture continue alors sans les commandes de la notification). AndroidX ajoute aussi une autorisation de signature limitée au paquet qui protège les récepteurs dynamiques non exportés ; elle ne donne aucun accès aux données de l'appareil. Aucune autorisation de stockage, média, caméra, localisation, accessibilité ou superposition n'est demandée.
 
@@ -307,6 +308,12 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 
 ******
 
+#### v2.1.0
+
+_2026/10/21_
+
+- `Fonctionnalité` Accès aux livres et au lecteur EPUB depuis des applications signées indépendamment
+
 #### v2.0.1
 
 _2026/10/17_
@@ -327,17 +334,6 @@ _2026/10/03_
 - `Correctif` Revenir au lecteur pendant l'enregistrement des préférences ne remplace plus le choix en attente par les anciennes valeurs du disque, y compris lors de la migration du mode de défilement
 - `Amélioration` Surfaces grises neutres et commandes et dialogues Material 3 lisibles aux couleurs du thème, avec espacement, icônes linéaires et séparateurs cohérents. L'icône automatique devient le choix par défaut; les mises à jour préservent les choix explicites et corrigent les entrées en double
 - `Amélioration` Taille visuelle harmonisée des icônes du lanceur et du Centre de plugins, avec des fonds transparents et des motifs noirs, blancs ou gris neutres
-
-#### v1.1.0
-
-_2026/09/21_
-
-- `Note` 1.1.0 clôt la feuille de route P9 (surlignages, notes et export) : la liseuse surligne et annote le texte sélectionné, liste les surlignages dans un panneau et les exporte en Markdown ; la version 2 du contrat EPUB permet aux hôtes qui la portent de lire les surlignages avec `book.annotations()` et de recevoir des événements `highlight`, tandis qu'AutoJs6 6.8.0 (build 5282) continue de fonctionner avec la version 1 du contrat
-- `Fonctionnalité` Surlignages et notes dans le lecteur (feuille de route P9.2): la barre de sélection de texte surligne le passage avec la dernière couleur choisie ou ouvre l'éditeur de note (surlignage / soulignement, cinq couleurs, note); les surlignages s'affichent dans la page et un appui rouvre leur éditeur; le panneau "Surlignages et notes" les liste par chapitre dans l'ordre de lecture avec aller à / modifier / supprimer / tout effacer; la page des réglages affiche et efface les surlignages enregistrés
-- `Fonctionnalité` Export des surlignages et des notes d'un livre en Markdown (feuille de route P9.3): le bouton d'export du panneau partage le texte via la feuille de partage du système ou enregistre un fichier `.md` à l'endroit choisi dans le sélecteur de documents; le document liste le titre, les auteurs et les chapitres dans l'ordre de lecture avec chaque passage, sa note et l'heure
-- `Fonctionnalité` Version 2 du contrat EPUB pour les hôtes (feuille de route P9.4): `IEpubBook.getAnnotations` liste les surlignages et notes d'un livre dans l'ordre de lecture, page par page, et une session du lecteur envoie un événement `highlight` quand l'un d'eux est ajouté, modifié ou supprimé; le plugin garde la version 1 comme base annoncée, indique la version 2 dans `epubMaxContractVersion`, répond à chaque livre et session avec la version portée par la requête d'ouverture de l'hôte, et les hôtes de version 1 (AutoJs6 6.8.0 build 5282) ne voient aucun changement
-- `Dépendance` Ajout de `androidx.room:room-runtime` 2.8.1 (la base de données des surlignages et des notes, feuille de route D4 / P9); `room-compiler` ne s'exécute que via KSP à la compilation
-- `Dépendance` Mise à niveau de `epub-api.aar` vers la version publiée du contrat EPUB version 2 (module hôte `plugin-api/epub-api`; le commit hôte d'origine et l'empreinte sont consignés dans `libs/README.md` et `locks/host-api-aars.lock`)
 
 ##### Pour plus d'historique des versions
 

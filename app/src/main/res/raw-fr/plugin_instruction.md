@@ -19,3 +19,5 @@ Les livres peuvent contenir des scripts et des ressources distantes ; le plugin 
 Explorer Action v2 prend en charge le bouton principal et le menu d'un seul fichier. AutoJs6 build 5318 ou ultérieur est requis.
 
 Merci aux développeurs de [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), de [Readium CSS](https://github.com/readium/readium-css) et des [références initiales](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). Voir la [coopération sur les droits](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md) pour toute question.
+
+Version de développement 2.1.0: Applications runtime: les applications Node.js/Bun signées indépendamment utilisent un service et une entrée du lecteur séparés, protégés par la permission normale `org.autojs.plugin.epub.permission.RUNTIME`. Les objets de livre et de commande vérifient leur UID créateur. La protection par signature du point initial reste active, et les préférences et données des livres restent partagées dans le module.

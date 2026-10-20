@@ -263,6 +263,7 @@ El complemento mantiene el comportamiento predeterminado de Readium para el cont
 - Los enlaces externos se muestran completos y se abren en el navegador del sistema solo tras confirmar; se rechazan los esquemas distintos de `http` y `https`.
 - Los datos de lectura permanecen locales: las posiciones se indexan por una huella del contenido y no se escribe ninguna ruta ni nombre de archivo en el almacenamiento.
 - La lectura en voz alta se ejecuta en un servicio de reproducción multimedia no exportado que solo existe mientras una voz lee y se detiene cuando la detiene, termina el libro o se cierra el lector (o, con `Continuar en segundo plano` activado, cuando la detiene desde la notificación); el texto se entrega al motor de texto a voz elegido en los ajustes del sistema, y el complemento no mantiene ningún wake lock.
+- Aplicaciones de ejecución: las aplicaciones Node.js/Bun con firma independiente usan un servicio y una entrada al lector separados, protegidos por el permiso normal `org.autojs.plugin.epub.permission.RUNTIME`. Los objetos de libros y control del lector verifican el UID que los creó. La entrada original conserva la protección de firma y las preferencias y los datos de libros siguen compartidos en el complemento.
 
 El manifiesto solicita el permiso de red, el permiso de complemento de AutoJs6 y, para la lectura en voz alta, los permisos de servicio en primer plano (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) más `POST_NOTIFICATIONS` en Android 13+, que se pide una sola vez al iniciar la lectura y puede rechazarse (la lectura continúa entonces sin los controles de la notificación). AndroidX añade además un permiso de firma limitado al paquete que protege los receptores dinámicos no exportados; no concede acceso a los datos del dispositivo. No se solicitan permisos de almacenamiento, multimedia, cámara, ubicación, accesibilidad ni superposición.
 
@@ -307,6 +308,12 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 
 ******
 
+#### v2.1.0
+
+_2026/10/21_
+
+- `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
+
 #### v2.0.1
 
 _2026/10/17_
@@ -327,17 +334,6 @@ _2026/10/03_
 - `Corrección` Volver al lector mientras se guardan las preferencias ya no sustituye la selección pendiente por los valores anteriores del disco, incluida la migración del modo de desplazamiento antiguo
 - `Mejora` Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas
 - `Mejora` Tamaño visual uniforme de los iconos del lanzador y del Centro de complementos, con fondos transparentes y diseños en blanco, negro o grises neutros
-
-#### v1.1.0
-
-_2026/09/21_
-
-- `Aviso` 1.1.0 cierra la hoja de ruta P9 (resaltados, notas y exportación): el lector resalta y anota el texto seleccionado, lista los resaltados en un panel y los exporta como Markdown; la versión 2 del contrato EPUB permite a los anfitriones que la llevan leer los resaltados con `book.annotations()` y recibir eventos `highlight`, mientras que AutoJs6 6.8.0 (compilación 5282) sigue funcionando con la versión 1 del contrato
-- `Función` Resaltados y notas en el lector (hoja de ruta P9.2): la barra de selección de texto resalta el pasaje con el último color elegido o abre el editor de notas (resaltado / subrayado, cinco colores, nota); los resaltados se dibujan en la página y un toque vuelve a abrir su editor; el panel "Resaltados y notas" los lista por capítulo en orden de lectura con saltar / editar / eliminar / borrar todo; la página de ajustes muestra y borra los resaltados guardados
-- `Función` Exportación de los resaltados y notas de un libro como Markdown (hoja de ruta P9.3): el botón de exportar del panel comparte el texto mediante la hoja de compartir del sistema o guarda un archivo `.md` en el lugar elegido en el selector de documentos; el documento lista el título, los autores y los capítulos en orden de lectura con cada pasaje, su nota y la hora
-- `Función` Versión 2 del contrato EPUB para los hosts (hoja de ruta P9.4): `IEpubBook.getAnnotations` lista los resaltados y notas de un libro en orden de lectura, página a página, y una sesión del lector envía un evento `highlight` cuando se añade, edita o elimina uno; el plugin mantiene la versión 1 como base anunciada, indica la versión 2 en `epubMaxContractVersion`, responde a cada libro y sesión con la versión que llevó la petición de apertura del host, y los hosts de la versión 1 (AutoJs6 6.8.0 build 5282) no notan cambio alguno
-- `Dependencia` Se añade `androidx.room:room-runtime` 2.8.1 (la base de datos de resaltados y notas, hoja de ruta D4 / P9); `room-compiler` solo se ejecuta mediante KSP durante la compilación
-- `Dependencia` Actualización de `epub-api.aar` a la compilación de lanzamiento de la versión 2 del contrato EPUB (módulo del host `plugin-api/epub-api`; el commit del host de origen y el resumen se registran en `libs/README.md` y `locks/host-api-aars.lock`)
 
 ##### Para consultar más historial de versiones
 

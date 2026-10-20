@@ -263,6 +263,7 @@ The plugin keeps Readium's default behavior for book content: scripts and remote
 - External links are shown in full and opened in the system browser only after confirmation; schemes other than `http` and `https` are refused.
 - Reading data stays local: positions are keyed by a content fingerprint and no file path or name is written to storage.
 - Read-aloud runs in a non-exported media playback service that lives only while a voice reads and stops when you stop it, the book ends or the reader closes (or, with `Continue in the background` on, when you stop it from the notification); the text goes to the text-to-speech engine chosen in the system settings, and the plugin holds no wake lock.
+- Runtime applications: independently signed Node.js/Bun apps use a separate service and reader entry protected by the normal permission `org.autojs.plugin.epub.permission.RUNTIME`. Returned book and reader-control handles check their creating UID. The original host signature entry stays protected; reading preferences and book data remain shared in this plugin.
 
 The manifest requests the network permission, the AutoJs6 plugin permission and, for read-aloud, the foreground service permissions (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) plus `POST_NOTIFICATIONS` on Android 13+, which is asked for once when read-aloud starts and can be refused (reading then continues without the notification controls). AndroidX also contributes a package-scoped signature permission that protects non-exported dynamic receivers; it grants no access to device data. No storage, media, camera, location, accessibility or overlay permission is requested.
 
@@ -307,6 +308,12 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 ******
 
+#### v2.1.0
+
+_2026/10/21_
+
+- `Feature` EPUB book and reader access for independently signed runtime applications
+
 #### v2.0.1
 
 _2026/10/17_
@@ -327,17 +334,6 @@ _2026/10/03_
 - `Fix` Returning to the reader while preferences are still being saved no longer replaces the pending choice with old disk values, including the legacy scroll-mode migration
 - `Improvement` Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries
 - `Improvement` Consistent visual sizing for launcher and Plugin Center icons, with transparent backgrounds and neutral black, white or grayscale artwork
-
-#### v1.1.0
-
-_2026/09/21_
-
-- `Hint` 1.1.0 closes roadmap P9 (highlights, notes and export): the reader highlights and annotates selected text, lists the highlights in a panel and exports them as Markdown; EPUB contract version 2 lets hosts that carry it read the highlights with `book.annotations()` and hear `highlight` events, while AutoJs6 6.8.0 (build 5282) keeps working with contract version 1
-- `Feature` Highlights and notes in the reader (roadmap P9.2): the text-selection toolbar highlights the passage with the last chosen colour or opens the note editor (highlight / underline, five colours, note), highlights render in the page and a tap on one reopens its editor, the "Highlights and notes" panel lists them by chapter in reading order with jump / edit / delete / clear all, and the settings page shows and clears the stored highlights
-- `Feature` Export of a book's highlights and notes as Markdown (roadmap P9.3): the panel's export button shares the text through the system share sheet or saves a `.md` file to a place chosen in the document picker; the document lists the title, the authors and the chapters in reading order with each passage, its note and the time
-- `Feature` EPUB contract version 2 for hosts (roadmap P9.4): `IEpubBook.getAnnotations` lists the highlights and notes of a book in reading order, page by page, and a reader session sends a `highlight` event when one is added, edited or removed; the plugin keeps contract version 1 as its advertised baseline, names version 2 in `epubMaxContractVersion`, answers every book and session with the version the host's open request carried, and hosts of version 1 (AutoJs6 6.8.0 build 5282) see no change
-- `Dependency` Add `androidx.room:room-runtime` 2.8.1 (the highlights and notes database, roadmap D4 / P9); `room-compiler` runs through KSP at build time only
-- `Dependency` Upgrade `epub-api.aar` to the release build of EPUB contract version 2 (host module `plugin-api/epub-api`; the source host commit and digest are recorded in `libs/README.md` and `locks/host-api-aars.lock`)
 
 ##### For more release history
 

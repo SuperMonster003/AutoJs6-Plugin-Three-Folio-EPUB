@@ -22,6 +22,9 @@ class HostSessionPolicyTest {
     fun onlyTheReaderActionWithAnExplicitComponentAndAWellFormedTokenIsAccepted() {
         val token = HostSessionPolicy.newToken()
         assertEquals(token, HostSessionPolicy.tokenOf(EpubActions.READER_ACTIVITY_ACTION, explicit = true, token = token))
+        assertEquals(token, HostSessionPolicy.tokenOf(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, explicit = true, token = token))
+        assertNull(HostSessionPolicy.tokenOf(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, explicit = false, token = token))
+        assertNull(HostSessionPolicy.tokenOf(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, explicit = true, token = "invalid"))
         assertNull(HostSessionPolicy.tokenOf(EpubActions.READER_ACTIVITY_ACTION, explicit = false, token = token))
         assertNull(HostSessionPolicy.tokenOf("android.intent.action.VIEW", explicit = true, token = token))
         assertNull(HostSessionPolicy.tokenOf(null, explicit = true, token = token))

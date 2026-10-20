@@ -19,3 +19,5 @@ AutoJs6 파일 관리자에서 3-Folio EPUB 사용하기:
 Explorer Action v2는 단일 파일의 기본 버튼과 메뉴를 모두 지원합니다. AutoJs6 빌드 5318 이상이 필요합니다.
 
 [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css), [초기 구현 참고 프로젝트](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references) 개발자에게 감사드립니다. 권리 또는 출처 표기 문의는 [협력 안내](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md)를 참조하세요.
+
+2.1.0 개발 버전: 런타임 앱: 독립적으로 서명된 Node.js/Bun 앱은 일반 권한 `org.autojs.plugin.epub.permission.RUNTIME` 으로 보호되는 별도 서비스와 리더 진입점을 사용합니다. 반환된 도서 및 리더 제어 핸들은 생성한 UID를 확인합니다. 기존 호스트 서명 진입점은 보호되며 읽기 설정과 도서 데이터는 플러그인에서 공유됩니다.

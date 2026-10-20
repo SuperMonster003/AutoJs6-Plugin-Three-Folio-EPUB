@@ -324,7 +324,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
         }
 
         val resuming = intent.action == ACTION_RESUME_READ_ALOUD
-        val hosted = intent.action == EpubActions.READER_ACTIVITY_ACTION
+        val hosted = HostSessionPolicy.isReaderAction(intent.action)
         val request = if (resuming || hosted) null else resolveRequest()
         if (resuming) {
             // Roadmap D26: the read-aloud notification brings back the book the voice is reading.
@@ -1284,7 +1284,7 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
      */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.action != EpubActions.READER_ACTIVITY_ACTION) return
+        if (!HostSessionPolicy.isReaderAction(intent.action)) return
         finish()
         startActivity(Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }

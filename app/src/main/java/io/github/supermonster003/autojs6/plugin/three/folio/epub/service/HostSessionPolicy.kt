@@ -26,7 +26,10 @@ internal object HostSessionPolicy {
      * resolves the Activity itself) and a well-formed token; null for anything else.
      */
     fun tokenOf(action: String?, explicit: Boolean, token: String?): String? =
-        token?.takeIf { action == EpubActions.READER_ACTIVITY_ACTION && explicit && isWellFormed(it) }
+        token?.takeIf { isReaderAction(action) && explicit && isWellFormed(it) }
+
+    fun isReaderAction(action: String?): Boolean =
+        action == EpubActions.READER_ACTIVITY_ACTION || action == EpubActions.PACKAGED_READER_ACTIVITY_ACTION
 
     fun sameToken(presented: String, expected: String): Boolean =
         MessageDigest.isEqual(presented.toByteArray(Charsets.UTF_8), expected.toByteArray(Charsets.UTF_8))

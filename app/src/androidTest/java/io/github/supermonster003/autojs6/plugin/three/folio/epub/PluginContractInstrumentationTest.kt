@@ -13,6 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.launcher.LauncherActivity
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.ThreeFolioEpubPluginService
+import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.ThreeFolioEpubPackagedService
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.ReleaseHistoryActivity
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.SettingsActivity
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.tts.TtsForegroundService
@@ -214,6 +215,18 @@ class PluginContractInstrumentationTest {
         )
         assertEquals(listOf(ThreeFolioEpubPluginService::class.java.name), epub.map { it.serviceInfo.name })
         assertTrue(discovery.none { it.serviceInfo.name == ThreeFolioEpubPluginService::class.java.name })
+        val packaged = packageManager.queryIntentServices(
+            Intent(EpubActions.PACKAGED_SERVICE_ACTION).addCategory(EpubActions.SERVICE_CATEGORY).setPackage(context.packageName), 0)
+        assertEquals(listOf(ThreeFolioEpubPackagedService::class.java.name), packaged.map { it.serviceInfo.name })
+        assertEquals(EpubActions.PACKAGED_PERMISSION, packaged.single().serviceInfo.permission)
+        val runtimePermission = packageManager.getPermissionInfo(EpubActions.PACKAGED_PERMISSION, 0)
+        assertEquals(android.content.pm.PermissionInfo.PROTECTION_NORMAL,
+            runtimePermission.protectionLevel and android.content.pm.PermissionInfo.PROTECTION_MASK_BASE)
+        val packagedReader = packageManager.queryIntentActivities(
+            Intent(EpubActions.PACKAGED_READER_ACTIVITY_ACTION).addCategory(Intent.CATEGORY_DEFAULT).setPackage(context.packageName), 0)
+        assertEquals(1, packagedReader.size)
+        assertEquals(EpubActions.PACKAGED_PERMISSION, packagedReader.single().activityInfo.permission)
+        assertEquals(EpubReaderActivity::class.java.name, packagedReader.single().activityInfo.targetActivity)
 
         val execution = packageManager.queryIntentActivities(
             Intent(ExplorerActionPluginActions.EXECUTE)
@@ -263,7 +276,7 @@ class PluginContractInstrumentationTest {
             assertFalse(activity.name, info.exported)
         }
 
-        // Five services in the package (roadmap P5.2 audit, P9.1): the three exported plugin doors above, the
+        // Six services: the original three plugin entries, the separate packaged entry, the
         // read-aloud service (roadmap P3 / D15, media playback type) and Room's own invalidation service
         // (roadmap P9.1, declared by the room-runtime manifest); the last two are not exported.
         val services = packageManager.getPackageInfo(context.packageName, PackageManager.GET_SERVICES).services.orEmpty()
@@ -272,6 +285,7 @@ class PluginContractInstrumentationTest {
                 ExplorerActionService::class.java.name,
                 PluginInfoService::class.java.name,
                 ThreeFolioEpubPluginService::class.java.name,
+                ThreeFolioEpubPackagedService::class.java.name,
                 TtsForegroundService::class.java.name,
                 ROOM_INVALIDATION_SERVICE,
             ),

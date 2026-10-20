@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.0
+
+###### 2026/10/21
+
+* `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
+
 # v2.0.1
 
 ###### 2026/10/17

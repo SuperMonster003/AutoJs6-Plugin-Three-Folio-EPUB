@@ -19,3 +19,5 @@ Books may contain scripts and remote resources; the plugin keeps Readium's defau
 Explorer Action v2 supports both the primary button and the overflow menu for a single file. AutoJs6 build 5318 or later is required.
 
 Thanks to [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css), and the [original AutoJs6 integration references](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). See [rights and cooperation](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md) for attribution concerns.
+
+2.1.0 development: Runtime applications: independently signed Node.js/Bun apps use a separate service and reader entry protected by the normal permission `org.autojs.plugin.epub.permission.RUNTIME`. Returned book and reader-control handles check their creating UID. The original host signature entry stays protected; reading preferences and book data remain shared in this plugin.

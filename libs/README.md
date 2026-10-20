@@ -16,9 +16,10 @@ verified (uppercase digest) by `:app:verifyExplorerActionApiCompatibility` befor
 
 Provenance is recorded per artifact. The frozen common and Explorer Action contracts retain their
 existing audited binaries. The current `epub-api.aar` uses the unchanged EPUB Binder protocol with
-`EpubIds` updated for 3-Folio EPUB. Its exact contract sources and MPL-2.0 license are retained
+the 3-Folio EPUB identity and separate packaged-application service, permission and reader action.
+Its exact contract sources and MPL-2.0 license are retained
 in `epub-api-sources/` for independent review; those files are not an additional compiled module.
-The AAR SHA-256 is `a86ede7ead489c2812ab55130b6157d4d81624c120729779d05d1a996d4bf2c1`.
+The AAR SHA-256 is `2a41a76d7478669e8f6c00e196c90353ef39b3036027dbc1734a7467d3b3fdcf`.
 When any artifact is replaced, update the lock file, `THIRD_PARTY_NOTICES.md` and this list in the
 same commit.
 

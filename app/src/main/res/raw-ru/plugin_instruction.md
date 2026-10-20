@@ -19,3 +19,5 @@
 Explorer Action v2 поддерживает и основную кнопку, и меню одного файла. Требуется AutoJs6 build 5318 или новее.
 
 Благодарим разработчиков [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css) и [исходных проектов-примеров](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). Вопросы об авторстве и правах описаны в [порядке взаимодействия](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
+
+Версия разработки 2.1.0: Приложения среды выполнения: приложения Node.js/Bun с независимой подписью используют отдельный сервис и вход в чтение, защищенные обычным разрешением `org.autojs.plugin.epub.permission.RUNTIME`. Дескрипторы книг и управления чтением проверяют UID создателя. Исходный вход сохраняет защиту подписью, а настройки чтения и данные книг остаются общими внутри плагина.

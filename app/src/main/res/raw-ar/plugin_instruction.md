@@ -19,3 +19,5 @@
 يدعم Explorer Action v2 الزر الرئيسي وقائمة الملف الواحد. يلزم AutoJs6 بالإصدار الداخلي 5318 أو أحدث.
 
 نشكر مطوري [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit) و[Readium CSS](https://github.com/readium/readium-css) و[المشاريع المرجعية الأولى](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). للاستفسارات حول النسب والحقوق راجع [سياسة التعاون](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
+
+إصدار التطوير 2.1.0: تطبيقات وقت التشغيل: تستخدم تطبيقات Node.js/Bun ذات التوقيع المستقل خدمة ومدخلا منفصلين للقارئ يحميهما الإذن العادي `org.autojs.plugin.epub.permission.RUNTIME`. تتحقق مقابض الكتب والتحكم في القارئ من UID الذي أنشأها. يبقى مدخل توقيع المضيف الأصلي محميا وتبقى تفضيلات القراءة وبيانات الكتب مشتركة داخل الملحق.

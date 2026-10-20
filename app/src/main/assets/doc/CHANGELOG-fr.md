@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.0
+
+###### 2026/10/21
+
+* `Fonctionnalité` Accès aux livres et au lecteur EPUB depuis des applications signées indépendamment
+
 # v2.0.1
 
 ###### 2026/10/17

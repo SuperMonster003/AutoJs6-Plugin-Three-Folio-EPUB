@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.0
+
+###### 2026/10/21
+
+* `Feature` EPUB book and reader access for independently signed runtime applications
+
 # v2.0.1
 
 ###### 2026/10/17

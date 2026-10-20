@@ -5,6 +5,12 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "相依性",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/21",
+      "feature": [
+        "獨立簽署的執行階段應用程式可讀取 EPUB 書籍並控制閱讀器"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/17",
       "fix": [

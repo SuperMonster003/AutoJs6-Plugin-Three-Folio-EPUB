@@ -33,11 +33,13 @@ import org.readium.r2.shared.util.getOrElse
  * Books are opened from the host's read-only descriptor, capped and idle-swept by
  * [BookRegistry], and all closed when the host unbinds. Reader sessions arrive with roadmap P5.3.
  */
-class ThreeFolioEpubPluginService : Service() {
+open class ThreeFolioEpubPluginService : Service() {
 
-    private val guard by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { CallerGuard(this, allowOwnUid = BuildConfig.DEBUG) }
+    protected open val packagedEntry: Boolean = false
+    private val guard by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { CallerGuard(this, allowOwnUid = BuildConfig.DEBUG, packaged = packagedEntry) }
     private val opener by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { BookOpener(this) }
     private val registry = BookRegistry()
+    private val sessions = java.util.concurrent.ConcurrentHashMap.newKeySet<ReaderSession>()
     private val annotationStore by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { AnnotationStore(AnnotationDatabase.get(this)) }
 
     private val binder = object : IEpubPlugin.Stub() {
@@ -67,16 +69,20 @@ class ThreeFolioEpubPluginService : Service() {
     /** The last client left: the host's leases ended, so nothing may keep a book open. */
     override fun onUnbind(intent: Intent?): Boolean {
         registry.closeAll()
-        ReaderSessionRegistry.closeAll(EpubContract.REASON_HOST)
+        sessions.toList().forEach { it.close(EpubContract.REASON_HOST, finish = false) }
+        sessions.clear()
         return false
     }
 
     override fun onDestroy() {
         registry.shutdown()
+        sessions.toList().forEach { it.close(EpubContract.REASON_HOST, finish = false) }
+        sessions.clear()
         super.onDestroy()
     }
 
     private fun open(source: ParcelFileDescriptor?, options: Bundle?): IEpubBook {
+        val owner = guard.forCaller()
         val descriptor = source
             ?: throw IllegalArgumentException(EpubErrorCodes.encode(EpubErrorCodes.INVALID_ARGUMENT, "source descriptor is missing"))
         var resource: PfdResource? = null
@@ -91,7 +97,7 @@ class ThreeFolioEpubPluginService : Service() {
             val opened = runBlocking { withTimeoutOrNull(EpubContract.OPEN_TIMEOUT_MS) { opener.open(pfdResource) } }
                 ?: throw ContractViolation(EpubErrorCodes.TIMEOUT, "opening took longer than ${EpubContract.OPEN_TIMEOUT_MS} ms")
             val publication = opened.getOrElse { error -> throw ContractViolation(codeOf(error), error.message) }
-            val book = EpubBookBinder(publication, pfdResource, guard, registry::remove, ContractVersions.of(options), annotationStore)
+            val book = EpubBookBinder(publication, pfdResource, owner, registry::remove, ContractVersions.of(options), annotationStore)
             try {
                 registry.register(book)
             } catch (e: ContractViolation) {
@@ -117,6 +123,7 @@ class ThreeFolioEpubPluginService : Service() {
      * The Activity is never started from here.
      */
     private fun openSession(source: ParcelFileDescriptor?, options: Bundle?, callback: IEpubReaderCallback?): IEpubReaderSession {
+        val owner = guard.forCaller()
         val descriptor = source
             ?: throw IllegalArgumentException(EpubErrorCodes.encode(EpubErrorCodes.INVALID_ARGUMENT, "source descriptor is missing"))
         var resource: PfdResource? = null
@@ -141,6 +148,8 @@ class ThreeFolioEpubPluginService : Service() {
             val book = opened.getOrElse { error -> throw ContractViolation(codeOf(error), error.message) }
             publication = book
             val session = ReaderSessionRegistry.open(displayName, ContractVersions.of(options), pfdResource, book, target, preferences?.patch ?: PreferencePatch.EMPTY, callback)
+            sessions.removeAll { it.closed }
+            sessions.add(session)
             if (target != null) {
                 try {
                     session.validateTarget(target)
@@ -153,7 +162,7 @@ class ThreeFolioEpubPluginService : Service() {
                 // The contract reports keys it does not know through an error event rather than a refusal.
                 session.requestPreferences(PreferenceParse(PreferencePatch.EMPTY, preferences.unsupported))
             }
-            return ReaderSessionBinder(session, guard)
+            return ReaderSessionBinder(session, owner)
         } catch (e: ContractViolation) {
             publication?.close()
             closeQuietly(resource, descriptor)

@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Mejora",
   "changelog_label_dependency": "Dependencia",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/21",
+      "feature": [
+        "Acceso a libros y al lector EPUB desde aplicaciones con firma independiente"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/17",
       "fix": [

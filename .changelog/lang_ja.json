@@ -5,6 +5,12 @@
   "changelog_label_improvement": "改善",
   "changelog_label_dependency": "依存関係",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/21",
+      "feature": [
+        "独立した署名のランタイムアプリによる EPUB 書籍の読み込みとリーダー操作"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/17",
       "fix": [
