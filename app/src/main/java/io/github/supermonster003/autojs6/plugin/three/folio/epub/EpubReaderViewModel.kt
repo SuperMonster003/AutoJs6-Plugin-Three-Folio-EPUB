@@ -33,6 +33,7 @@ import io.github.supermonster003.autojs6.plugin.three.folio.epub.search.SearchSt
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.PreferencePatch
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.ReaderPreferencesJson
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.ReaderSession
+import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.HostSessionPolicy
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.ReaderSessionRegistry
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.service.SessionAdopter
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.BookDataStore
@@ -364,14 +365,20 @@ internal class EpubReaderViewModel(application: Application) : AndroidViewModel(
 
     // ---- Host reader session (roadmap P5.3) ----
 
+    private var adoptedSessionToken: String? = null
+
     /**
      * Claims the host session behind [token] and adopts its book (the two-step launch of D12);
      * false when no session waits for that token. Like [open], a later call while opening or
      * ready is ignored, so a recreated Activity keeps the adopted book.
      */
     fun adoptSession(token: String): Boolean {
-        if (_state.value !is OpenState.Idle) return _state.value is OpenState.Ready
+        if (_state.value !is OpenState.Idle) {
+            return (_state.value is OpenState.Opening || _state.value is OpenState.Ready) &&
+                adoptedSessionToken?.let { HostSessionPolicy.sameToken(token, it) } == true
+        }
         val session = ReaderSessionRegistry.claim(token) ?: return false
+        adoptedSessionToken = token
         _state.value = OpenState.Opening
         viewModelScope.launch {
             _state.value = adoptBook(session)

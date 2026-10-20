@@ -1039,3 +1039,5 @@ The maintainer selected repository AutoJs6-Plugin-Three-Folio-EPUB, display name
 ### 2026-10-21: Runtime EPUB clients and independently signed applications
 
 Version 2.1.0 adds a separate service and reader alias protected by org.autojs.plugin.epub.permission.RUNTIME. The original host signature entries stay protected. Returned book and reader-control Binders check their creating UID; service teardown closes only its own reader sessions. Host Node/Bun/Worker APIs reuse the existing parser, resource export and reader. The EPUB protocol, Readium version and user-data schema are unchanged. Local compilation/JVM/lint checks pass; physical provider, host and generated-application acceptance is pending.
+
+The initial API 33/35 provider run exposed a pending-adoption recreation failure. A deterministic held-storage regression fails on the original artifact. The reader now accepts reattachment to the same pending token, rejects a different token and validates the separate packaged Activity alias. Both the JVM policy regression and rebuilt debug/release artifacts pass local checks; the corrected physical suites are being repeated.

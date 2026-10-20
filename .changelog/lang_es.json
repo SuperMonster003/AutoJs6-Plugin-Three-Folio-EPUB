@@ -9,6 +9,9 @@
       "released_date": "2026/10/21",
       "feature": [
         "Acceso a libros y al lector EPUB desde aplicaciones con firma independiente"
+      ],
+      "fix": [
+        "El lector de scripts no abría el libro si un cambio de apariencia recreaba la Activity durante la carga"
       ]
     },
     "v2.0.1": {

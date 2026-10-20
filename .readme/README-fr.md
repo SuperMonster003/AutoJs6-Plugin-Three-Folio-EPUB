@@ -313,6 +313,7 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 _2026/10/21_
 
 - `Fonctionnalité` Accès aux livres et au lecteur EPUB depuis des applications signées indépendamment
+- `Correctif` Le lecteur piloté par script ne pouvait pas ouvrir un livre après une recréation liée au thème pendant le chargement
 
 #### v2.0.1
 

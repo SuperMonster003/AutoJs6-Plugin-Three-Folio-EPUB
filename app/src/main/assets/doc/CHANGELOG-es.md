@@ -9,6 +9,7 @@
 ###### 2026/10/21
 
 * `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
+* `Corrección` El lector de scripts no abría el libro si un cambio de apariencia recreaba la Activity durante la carga
 
 # v2.0.1
 

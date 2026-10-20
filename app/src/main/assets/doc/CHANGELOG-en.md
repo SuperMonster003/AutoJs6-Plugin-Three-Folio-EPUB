@@ -9,6 +9,7 @@
 ###### 2026/10/21
 
 * `Feature` EPUB book and reader access for independently signed runtime applications
+* `Fix` Scripted readers failing to open when appearance changes recreate the Activity during book loading
 
 # v2.0.1
 

@@ -313,6 +313,7 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 _2026/10/21_
 
 - `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
+- `Corrección` El lector de scripts no abría el libro si un cambio de apariencia recreaba la Activity durante la carga
 
 #### v2.0.1
 

@@ -12,6 +12,8 @@ import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.annotations.AnnotationAddResult
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.annotations.AnnotationColors
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.annotations.AnnotationDatabase
@@ -20,12 +22,15 @@ import io.github.supermonster003.autojs6.plugin.three.folio.epub.annotations.Boo
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.book.BookFingerprint
 import java.util.concurrent.TimeUnit
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.EpubReaderActivity
+import io.github.supermonster003.autojs6.plugin.three.folio.epub.EpubReaderViewModel
+import io.github.supermonster003.autojs6.plugin.three.folio.epub.OpenState
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.R
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.ThreeFolioEpubPlugin
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.prefs.ThemeMode
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.BookDataStore
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.ProgressRecord
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
 import org.autojs.plugin.epub.api.EpubActions
 import org.autojs.plugin.epub.api.EpubContract
 import org.autojs.plugin.epub.api.EpubErrorCodes
@@ -208,6 +213,53 @@ class ReaderSessionInstrumentationTest {
     }
 
     // ---- Tests ----
+
+    @Test
+    fun packagedReaderAliasClaimsItsSession() {
+        val binder = serviceRule.bindService(Intent(context, ThreeFolioEpubPackagedService::class.java))
+        val plugin = IEpubPlugin.Stub.asInterface(RemoteOnlySessionBinder(binder))
+        val callback = RecordingCallback()
+        val session = openReader(plugin, callback)
+        val token = requireNotNull(session.state.requireOk("packaged reader").getString(EpubContract.KEY_SESSION_TOKEN))
+        val intent = Intent(EpubActions.PACKAGED_READER_ACTIVITY_ACTION)
+            .setClassName(context.packageName, context.packageName + ".PackagedEpubReaderActivity")
+            .putExtra(EpubActions.EXTRA_SESSION_TOKEN, token)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        activities += instrumentation.startActivitySync(intent) as EpubReaderActivity
+        val opened = callback.await("packaged reader open") { it.type == EpubContract.EVENT_OPEN }
+        assertTrue(opened.bundle.getBoolean(EpubContract.KEY_VISIBLE))
+        session.close(options { putBoolean(EpubContract.KEY_FINISH, true) })
+        callback.await("packaged reader close") { it.type == EpubContract.EVENT_CLOSE }
+    }
+
+    @Test
+    fun pendingSessionAdoptionSurvivesAnActivityReattach() {
+        val callback = RecordingCallback()
+        val session = openReader(bind(), callback)
+        val token = requireNotNull(session.state.requireOk("pending").getString(EpubContract.KEY_SESSION_TOKEN))
+        val store = ViewModelStore()
+        val model = onMain {
+            ViewModelProvider(store, ViewModelProvider.AndroidViewModelFactory(context.applicationContext as android.app.Application))[EpubReaderViewModel::class.java]
+        }
+        val mutex = EpubReaderViewModel::class.java.getDeclaredField("storeMutex").apply { isAccessible = true }.get(model) as Mutex
+        runBlocking { mutex.lock() }
+        try {
+            onMain {
+                assertTrue(model.adoptSession(token))
+                assertTrue(model.state.value is OpenState.Opening)
+                assertTrue("A recreated Activity must retain its pending adoption", model.adoptSession(token))
+                assertFalse("Another token must not reuse this book", model.adoptSession(HostSessionPolicy.newToken()))
+            }
+        } finally {
+            mutex.unlock()
+            try {
+                await("pending adoption finishes") { model.state.value is OpenState.Ready || model.state.value is OpenState.Failed }
+                session.close(options { putBoolean(EpubContract.KEY_FINISH, false) })
+            } finally {
+                onMain { store.clear() }
+            }
+        }
+    }
 
     /**
      * Roadmap P9.4 (contract version 2): the highlights stored before the claim are the baseline

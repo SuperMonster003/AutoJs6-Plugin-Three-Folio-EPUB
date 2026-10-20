@@ -31,6 +31,13 @@ internal object HostSessionPolicy {
     fun isReaderAction(action: String?): Boolean =
         action == EpubActions.READER_ACTIVITY_ACTION || action == EpubActions.PACKAGED_READER_ACTIVITY_ACTION
 
+    fun isReaderTarget(action: String?, component: String?, signedReader: String, packagedReader: String): Boolean =
+        when (action) {
+            EpubActions.READER_ACTIVITY_ACTION -> component == signedReader
+            EpubActions.PACKAGED_READER_ACTIVITY_ACTION -> component == packagedReader
+            else -> false
+        }
+
     fun sameToken(presented: String, expected: String): Boolean =
         MessageDigest.isEqual(presented.toByteArray(Charsets.UTF_8), expected.toByteArray(Charsets.UTF_8))
 }

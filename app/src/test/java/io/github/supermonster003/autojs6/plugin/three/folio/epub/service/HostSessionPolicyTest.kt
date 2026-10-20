@@ -43,4 +43,15 @@ class HostSessionPolicyTest {
         assertFalse(HostSessionPolicy.sameToken(token.dropLast(1), token))
         assertFalse(HostSessionPolicy.sameToken("", token))
     }
+
+    @Test
+    fun eachReaderActionRequiresItsOwnExplicitComponent() {
+        val signed = "example.Reader"
+        val packaged = "example.PackagedReader"
+        assertTrue(HostSessionPolicy.isReaderTarget(EpubActions.READER_ACTIVITY_ACTION, signed, signed, packaged))
+        assertTrue(HostSessionPolicy.isReaderTarget(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, packaged, signed, packaged))
+        assertFalse(HostSessionPolicy.isReaderTarget(EpubActions.READER_ACTIVITY_ACTION, packaged, signed, packaged))
+        assertFalse(HostSessionPolicy.isReaderTarget(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, signed, signed, packaged))
+        assertFalse(HostSessionPolicy.isReaderTarget(EpubActions.PACKAGED_READER_ACTIVITY_ACTION, null, signed, packaged))
+    }
 }

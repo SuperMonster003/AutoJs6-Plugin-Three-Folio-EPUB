@@ -338,7 +338,8 @@ open class EpubReaderActivity : HostAppearanceActivity(), EpubNavigatorFragment.
             // Roadmap P5.3 / D12: the host opened a session and starts this reader with its token; any other token is an invalid request.
             val token = HostSessionPolicy.tokenOf(
                 intent.action,
-                intent.component?.className == ThreeFolioEpubPlugin.ACTIVITY_CLASS_NAME,
+                HostSessionPolicy.isReaderTarget(intent.action, intent.component?.className,
+                    ThreeFolioEpubPlugin.ACTIVITY_CLASS_NAME, "$packageName.PackagedEpubReaderActivity"),
                 intent.getStringExtra(EpubActions.EXTRA_SESSION_TOKEN),
             )
             if (token == null || !model.adoptSession(token)) {
