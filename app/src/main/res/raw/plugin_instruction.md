@@ -3,7 +3,7 @@
 Use 3-Folio EPUB from the AutoJs6 file manager:
 
 1. Install and enable the `3-Folio EPUB` plugin.
-2. Tap an `.epub` file, or open its overflow menu and choose `3-Folio EPUB`.
+2. Tap an `.epub` file, or open its overflow menu and choose `Read EPUB`.
 3. The book opens in a reader powered by the Readium Kotlin Toolkit.
 
 Tap the left or right third of the page or press the volume keys to turn pages; tap the middle to hide or show the toolbar. The reading position is saved per book and restored on the next open; choose `Start from the beginning` in the overflow menu to clear it.

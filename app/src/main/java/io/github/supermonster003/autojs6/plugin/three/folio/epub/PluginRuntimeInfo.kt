@@ -26,7 +26,7 @@ internal object ThreeFolioEpubPlugin {
     const val ACTION_PRIORITY = 100
     const val VARIANT = "default"
     const val LABEL_RESOURCE_NAME = "action_three_folio_epub"
-    const val LABEL_FALLBACK = "3-Folio EPUB"
+    const val LABEL_FALLBACK = "Read EPUB"
     const val ACTIVITY_CLASS_NAME =
         "io.github.supermonster003.autojs6.plugin.three.folio.epub.EpubReaderActivity"
     /** The exported `ACTION_VIEW` door (roadmap P4.2); not part of the Explorer catalog. */

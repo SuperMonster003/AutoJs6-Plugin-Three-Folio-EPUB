@@ -29,7 +29,7 @@ class PluginRuntimeInfoTest {
 
         assertEquals(1, distinctPresentation.size)
         assertEquals("action_three_folio_epub", distinctPresentation.single().first)
-        assertEquals("3-Folio EPUB", distinctPresentation.single().second)
+        assertEquals("Read EPUB", distinctPresentation.single().second)
         assertEquals(
             "io.github.supermonster003.autojs6.plugin.three.folio.epub.EpubReaderActivity",
             distinctPresentation.single().third,

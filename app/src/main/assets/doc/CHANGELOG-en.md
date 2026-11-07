@@ -9,6 +9,7 @@
 ###### 2026/11/07
 
 * `Fix` In the AutoJs6 file manager, the option of this plugin for reading a book no longer shows the plugin name instead of its translated name in other interface languages
+* `Improvement` In the English interface, the option of this plugin for reading a book in the AutoJs6 file manager is now "Read EPUB" instead of having the same name as the submenu "3-Folio EPUB"
 
 # v2.1.1
 

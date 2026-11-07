@@ -9,6 +9,7 @@
 ###### 2026/11/07
 
 * `Correctif` Dans le gestionnaire de fichiers d'AutoJs6, l'option "Lire l'EPUB" de ce plugin ne s'affiche plus sous la forme "3-Folio EPUB" dans les autres langues de l'interface
+* `Amélioration` Dans l'interface en anglais, l'option de lecture de ce plugin dans le gestionnaire de fichiers d'AutoJs6 s'appelle désormais "Read EPUB" au lieu de porter le même nom que le sous-menu "3-Folio EPUB"
 
 # v2.1.1
 

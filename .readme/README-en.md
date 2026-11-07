@@ -39,7 +39,7 @@ The current README.md supports the following languages:
 
 ******
 
-One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, either with the primary `3-Folio EPUB` button or from the overflow menu. The reader is built on the [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit) 3.4.0, the same open-source engine used by many commercial readers.
+One-tap reading: open an `.epub` file straight from the AutoJs6 file manager, either with the primary `Read EPUB` button or from the overflow menu. The reader is built on the [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit) 3.4.0, the same open-source engine used by many commercial readers.
 
 The plugin reads the book directly through the temporary file descriptor granted by the host. It never receives a filesystem path, never copies the book anywhere, and never extracts it to storage.
 
@@ -122,7 +122,7 @@ Taken on a phone from the sample books generated in `docs/fixtures` (no third-pa
 
 1. Download the latest plugin APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) page and install it on your device.
 2. Open the AutoJs6 plugin center and enable the `3-Folio EPUB` plugin.
-3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`. From AutoJs6 6.8.1 this item is in the submenu `3-Folio EPUB`.
+3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `Read EPUB`. From AutoJs6 6.8.1 this item is in the submenu `3-Folio EPUB`.
 4. Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
 5. Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.
 6. From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.
@@ -313,6 +313,7 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 _2026/11/07_
 
 - `Fix` In the AutoJs6 file manager, the option of this plugin for reading a book no longer shows the plugin name instead of its translated name in other interface languages
+- `Improvement` In the English interface, the option of this plugin for reading a book in the AutoJs6 file manager is now "Read EPUB" instead of having the same name as the submenu "3-Folio EPUB"
 
 #### v2.1.1
 

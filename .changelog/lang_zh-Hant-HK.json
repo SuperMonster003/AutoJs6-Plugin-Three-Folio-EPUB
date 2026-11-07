@@ -9,6 +9,9 @@
       "released_date": "2026/11/07",
       "fix": [
         "AutoJs6 檔案管理器中本插件的 \"閱讀 EPUB\" 選項在非英文介面不再顯示為 \"3-Folio EPUB\""
+      ],
+      "improvement": [
+        "英文介面中, AutoJs6 檔案管理器裡本插件的閱讀選項改為 \"Read EPUB\", 不再與子選單 \"3-Folio EPUB\" 同名"
       ]
     },
     "v2.1.1": {
