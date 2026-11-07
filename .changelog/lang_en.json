@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Improvement",
   "changelog_label_dependency": "Dependency",
   "$data": {
+    "v2.1.2": {
+      "released_date": "2026/11/07",
+      "fix": [
+        "In the AutoJs6 file manager, the option of this plugin for reading a book no longer shows the plugin name instead of its translated name in other interface languages"
+      ]
+    },
     "v2.1.1": {
       "released_date": "2026/11/07",
       "improvement": [

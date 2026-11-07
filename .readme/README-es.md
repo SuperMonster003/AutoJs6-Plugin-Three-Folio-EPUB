@@ -308,6 +308,12 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 
 ******
 
+#### v2.1.2
+
+_2026/11/07_
+
+- `Corrección` En el administrador de archivos de AutoJs6, la opción "Leer EPUB" de este plugin ya no aparece como "3-Folio EPUB" en los demás idiomas de la interfaz
+
 #### v2.1.1
 
 _2026/11/07_
@@ -320,14 +326,6 @@ _2026/10/21_
 
 - `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
 - `Corrección` El lector de scripts no abría el libro si un cambio de apariencia recreaba la Activity durante la carga
-
-#### v2.0.1
-
-_2026/10/17_
-
-- `Corrección` En la interfaz en árabe, 3-Folio EPUB ya no aparece invertido como Folio EPUB-3
-- `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
-- `Mejora` Los iconos de información de la aplicación de Android comparten las imágenes y los fondos claros y oscuros de Icon Studio, conservando las imágenes transparentes del centro de plugins y las opciones del lanzador
 
 ##### Para consultar más historial de versiones
 

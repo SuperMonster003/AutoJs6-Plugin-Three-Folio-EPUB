@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.2
+
+###### 2026/11/07
+
+* `Fix` In the AutoJs6 file manager, the option of this plugin for reading a book no longer shows the plugin name instead of its translated name in other interface languages
+
 # v2.1.1
 
 ###### 2026/11/07

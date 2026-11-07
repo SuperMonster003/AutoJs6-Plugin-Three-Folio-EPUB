@@ -308,6 +308,12 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 ******
 
+#### v2.1.2
+
+_2026/11/07_
+
+- `Fix` In the AutoJs6 file manager, the option of this plugin for reading a book no longer shows the plugin name instead of its translated name in other interface languages
+
 #### v2.1.1
 
 _2026/11/07_
@@ -320,14 +326,6 @@ _2026/10/21_
 
 - `Feature` EPUB book and reader access for independently signed runtime applications
 - `Fix` Scripted readers failing to open when appearance changes recreate the Activity during book loading
-
-#### v2.0.1
-
-_2026/10/17_
-
-- `Fix` In the Arabic interface, 3-Folio EPUB no longer appears reversed as Folio EPUB-3
-- `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
-- `Improvement` Android App info icons share Icon Studio artwork and light/dark backgrounds while preserving transparent Plugin Center artwork and existing launcher choices
 
 ##### For more release history
 

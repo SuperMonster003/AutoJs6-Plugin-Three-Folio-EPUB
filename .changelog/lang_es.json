@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Mejora",
   "changelog_label_dependency": "Dependencia",
   "$data": {
+    "v2.1.2": {
+      "released_date": "2026/11/07",
+      "fix": [
+        "En el administrador de archivos de AutoJs6, la opción \"Leer EPUB\" de este plugin ya no aparece como \"3-Folio EPUB\" en los demás idiomas de la interfaz"
+      ]
+    },
     "v2.1.1": {
       "released_date": "2026/11/07",
       "improvement": [

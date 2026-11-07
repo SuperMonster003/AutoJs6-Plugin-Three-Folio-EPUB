@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.2
+
+###### 2026/11/07
+
+* `Corrección` En el administrador de archivos de AutoJs6, la opción "Leer EPUB" de este plugin ya no aparece como "3-Folio EPUB" en los demás idiomas de la interfaz
+
 # v2.1.1
 
 ###### 2026/11/07

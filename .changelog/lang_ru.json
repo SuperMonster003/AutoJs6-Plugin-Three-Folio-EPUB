@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Улучшение",
   "changelog_label_dependency": "Зависимость",
   "$data": {
+    "v2.1.2": {
+      "released_date": "2026/11/07",
+      "fix": [
+        "В файловом менеджере AutoJs6 пункт \"Читать EPUB\" этого плагина больше не отображается как \"3-Folio EPUB\" в интерфейсе на других языках"
+      ]
+    },
     "v2.1.1": {
       "released_date": "2026/11/07",
       "improvement": [
