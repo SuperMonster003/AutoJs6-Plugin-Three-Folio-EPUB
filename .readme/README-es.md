@@ -122,7 +122,7 @@ Tomadas en un teléfono con los libros de muestra generados en `docs/fixtures` (
 
 1. Descargue el APK más reciente del complemento desde la página [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) e instálelo en el dispositivo.
 2. Abra el centro de complementos de AutoJs6 y active el complemento `3-Folio EPUB`.
-3. En el administrador de archivos de AutoJs6, toque un archivo `.epub`, o abra su menú (más acciones) y elija `Leer EPUB`.
+3. En el administrador de archivos de AutoJs6, toque un archivo `.epub`, o abra su menú (más acciones) y elija `Leer EPUB`. A partir de AutoJs6 6.8.1, esta entrada está en el submenú `3-Folio EPUB`.
 4. Use el botón de índice de la barra de herramientas para saltar entre capítulos y el botón de preferencias para ajustar el texto y el tema; toque el tercio izquierdo o derecho de la página o pulse las teclas de volumen para pasar páginas, y toque el centro para ocultar o mostrar la barra de herramientas; pulse Atrás para cerrar el lector, la posición se recuerda.
 5. Sin el administrador de archivos, toque el icono de la aplicación: el lanzador muestra sus libros recientes y `Abrir EPUB` elige un libro con el selector de documentos del sistema; los libros abiertos así permanecen en la lista con su portada y su progreso.
 6. Desde otra aplicación (un administrador de archivos, las descargas de un navegador, un adjunto de correo), elija este lector para un archivo `.epub`; el libro se abre de la misma forma y `Añadir a libros recientes` en el menú desbordante lo conserva en la lista del lanzador cuando la aplicación remitente permite un acceso duradero.
@@ -308,6 +308,12 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 
 ******
 
+#### v2.1.1
+
+_2026/11/07_
+
+- `Mejora` El administrador de archivos de AutoJs6 agrupa las opciones de menú de este plugin en el submenú "3-Folio EPUB", con el mismo nombre que en el Centro de plugins (requiere AutoJs6 6.8.1 o posterior)
+
 #### v2.1.0
 
 _2026/10/21_
@@ -322,19 +328,6 @@ _2026/10/17_
 - `Corrección` En la interfaz en árabe, 3-Folio EPUB ya no aparece invertido como Folio EPUB-3
 - `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
 - `Mejora` Los iconos de información de la aplicación de Android comparten las imágenes y los fondos claros y oscuros de Icon Studio, conservando las imágenes transparentes del centro de plugins y las opciones del lanzador
-
-#### v2.0.0
-
-_2026/10/03_
-
-- `Aviso` Nuevo nombre 3-Folio EPUB y paquete io.github.supermonster003.autojs6.plugin.three.folio.epub. Es una instalación independiente; los ajustes, libros recientes y anotaciones de Readium EPUB Reader no se migran automáticamente. Requiere AutoJs6 5318 o posterior
-- `Función` Icono del lanzador en Ajustes: adaptable claro, adaptable oscuro, adaptable automático (predeterminado) o fondo transparente. Los colores automáticos y la transparencia dependen del lanzador, que puede guardar iconos en caché o añadir un fondo. Algunos accesos directos pueden necesitar añadirse de nuevo tras el cambio
-- `Función` Ajustes unificados de idioma, modo nocturno, color del tema e icono del lanzador, con confirmación, 16 colores predefinidos y vista previa HEX/RGB. La apariencia sigue AutoJs6 por defecto y utiliza una alternativa segura si el anfitrión no está disponible
-- `Función` La apariencia de la aplicación es independiente del esquema de colores de lectura
-- `Corrección` Los ajustes de apariencia ya no fijan la orientación ni el tamaño de la ventana del lector, por lo que el diseño horizontal y la vista automática de dos páginas se actualizan al girar
-- `Corrección` Volver al lector mientras se guardan las preferencias ya no sustituye la selección pendiente por los valores anteriores del disco, incluida la migración del modo de desplazamiento antiguo
-- `Mejora` Superficies grises neutras y controles y diálogos Material 3 legibles con el color del tema, con espaciado, iconos lineales y divisores uniformes. El icono automático es el nuevo valor predeterminado; las actualizaciones conservan las elecciones explícitas y corrigen entradas duplicadas
-- `Mejora` Tamaño visual uniforme de los iconos del lanzador y del Centro de complementos, con fondos transparentes y diseños en blanco, negro o grises neutros
 
 ##### Para consultar más historial de versiones
 

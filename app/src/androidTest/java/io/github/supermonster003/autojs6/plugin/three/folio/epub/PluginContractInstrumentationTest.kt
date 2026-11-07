@@ -147,6 +147,17 @@ class PluginContractInstrumentationTest {
             ThreeFolioEpubPlugin.PROTOCOL_VERSION,
             catalog.getInt(ExplorerActionCatalogKeys.PROTOCOL_VERSION),
         )
+        assertEquals(
+            setOf(
+                ExplorerActionCatalogKeys.PROTOCOL_VERSION,
+                ThreeFolioEpubPlugin.MENU_GROUP_LABEL_RESOURCE_NAME_KEY,
+                ThreeFolioEpubPlugin.MENU_GROUP_LABEL_FALLBACK_KEY,
+                ExplorerActionCatalogKeys.ACTIONS,
+            ),
+            catalog.keySet(),
+        )
+        assertEquals("app_name", catalog.getString("menuGroupLabelResourceName"))
+        assertEquals("3-Folio EPUB", catalog.getString("menuGroupLabelFallback"))
         assertNotNull(action)
         assertEquals("action_three_folio_epub", action?.getString(ExplorerActionCatalogKeys.LABEL_RESOURCE_NAME))
         assertEquals(ThreeFolioEpubPlugin.ACTIVITY_CLASS_NAME, action?.getString(ExplorerActionCatalogKeys.ACTIVITY_CLASS_NAME))

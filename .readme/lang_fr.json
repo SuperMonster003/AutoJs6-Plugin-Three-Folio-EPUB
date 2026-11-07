@@ -58,7 +58,7 @@
   "usage_steps": [
     "Téléchargez le dernier APK du plugin depuis la page [Releases]({{ repo_url }}/releases) et installez-le sur votre appareil.",
     "Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `3-Folio EPUB`.",
-    "Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`.",
+    "Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`. À partir d'AutoJs6 6.8.1, cette entrée se trouve dans le sous-menu `3-Folio EPUB`.",
     "Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre et le bouton de préférences pour ajuster le texte et le thème ; touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.",
     "Sans le gestionnaire de fichiers, touchez l'icône de l'application : le lanceur liste vos livres récents et `Ouvrir un EPUB` choisit un livre avec le sélecteur de documents du système ; les livres ouverts ainsi restent dans la liste avec leur couverture et leur progression.",
     "Depuis une autre application (un gestionnaire de fichiers, les téléchargements d'un navigateur, une pièce jointe), choisissez cette liseuse pour un fichier `.epub` ; le livre s'ouvre de la même façon et `Ajouter aux livres récents` dans le menu de débordement le garde dans la liste du lanceur lorsque l'application expéditrice autorise un accès durable.",

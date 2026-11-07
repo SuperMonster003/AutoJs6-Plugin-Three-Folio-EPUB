@@ -122,7 +122,7 @@ Taken on a phone from the sample books generated in `docs/fixtures` (no third-pa
 
 1. Download the latest plugin APK from the [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) page and install it on your device.
 2. Open the AutoJs6 plugin center and enable the `3-Folio EPUB` plugin.
-3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`.
+3. In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`. From AutoJs6 6.8.1 this item is in the submenu `3-Folio EPUB`.
 4. Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.
 5. Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.
 6. From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.
@@ -308,6 +308,12 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 ******
 
+#### v2.1.1
+
+_2026/11/07_
+
+- `Improvement` The AutoJs6 file manager groups the menu options of this plugin under the submenu "3-Folio EPUB", named as in the Plugin Center (requires AutoJs6 6.8.1 or later)
+
 #### v2.1.0
 
 _2026/10/21_
@@ -322,19 +328,6 @@ _2026/10/17_
 - `Fix` In the Arabic interface, 3-Folio EPUB no longer appears reversed as Folio EPUB-3
 - `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
 - `Improvement` Android App info icons share Icon Studio artwork and light/dark backgrounds while preserving transparent Plugin Center artwork and existing launcher choices
-
-#### v2.0.0
-
-_2026/10/03_
-
-- `Hint` Renamed to 3-Folio EPUB with the new installation identity io.github.supermonster003.autojs6.plugin.three.folio.epub. Android treats it as a separate app; Readium EPUB Reader settings, recent books and annotations are not migrated automatically. AutoJs6 5318 or later is required
-- `Feature` Launcher icon choices in Settings: adaptive light, adaptive dark, adaptive automatic (default), or transparent background. Automatic colors and transparent rendering depend on the launcher; it may cache icons or add a background. Some home-screen shortcuts may need to be added again after a change
-- `Feature` Unified language, night mode, theme color and launcher icon settings, with explicit confirmation, 16 color presets and HEX/RGB preview. App appearance follows AutoJs6 by default and falls back safely when the host is unavailable
-- `Feature` App appearance settings remain independent of the reading color scheme
-- `Fix` Following the app appearance no longer freezes the reader window configuration when rotating, so landscape layouts and automatic two-page spreads update correctly
-- `Fix` Returning to the reader while preferences are still being saved no longer replaces the pending choice with old disk values, including the legacy scroll-mode migration
-- `Improvement` Neutral surfaces and readable themed Material 3 controls and dialogs, consistent spacing, outline icons and dividers. Automatic launcher icons are the new default; upgrades preserve explicit choices and normalize duplicate entries
-- `Improvement` Consistent visual sizing for launcher and Plugin Center icons, with transparent backgrounds and neutral black, white or grayscale artwork
 
 ##### For more release history
 

@@ -122,7 +122,7 @@ Prises sur un téléphone avec les livres d'exemple générés dans `docs/fixtur
 
 1. Téléchargez le dernier APK du plugin depuis la page [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/releases) et installez-le sur votre appareil.
 2. Ouvrez le centre de plugins d'AutoJs6 et activez le plugin `3-Folio EPUB`.
-3. Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`.
+3. Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier `.epub`, ou ouvrez son menu (autres actions) et choisissez `Lire l'EPUB`. À partir d'AutoJs6 6.8.1, cette entrée se trouve dans le sous-menu `3-Folio EPUB`.
 4. Utilisez le bouton de table des matières de la barre d'outils pour changer de chapitre et le bouton de préférences pour ajuster le texte et le thème ; touchez le tiers gauche ou droit de la page ou appuyez sur les touches de volume pour tourner les pages, et touchez le centre pour masquer ou afficher la barre d'outils ; appuyez sur Retour pour fermer la liseuse, la position est mémorisée.
 5. Sans le gestionnaire de fichiers, touchez l'icône de l'application : le lanceur liste vos livres récents et `Ouvrir un EPUB` choisit un livre avec le sélecteur de documents du système ; les livres ouverts ainsi restent dans la liste avec leur couverture et leur progression.
 6. Depuis une autre application (un gestionnaire de fichiers, les téléchargements d'un navigateur, une pièce jointe), choisissez cette liseuse pour un fichier `.epub` ; le livre s'ouvre de la même façon et `Ajouter aux livres récents` dans le menu de débordement le garde dans la liste du lanceur lorsque l'application expéditrice autorise un accès durable.
@@ -308,6 +308,12 @@ ROADMAP.md suit chaque jalon sous forme de liste à cocher avec critères d'acce
 
 ******
 
+#### v2.1.1
+
+_2026/11/07_
+
+- `Amélioration` Le gestionnaire de fichiers d'AutoJs6 regroupe les options de menu de ce plugin dans le sous-menu "3-Folio EPUB", nommé comme dans le Centre des plugins (AutoJs6 6.8.1 ou ultérieur requis)
+
 #### v2.1.0
 
 _2026/10/21_
@@ -322,19 +328,6 @@ _2026/10/17_
 - `Correctif` Dans l'interface en arabe, 3-Folio EPUB ne s'affiche plus à l'envers sous la forme Folio EPUB-3
 - `Amélioration` Les icônes du centre de plugins utilisent les tailles, positions, images claires et sombres et fonds circulaires réglés dans Icon Studio, avec les sources et paramètres permettant de les reproduire
 - `Amélioration` Les icônes des informations d'application Android utilisent les illustrations et les fonds clairs et sombres d'Icon Studio, en conservant les images transparentes du centre de plugins et les choix du lanceur
-
-#### v2.0.0
-
-_2026/10/03_
-
-- `Note` Renommé 3-Folio EPUB avec le nouveau paquet io.github.supermonster003.autojs6.plugin.three.folio.epub. Installation distincte sans migration automatique des réglages, livres récents ou annotations de Readium EPUB Reader. AutoJs6 5318 ou ultérieur requis
-- `Fonctionnalité` Choix de l'icône du lanceur dans les paramètres: adaptative claire, adaptative sombre, adaptative automatique (par défaut) ou fond transparent. Les couleurs automatiques et la transparence dépendent du lanceur, qui peut garder les icônes en cache ou ajouter un fond. Certains raccourcis doivent parfois être ajoutés à nouveau après le changement
-- `Fonctionnalité` Réglages unifiés de langue, mode nuit, couleur du thème et icône du lanceur, avec confirmation, 16 couleurs prédéfinies et aperçu HEX/RGB. Par défaut, l'apparence suit AutoJs6 et utilise un repli sûr si l'hôte est indisponible
-- `Fonctionnalité` L'apparence de l'application reste indépendante des couleurs de lecture
-- `Correctif` Les réglages d'apparence ne figent plus l'orientation et la taille de la fenêtre du lecteur, ce qui permet la mise à jour du mode paysage et des doubles pages automatiques lors de la rotation
-- `Correctif` Revenir au lecteur pendant l'enregistrement des préférences ne remplace plus le choix en attente par les anciennes valeurs du disque, y compris lors de la migration du mode de défilement
-- `Amélioration` Surfaces grises neutres et commandes et dialogues Material 3 lisibles aux couleurs du thème, avec espacement, icônes linéaires et séparateurs cohérents. L'icône automatique devient le choix par défaut; les mises à jour préservent les choix explicites et corrigent les entrées en double
-- `Amélioration` Taille visuelle harmonisée des icônes du lanceur et du Centre de plugins, avec des fonds transparents et des motifs noirs, blancs ou gris neutres
 
 ##### Pour plus d'historique des versions
 

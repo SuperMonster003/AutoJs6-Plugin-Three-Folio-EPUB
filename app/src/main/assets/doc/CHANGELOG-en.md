@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.1
+
+###### 2026/11/07
+
+* `Improvement` The AutoJs6 file manager groups the menu options of this plugin under the submenu "3-Folio EPUB", named as in the Plugin Center (requires AutoJs6 6.8.1 or later)
+
 # v2.1.0
 
 ###### 2026/10/21

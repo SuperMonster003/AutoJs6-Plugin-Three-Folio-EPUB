@@ -33,6 +33,17 @@ internal object ThreeFolioEpubPlugin {
     const val EXTERNAL_VIEWER_CLASS_NAME =
         "io.github.supermonster003.autojs6.plugin.three.folio.epub.ExternalViewerActivity"
 
+    /**
+     * The name of the plugin's first-level menu in the AutoJs6 file manager (host Explorer Action protocol v27): the
+     * display name, as in the Plugin Center. The bundled explorer-action-api predates v27 and has no constants for
+     * the two catalog-level keys, hence the literal key names. Hosts from 6.8.1 read them from catalogs of every
+     * protocol version and older hosts ignore unknown keys, so the protocol and minimum host versions stay.
+     */
+    const val MENU_GROUP_LABEL_RESOURCE_NAME_KEY = "menuGroupLabelResourceName"
+    const val MENU_GROUP_LABEL_FALLBACK_KEY = "menuGroupLabelFallback"
+    const val MENU_GROUP_LABEL_RESOURCE_NAME = "app_name"
+    const val MENU_GROUP_LABEL_FALLBACK = "3-Folio EPUB"
+
     const val EPUB_MIME_TYPE = "application/epub+zip"
     const val EPUB_EXTENSION = "epub"
 
@@ -166,6 +177,8 @@ internal fun threeFolioEpubActionCatalog(): Bundle {
     }
     return Bundle().apply {
         putInt(ExplorerActionCatalogKeys.PROTOCOL_VERSION, ThreeFolioEpubPlugin.PROTOCOL_VERSION)
+        putString(ThreeFolioEpubPlugin.MENU_GROUP_LABEL_RESOURCE_NAME_KEY, ThreeFolioEpubPlugin.MENU_GROUP_LABEL_RESOURCE_NAME)
+        putString(ThreeFolioEpubPlugin.MENU_GROUP_LABEL_FALLBACK_KEY, ThreeFolioEpubPlugin.MENU_GROUP_LABEL_FALLBACK)
         putParcelableArrayList(
             ExplorerActionCatalogKeys.ACTIONS,
             ArrayList(ThreeFolioEpubPlugin.actionSpecs().map(::action)),

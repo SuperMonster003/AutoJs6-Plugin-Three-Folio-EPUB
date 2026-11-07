@@ -58,7 +58,7 @@
   "usage_steps": [
     "Download the latest plugin APK from the [Releases]({{ repo_url }}/releases) page and install it on your device.",
     "Open the AutoJs6 plugin center and enable the `3-Folio EPUB` plugin.",
-    "In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`.",
+    "In the AutoJs6 file manager, tap an `.epub` file, or open its overflow menu (more actions) and choose `3-Folio EPUB`. From AutoJs6 6.8.1 this item is in the submenu `3-Folio EPUB`.",
     "Use the table of contents button in the toolbar to jump between chapters and the preferences button to adjust the text and the theme; tap the left or right third of the page or press the volume keys to turn pages, and tap the middle to hide or show the toolbar; press Back to close the reader, the position is remembered.",
     "Without the file manager, tap the app icon: the launcher lists your recent books, and `Open EPUB` picks a book with the system document picker; books opened this way stay in the list with their cover and progress.",
     "From another app (a file manager, a browser's downloads, a mail attachment), choose this reader for an `.epub` file; the book opens the same way, and `Add to recent books` in the overflow menu keeps it in the launcher's list when the sending app allows lasting access.",

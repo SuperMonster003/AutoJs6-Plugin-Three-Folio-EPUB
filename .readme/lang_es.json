@@ -58,7 +58,7 @@
   "usage_steps": [
     "Descargue el APK más reciente del complemento desde la página [Releases]({{ repo_url }}/releases) e instálelo en el dispositivo.",
     "Abra el centro de complementos de AutoJs6 y active el complemento `3-Folio EPUB`.",
-    "En el administrador de archivos de AutoJs6, toque un archivo `.epub`, o abra su menú (más acciones) y elija `Leer EPUB`.",
+    "En el administrador de archivos de AutoJs6, toque un archivo `.epub`, o abra su menú (más acciones) y elija `Leer EPUB`. A partir de AutoJs6 6.8.1, esta entrada está en el submenú `3-Folio EPUB`.",
     "Use el botón de índice de la barra de herramientas para saltar entre capítulos y el botón de preferencias para ajustar el texto y el tema; toque el tercio izquierdo o derecho de la página o pulse las teclas de volumen para pasar páginas, y toque el centro para ocultar o mostrar la barra de herramientas; pulse Atrás para cerrar el lector, la posición se recuerda.",
     "Sin el administrador de archivos, toque el icono de la aplicación: el lanzador muestra sus libros recientes y `Abrir EPUB` elige un libro con el selector de documentos del sistema; los libros abiertos así permanecen en la lista con su portada y su progreso.",
     "Desde otra aplicación (un administrador de archivos, las descargas de un navegador, un adjunto de correo), elija este lector para un archivo `.epub`; el libro se abre de la misma forma y `Añadir a libros recientes` en el menú desbordante lo conserva en la lista del lanzador cuando la aplicación remitente permite un acceso duradero.",
