@@ -58,3 +58,10 @@ P9.1 (2026-09-21) 附加 Room 2.8.1 (`room-runtime` 为运行时依赖, `room-co
 | 1.1.0 发布源 (`092cf6c`, build 73; P9.6) | 3,446,403 | 较 P9.4 +3,280 B (0.1%), 只来自文档: `assets/doc/` 的 changelog 副本 (发布提示) 与 11 份 `plugin_instruction.md`; `classes.dex` 2,071,076 + `classes2.dex` 80,705 (压缩后) 与 `resources.arsc` 533,948 同 P9.4, `assets` 310,938, `res` 313,615 (719 项), `lib/` 仍为空; 来源 `build/p9_commit.py verify 4` 的 `:app:appendDigestToReleasedFiles` (日志 `build/gradle-p9-commit4.log`): `autojs6-plugin-readium-epub-reader-v1.1.0-7367b5ef.apk`, SHA-256 `76548cfc...7393a`, apksigner v2 通过, 签名证书 SHA-256 `31a681fc...c213` 与 1.0.0 同一密钥; 预算余量 53,597 B (1.5%) |
 
 P9.1 时预算 3,500,000 B (§5) 的余量为 108,039 B (3.1%); P9.4 时余量收窄到 56,877 B (1.6%), 其中契约版本 2 的 AAR 本身只多几个常量与一个 AIDL 方法, 增量几乎全部来自 P9.2 / P9.3 的阅读器类与资源 (`resources.arsc` +18,912). Room 在 Android 上使用系统 SQLite (`androidx.sqlite` 的 framework 驱动), 不带原生库, §4 与 AGENTS.md 5.4 的零原生库结论不变 (APK 条目列表中无 `lib/`). P9.5 (文档) 不改 APK; P9.6 的发布门再记一次实际体积, 若逼近预算则先考虑 §2 的削减项而不是放宽预算.
+
+## 7. 低版本 release 回归 (2026-11-08 起, 每次发布)
+
+R8 优化 (横向类合并) 可能把持有新版本类型字段的类 (例如 media3 里 API 31 的 `android.media.metrics.LogSessionId`) 并进所有版本都会执行的代码: 合并后字段变成 `Object`, 读取处插入 `check-cast`, ART 在判空之前先解析类, 所以只有 release 包在 Android 7 - 11 (API 24 - 30) 上崩溃 (`NoClassDefFoundError`), debug 包, 单元测试与 API 31+ 设备都查不出. 3-Slate Studio 1.0.0 发布时因此发现 Transformer 全部操作崩溃. 本插件经 Readium 与 `media3-session` 使用 media3 (朗读的 `TtsForegroundService`), 因此发布前:
+
+- 把 `appendDigestToReleasedFiles` 产出的签名 APK (不是 debug 包) 装到 API 24 - 30 的模拟器 (至少 API 24 与 API 29) 或真机, 打开一本书, 从溢出菜单开始朗读, 确认 media3 会话进入播放, 回到桌面后朗读继续, 媒体键暂停 / 继续 (阅读器在前台时 `MEDIA_PAUSE` / `MEDIA_PLAY_PAUSE` 不到会话, `HEADSETHOOK` 与回到桌面后正常), logcat 无 `NoClassDefFoundError` / `FATAL EXCEPTION`. 预置模拟器镜像没有 TTS 引擎, 需要先装一个测试引擎并把 `tts_default_synth` 指向它.
+- 2026-11-08 的 2.1.2 (build 182, 3,844,011 B) 在 API 24 / 27 / 29 模拟器上 11 / 11 通过; 对 dex 的静态扫描 (被合并成 `Object` 的字段读出后 `check-cast` 到 API 24 以上的类型, 按 mapping 还原原始方法) 只发现 9 处, 全部位于只在新版本执行的代码, 未复现, 不需要修改 R8 规则.
