@@ -15,7 +15,12 @@
     <string name="launcher_icon_transparent_note">Some launchers add their own background or mask, so transparency may not be preserved.</string>
     <string name="plugin_description">Reads EPUB e-books with navigation, search, read-aloud and scripting access</string>
     <string name="release_history">Release history</string>
-    <string name="release_history_unavailable">Release history is unavailable</string>
+    <string name="release_history_collapse_all">Collapse all</string>
+    <string name="release_history_collapsed">Collapsed</string>
+    <string name="release_history_expand_all">Expand all</string>
+    <string name="release_history_expanded">Expanded</string>
+    <string name="release_history_unavailable">Unable to load the release history</string>
+    <string name="setting_release_history_summary">Read the release history included with this app</string>
     <string name="text_add_to_recent">Add to recent books</string>
     <string name="text_added_to_recent">Added to recent books</string>
     <string name="text_annotation_added">Highlighted</string>

@@ -206,7 +206,7 @@ Only EPUB is supported: reflowable and fixed-layout books in EPUB 2 or EPUB 3. C
 What the plugin needs, what it was verified on and what stays out of scope:
 
 - AutoJs6: internal build 5318 or later for the file manager entry (Explorer Action v2); the `epub` script API, the host reader session and the sample scripts need AutoJs6 6.8.0 (build 5318), the last host build audited for this release.
-- Android 7.0 (API 24) up to Android 16 (API 37, the target); the pages render in the device's WebView, so an up-to-date Android System WebView or Chrome is expected. The plugin has no native libraries and runs unchanged on 16 KB page devices.
+- Android 7.0 (API 24) up to Android 16 (API 37, the target); the pages render in the device's WebView, so an up-to-date Android System WebView or Chrome is expected. The plugin has no native code of its own; its only native library is a small one that comes with Compose, 16 KB aligned for all four ABIs, so it runs unchanged on 16 KB page devices.
 - Verified on AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) and Xiaomi Pad 6 (Android 15, service side); the device x scenario matrix, its deviations and the WebView versions are in `docs/dev/compatibility-matrix.md`.
 - Books: EPUB 2 and EPUB 3, reflowable and fixed layout, vertical CJK and right-to-left. DRM-protected books (LCP, Adobe ADEPT) are reported as protected and never rendered; PDF, MOBI, AZW, CBZ and audiobooks are out of scope.
 - Read-aloud needs a text-to-speech engine with voice data for the book's language (Google Speech Services, the vendor's engine or any other installed engine); a device without a usable engine reports it after about 20 seconds instead of staying silent.

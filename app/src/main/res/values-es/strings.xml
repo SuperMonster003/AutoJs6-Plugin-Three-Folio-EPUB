@@ -15,7 +15,12 @@
     <string name="launcher_icon_transparent_note">Algunos lanzadores agregan un fondo o una máscara. Puede que no se conserve la transparencia.</string>
     <string name="plugin_description">Lee libros EPUB con navegación, búsqueda, lectura en voz alta y acceso desde scripts</string>
     <string name="release_history">Historial de versiones</string>
-    <string name="release_history_unavailable">El historial de versiones no está disponible</string>
+    <string name="release_history_collapse_all">Contraer todo</string>
+    <string name="release_history_collapsed">Contraído</string>
+    <string name="release_history_expand_all">Expandir todo</string>
+    <string name="release_history_expanded">Expandido</string>
+    <string name="release_history_unavailable">No se pudo cargar el historial de versiones</string>
+    <string name="setting_release_history_summary">Consultar el historial de versiones incluido en la aplicación</string>
     <string name="text_add_to_recent">Añadir a libros recientes</string>
     <string name="text_added_to_recent">Añadido a libros recientes</string>
     <string name="text_annotation_added">Resaltado</string>

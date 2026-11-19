@@ -15,7 +15,12 @@
     <string name="launcher_icon_transparent_note">Некоторые лаунчеры добавляют фон или маску, поэтому прозрачность может не сохраниться.</string>
     <string name="plugin_description">Чтение электронных книг EPUB с оглавлением, поиском, озвучиванием и доступом из скриптов</string>
     <string name="release_history">История выпусков</string>
-    <string name="release_history_unavailable">История выпусков недоступна</string>
+    <string name="release_history_collapse_all">Свернуть всё</string>
+    <string name="release_history_collapsed">Свёрнуто</string>
+    <string name="release_history_expand_all">Развернуть всё</string>
+    <string name="release_history_expanded">Развёрнуто</string>
+    <string name="release_history_unavailable">Не удалось загрузить историю выпусков</string>
+    <string name="setting_release_history_summary">Открыть встроенную историю выпусков приложения</string>
     <string name="text_add_to_recent">Добавить в недавние книги</string>
     <string name="text_added_to_recent">Добавлено в недавние книги</string>
     <string name="text_annotation_added">Выделено</string>

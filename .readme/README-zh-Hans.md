@@ -206,7 +206,7 @@ epub
 插件的运行要求, 已验证的环境与不在范围内的内容:
 
 - AutoJs6: 文件管理器入口 (Explorer Action v2) 需要内部版本号 5318 及以上; `epub` 脚本 API, 宿主阅读器会话与示例脚本需要 AutoJs6 6.8.0 (版本号 5318), 这也是本次发布审计过的最高宿主版本.
-- Android 7.0 (API 24) 至 Android 16 (API 37, 目标版本); 页面在设备的 WebView 中渲染, 需要较新的 Android System WebView 或 Chrome. 插件不含原生库, 在 16 KB 页设备上无需改动即可运行.
+- Android 7.0 (API 24) 至 Android 16 (API 37, 目标版本); 页面在设备的 WebView 中渲染, 需要较新的 Android System WebView 或 Chrome. 插件自身不含原生代码, 只有 Compose 带来的一个小型原生库 (四种 ABI 均按 16 KB 对齐), 在 16 KB 页设备上无需改动即可运行.
 - 已在 AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) 与 Xiaomi Pad 6 (Android 15, 服务侧) 上验证; 设备 x 场景矩阵, 偏差与 WebView 版本见 `docs/dev/compatibility-matrix.md`.
 - 书籍: EPUB 2 与 EPUB 3, 可重排与固定版式, CJK 竖排与从右到左. 受 DRM 保护的书籍 (LCP, Adobe ADEPT) 会提示受保护而不会渲染; PDF, MOBI, AZW, CBZ 与有声书不在范围内.
 - 朗读需要带有书籍语言语音数据的文字转语音引擎 (Google 语音服务, 厂商引擎或其它已安装引擎); 没有可用引擎的设备会在约 20 秒后给出提示, 而不是一直无声.

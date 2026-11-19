@@ -40,10 +40,8 @@ import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -55,7 +53,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Roadmap P4.3 device evidence: the settings page persists the toggles and choices where the
- * reader reads them, the release history opens with the bundled changelog, the data rows empty
+ * reader reads them, the release history opens from its row, the data rows empty
  * the stores, and the manual update check (D28) shows a newer release from a substituted source,
  * remembers "ignore", reuses today's answer instead of fetching again, and leaves the stored
  * state alone on failure. Notes land in `files/p2-evidence/settings-api<N>.txt`.
@@ -125,20 +123,18 @@ class EpubReaderSettingsInstrumentationTest {
         finish(page)
     }
 
+    /** The row and its summary; the page itself (releases, expanding, the update dialog) is ReleaseHistoryPageInstrumentationTest. */
     @Test
-    fun theReleaseHistoryOpensWithTheBundledChangelog() {
+    fun theReleaseHistoryOpensFromItsRow() {
         historyMonitor = instrumentation.addMonitor(ReleaseHistoryActivity::class.java.name, null, false)
         val page = startSettings()
+        val summary = onMain { row(page, R.string.release_history).findViewById<TextView>(R.id.row_summary).text.toString() }
+        assertEquals(context.getString(R.string.setting_release_history_summary), summary)
         click(page, R.string.release_history)
         val history = historyMonitor!!.waitForActivityWithTimeout(30_000) as? ReleaseHistoryActivity
             ?: failWith("The release history did not open")
-        val unavailable = context.getString(R.string.release_history_unavailable)
-        await("history rendered") { historyText(history).length > 100 }
-        val text = historyText(history)
-        assertNotEquals(unavailable, text)
-        assertTrue(text, text.contains("1.0.0"))
 
-        notes += "history: ${text.length} chars, first line '${text.lineSequence().first()}'"
+        notes += "history: opened from the row, summary '$summary'"
         record("settings-history-api${Build.VERSION.SDK_INT}.txt", notes)
         finish(history)
         finish(page)
@@ -240,10 +236,6 @@ class EpubReaderSettingsInstrumentationTest {
         val content = page.findViewById<ViewGroup>(R.id.content)
         return (0 until content.childCount).map(content::getChildAt).firstOrNull { it.tag == title }
             ?: failWith("No row titled ${context.resources.getResourceEntryName(title)}")
-    }
-
-    private fun historyText(history: ReleaseHistoryActivity): String = onMain {
-        history.findViewById<TextView>(R.id.history).text.toString()
     }
 
     private fun finish(activity: Activity) {

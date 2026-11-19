@@ -206,7 +206,7 @@ EPUB만 지원합니다: EPUB 2 또는 EPUB 3의 리플로우와 고정 레이�
 플러그인에 필요한 것, 검증한 환경, 범위 밖인 것:
 
 - AutoJs6: 파일 관리자 진입점 (Explorer Action v2)에는 내부 빌드 5318 이상이 필요합니다. `epub` 스크립트 API, 호스트 리더 세션, 샘플 스크립트에는 AutoJs6 6.8.0 (빌드 5318)이 필요하며, 이는 이번 릴리스에서 감사한 마지막 호스트 빌드입니다.
-- Android 7.0 (API 24)부터 Android 16 (API 37, 대상)까지. 페이지는 기기의 WebView에서 렌더링되므로 최신 Android System WebView 또는 Chrome이 필요합니다. 플러그인에는 네이티브 라이브러리가 없어 16 KB 페이지 기기에서도 그대로 실행됩니다.
+- Android 7.0 (API 24)부터 Android 16 (API 37, 대상)까지. 페이지는 기기의 WebView에서 렌더링되므로 최신 Android System WebView 또는 Chrome이 필요합니다. 플러그인 자체에는 네이티브 코드가 없고 Compose에 포함된 작은 네이티브 라이브러리 하나만 있습니다 (네 가지 ABI 모두 16 KB 정렬). 16 KB 페이지 기기에서도 그대로 실행됩니다.
 - 검증 완료: AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI), Xiaomi Pad 6 (Android 15, 서비스 측). 기기 x 시나리오 매트릭스, 편차, WebView 버전은 `docs/dev/compatibility-matrix.md`에 있습니다.
 - 책: EPUB 2와 EPUB 3, 리플로우와 고정 레이아웃, CJK 세로쓰기와 오른쪽에서 왼쪽. DRM으로 보호된 책 (LCP, Adobe ADEPT)은 보호됨으로 보고되며 렌더링되지 않습니다. PDF, MOBI, AZW, CBZ, 오디오북은 범위 밖입니다.
 - 소리 내어 읽기에는 책의 언어 음성 데이터가 있는 텍스트 음성 변환 엔진이 필요합니다 (Google 음성 서비스, 제조사 엔진, 그 밖의 설치된 엔진). 사용할 수 있는 엔진이 없는 기기는 조용히 있지 않고 약 20초 뒤에 알립니다.

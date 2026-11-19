@@ -79,7 +79,7 @@
   "p_compatibility_intro": "外掛的執行需求, 已驗證的環境與不在範圍內的內容",
   "compatibility_points": [
     "AutoJs6: 檔案管理器入口 (Explorer Action v2) 需要內部版本號 {{ required_host_build }} 及以上; `epub` 指令碼 API, 宿主閱讀器工作階段與範例指令碼需要 AutoJs6 6.8.0 (版本號 {{ audited_host_build }}), 這也是本次發布稽核過的最高宿主版本.",
-    "Android 7.0 (API 24) 至 Android 16 (API 37, 目標版本); 頁面在裝置的 WebView 中繪製, 需要較新的 Android System WebView 或 Chrome. 外掛不含原生程式庫, 在 16 KB 頁裝置上無需改動即可執行.",
+    "Android 7.0 (API 24) 至 Android 16 (API 37, 目標版本); 頁面在裝置的 WebView 中繪製, 需要較新的 Android System WebView 或 Chrome. 外掛本身不含原生程式碼, 只有 Compose 帶來的一個小型原生程式庫 (四種 ABI 均按 16 KB 對齊), 在 16 KB 頁裝置上無需改動即可執行.",
     "已在 AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI) 與 Xiaomi Pad 6 (Android 15, 服務側) 上驗證; 裝置 x 情境矩陣, 偏差與 WebView 版本見 `docs/dev/compatibility-matrix.md`.",
     "書籍: EPUB 2 與 EPUB 3, 可重排與固定版面, CJK 直排與從右到左. 受 DRM 保護的書籍 (LCP, Adobe ADEPT) 會提示受保護而不會繪製; PDF, MOBI, AZW, CBZ 與有聲書不在範圍內.",
     "朗讀需要帶有書籍語言語音資料的文字轉語音引擎 (Google 語音服務, 廠商引擎或其它已安裝引擎); 沒有可用引擎的裝置會在約 20 秒後給出提示, 而不是一直無聲.",

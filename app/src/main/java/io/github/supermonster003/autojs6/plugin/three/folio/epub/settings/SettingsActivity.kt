@@ -221,7 +221,7 @@ internal class SettingsActivity : HostAppearanceActivity() {
         row(R.string.text_settings_license, summary = { getString(R.string.text_settings_license_summary) }) { openUrl(LICENSE_PAGE) }
         row(R.string.text_settings_third_party) { openUrl(THIRD_PARTY_PAGE) }
         row(R.string.text_settings_source, summary = { getString(R.string.text_settings_source_summary) }) { openUrl(SOURCE_PAGE) }
-        row(R.string.release_history) { startActivity(Intent(this, ReleaseHistoryActivity::class.java)) }
+        row(R.string.release_history, summary = { getString(R.string.setting_release_history_summary) }) { openReleaseHistory() }
         row(R.string.text_settings_check_update, summary = { updateSummary() }) { checkForUpdates() }
     }
 

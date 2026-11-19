@@ -1,5 +1,6 @@
 package io.github.supermonster003.autojs6.plugin.three.folio.epub.theme
 
+import java.lang.reflect.Modifier
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -76,7 +77,8 @@ class AppThemePaletteTest {
 
     private fun assertOpaque(palette: AppThemePalette) {
         palette.javaClass.declaredFields
-            .filter { field -> field.type == Int::class.javaPrimitiveType }
+            // The Compose compiler adds a static Int `$stable` field to every class; only instance colors count.
+            .filter { field -> field.type == Int::class.javaPrimitiveType && !Modifier.isStatic(field.modifiers) }
             .forEach { field ->
                 field.isAccessible = true
                 val color = field.getInt(palette)

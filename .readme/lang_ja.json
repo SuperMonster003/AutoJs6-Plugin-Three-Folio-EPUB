@@ -79,7 +79,7 @@
   "p_compatibility_intro": "プラグインに必要なもの, 検証した環境, 対象外のもの",
   "compatibility_points": [
     "AutoJs6: ファイルマネージャーの入口 (Explorer Action v2) には内部ビルド {{ required_host_build }} 以降が必要です. `epub` スクリプト API, ホストのリーダーセッション, サンプルスクリプトには AutoJs6 6.8.0 (ビルド {{ audited_host_build }}) が必要で, これは本リリースで監査した最後のホストビルドです.",
-    "Android 7.0 (API 24) から Android 16 (API 37, ターゲット) まで. ページは端末の WebView で描画されるため, 最新の Android System WebView または Chrome が前提です. プラグインにネイティブライブラリはなく, 16 KB ページの端末でもそのまま動作します.",
+    "Android 7.0 (API 24) から Android 16 (API 37, ターゲット) まで. ページは端末の WebView で描画されるため, 最新の Android System WebView または Chrome が前提です. プラグイン自体にネイティブコードはなく, Compose に含まれる小さなネイティブライブラリが 1 つあるだけです (4 つの ABI すべてで 16 KB アラインメント済み). 16 KB ページの端末でもそのまま動作します.",
     "検証済み: AVD API 24 / 33 / 36 / 37, Sony Xperia XZ1 Compact (Android 9), Redmi 12C (Android 13, MIUI), Xiaomi Pad 6 (Android 15, サービス側). 端末 x シナリオの表, 逸脱, WebView のバージョンは `docs/dev/compatibility-matrix.md` にあります.",
     "本: EPUB 2 と EPUB 3, リフロー型と固定レイアウト, CJK 縦書きと右から左. DRM で保護された本 (LCP, Adobe ADEPT) は保護されていると報告し, 描画しません. PDF, MOBI, AZW, CBZ, オーディオブックは対象外です.",
     "読み上げには本の言語の音声データを持つテキスト読み上げエンジンが必要です (Google 音声サービス, メーカーのエンジン, その他のインストール済みエンジン). 使えるエンジンのない端末では無音のままにならず, 約 20 秒後に報告します.",

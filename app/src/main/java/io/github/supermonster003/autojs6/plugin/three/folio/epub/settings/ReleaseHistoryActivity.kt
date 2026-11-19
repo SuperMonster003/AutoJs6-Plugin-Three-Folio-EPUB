@@ -1,53 +1,41 @@
 package io.github.supermonster003.autojs6.plugin.three.folio.epub.settings
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
-import android.widget.Toast
-import androidx.core.net.toUri
-import androidx.lifecycle.lifecycleScope
+import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.HostAppearanceActivity
-import io.github.supermonster003.autojs6.plugin.three.folio.epub.R
-import io.github.supermonster003.autojs6.plugin.three.folio.epub.databinding.ActivityReleaseHistoryBinding
-import io.github.supermonster003.autojs6.plugin.three.folio.epub.loadReleaseHistory
-import io.github.supermonster003.autojs6.plugin.three.folio.epub.releaseHistoryCandidates
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
- * The bundled changelog in the host's language (roadmap P4.3), rendered from the CHANGELOG assets
- * through [MarkdownLite] and [MarkdownRenderer]; reached from the settings page and from the
- * update dialog. Not exported and takes no data.
+ * Renders the bundled changelog for the current locale (English when that one is missing) as one group per released
+ * version, under the title "Release history" with the plugin name as the subtitle
+ * (AUTOJS6_PLUGIN_RELEASE_HISTORY_AGENTS.md); reached from the settings page and from the update dialog. Not exported
+ * and takes no data. The language, night mode and colors are those of the settings page ([HostAppearanceActivity]).
  */
 internal class ReleaseHistoryActivity : HostAppearanceActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityReleaseHistoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.toolbar.setNavigationOnClickListener { finish() }
-        fitToolbarAndContent(binding.root, binding.toolbar, binding.history)
-        binding.history.movementMethod = LinkMovementMethod.getInstance()
-        val locale = resources.configuration.locales[0]
-        lifecycleScope.launch {
-            val markdown = withContext(Dispatchers.IO) {
-                loadReleaseHistory(releaseHistoryCandidates(locale.language, locale.country, locale.script)) { path ->
-                    assets.open(path).bufferedReader(Charsets.UTF_8).use { it.readText() }
-                }
-            }
-            binding.history.text = markdown
-                ?.let { MarkdownRenderer.render(this@ReleaseHistoryActivity, MarkdownLite.parse(it), ::openLink) }
-                ?: getString(R.string.release_history_unavailable)
+        // Edge to edge like the settings page; the scaffold pads the system bars and the display cutout.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val candidates = ReleaseHistoryAssetPolicy.candidatesFor(resources.configuration.locales[0])
+        val entries = loadReleaseHistory(candidates) { path ->
+            assets.open(path).use { stream -> stream.readBytes().toString(Charsets.UTF_8) }
         }
-    }
-
-    private fun openLink(url: String) {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
-        } catch (_: ActivityNotFoundException) {
-            Toast.makeText(this, R.string.text_no_app_for_action, Toast.LENGTH_SHORT).show()
+        val palette = appPalette
+        val colors = ReleaseHistoryColors(
+            dark = palette.isDark,
+            primary = palette.primary,
+            primaryContainer = palette.primaryContainer,
+            background = palette.background,
+            surface = palette.appBar,
+            onSurface = palette.onSurface,
+            onSurfaceVariant = palette.onSurfaceVariant,
+            outlineVariant = palette.outlineVariant,
+        )
+        setContent {
+            ReleaseHistoryTheme(colors) {
+                ReleaseHistoryScreen(entries = entries, onBack = ::finish)
+            }
         }
     }
 }

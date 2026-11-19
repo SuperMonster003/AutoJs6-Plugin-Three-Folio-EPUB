@@ -15,7 +15,12 @@
     <string name="launcher_icon_transparent_note">قد تضيف بعض المشغلات خلفية أو قناعا, لذلك قد لا يتم الحفاظ على الشفافية.</string>
     <string name="plugin_description">قراءة كتب EPUB مع التنقل والبحث والقراءة الصوتية والوصول من السكربتات</string>
     <string name="release_history">سجل الإصدارات</string>
-    <string name="release_history_unavailable">سجل الإصدارات غير متاح</string>
+    <string name="release_history_collapse_all">طيّ الكل</string>
+    <string name="release_history_collapsed">مطوي</string>
+    <string name="release_history_expand_all">توسيع الكل</string>
+    <string name="release_history_expanded">موسَّع</string>
+    <string name="release_history_unavailable">تعذر تحميل سجل الإصدارات</string>
+    <string name="setting_release_history_summary">عرض سجل الإصدارات المضمن في التطبيق</string>
     <string name="text_add_to_recent">إضافة إلى الكتب الأخيرة</string>
     <string name="text_added_to_recent">تمت الإضافة إلى الكتب الأخيرة</string>
     <string name="text_annotation_added">تم التمييز</string>

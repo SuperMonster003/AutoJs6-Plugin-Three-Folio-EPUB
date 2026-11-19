@@ -12,7 +12,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.R
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.MarkdownLite
-import io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.ReleaseHistoryActivity
+import io.github.supermonster003.autojs6.plugin.three.folio.epub.settings.openReleaseHistory
 import io.github.supermonster003.autojs6.plugin.three.folio.epub.store.ReaderSettings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -107,9 +107,7 @@ internal class AppUpdateCoordinator(
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton(R.string.text_update_open_release) { _, _ -> openReleasePage(release.htmlUrl) }
-            .setNeutralButton(R.string.release_history) { _, _ ->
-                activity.startActivity(Intent(activity, ReleaseHistoryActivity::class.java))
-            }
+            .setNeutralButton(R.string.release_history) { _, _ -> activity.openReleaseHistory() }
             .setNegativeButton(if (ignored) R.string.text_update_unignore else R.string.text_update_ignore) { _, _ ->
                 settings.ignoredUpdateVersion = if (ignored) null else release.tagName
                 if (!ignored) toast(activity.getString(R.string.text_update_ignored, release.tagName))

@@ -67,6 +67,12 @@ the components themselves embed.
 - Source: <https://github.com/androidx/androidx>, <https://github.com/material-components/material-components-android>
 - License: Apache License 2.0
 
+## Jetpack Compose
+
+- Component: `androidx.compose:compose-bom` 2026.09.00 with `androidx.compose.runtime:runtime`, `androidx.compose.ui:ui`, `androidx.compose.foundation:foundation`, `androidx.compose.material3:material3`, `androidx.compose.animation:animation` and `androidx.activity:activity-compose` (the release history page only). `ui-graphics` brings `androidx.graphics:graphics-path`, whose `libandroidx.graphics.path.so` (arm64-v8a, armeabi-v7a, x86_64, x86) is the only native library in the APK
+- Source: <https://github.com/androidx/androidx>
+- License: Apache License 2.0
+
 ## Android desugared JDK libraries
 
 - Component: `com.android.tools:desugar_jdk_libs` 2.1.5 (`java.time` and other JDK APIs on API 24 and 25 devices)
@@ -79,7 +85,8 @@ These libraries are used by the JVM and instrumentation test source sets only an
 in the APK.
 
 - JUnit 4 (`junit:junit`): Eclipse Public License 1.0
-- AndroidX Test (`androidx.test:runner`, `androidx.test:rules`, `androidx.test.ext:junit`): Apache License 2.0
+- AndroidX Test (`androidx.test:runner`, `androidx.test:rules`, `androidx.test.ext:junit`, `androidx.test.espresso:espresso-core`): Apache License 2.0
+- Compose UI test (`androidx.compose.ui:ui-test-junit4`; `ui-test-manifest` is added to debug builds only): Apache License 2.0
 - Android Test Orchestrator (`androidx.test:orchestrator:1.6.1`): Apache License 2.0; test execution only, installed separately from the application. Source: https://developer.android.com/jetpack/androidx/releases/test; SHA-256 of `orchestrator-1.6.1.apk`: `0a8aa1f18da0613d863be7be26e2a5c8de2f6892660b86577848a122ff7df6c5`.
 - kotlinx-coroutines-test: Apache License 2.0
 
