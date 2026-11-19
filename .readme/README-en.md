@@ -308,6 +308,15 @@ ROADMAP.md tracks every milestone as a checkable list with acceptance criteria a
 
 ******
 
+#### v2.1.3
+
+_2026/11/19_
+
+- `Improvement` The release history page expands and collapses by version: a collapsed version shows its date and the number of entries per category, an expanded one names each category once; all versions can be expanded or collapsed at once, the newest one opens expanded and the subtitle shows the plugin name
+- `Improvement` Rewrote the instructions shown in Plugin center in five parts: getting started, main features, using it in scripts, requirements and FAQ
+- `Dependency` Added Jetpack Compose BOM 2026.09.00 (release history page)
+- `Dependency` Upgraded shared build plugins version 1.9.0 -> 1.9.7
+
 #### v2.1.2
 
 _2026/11/07_
@@ -320,13 +329,6 @@ _2026/11/07_
 _2026/11/07_
 
 - `Improvement` The AutoJs6 file manager groups the menu options of this plugin under the submenu "3-Folio EPUB", named as in the Plugin Center (requires AutoJs6 6.8.1 or later)
-
-#### v2.1.0
-
-_2026/10/21_
-
-- `Feature` EPUB book and reader access for independently signed runtime applications
-- `Fix` Scripted readers failing to open when appearance changes recreate the Activity during book loading
 
 ##### For more release history
 

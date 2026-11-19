@@ -65,3 +65,25 @@ R8 优化 (横向类合并) 可能把持有新版本类型字段的类 (例如 m
 
 - 把 `appendDigestToReleasedFiles` 产出的签名 APK (不是 debug 包) 装到 API 24 - 30 的模拟器 (至少 API 24 与 API 29) 或真机, 打开一本书, 从溢出菜单开始朗读, 确认 media3 会话进入播放, 回到桌面后朗读继续, 媒体键暂停 / 继续 (阅读器在前台时 `MEDIA_PAUSE` / `MEDIA_PLAY_PAUSE` 不到会话, `HEADSETHOOK` 与回到桌面后正常), logcat 无 `NoClassDefFoundError` / `FATAL EXCEPTION`. 预置模拟器镜像没有 TTS 引擎, 需要先装一个测试引擎并把 `tts_default_synth` 指向它.
 - 2026-11-08 的 2.1.2 (build 182 与只改文档的 build 183, 均 3,844,011 B) 在 API 24 / 25 / 27 / 29 / 30 模拟器上 11 / 11 通过; 对 dex 的静态扫描 (被合并成 `Object` 的字段读出后 `check-cast` 到 API 24 以上的类型, 按 mapping 还原原始方法) 只发现 9 处, 全部位于只在新版本执行的代码, 未复现, 不需要修改 R8 规则.
+
+## 8. 2.1.3 (发行历史页引入 Compose, plugin-center P21.4)
+
+2.1.3 把发行历史页改为 Jetpack Compose (Material 3, BOM 2026.09.00), 这是维护者的决定 (plugin-center Q115 A: 为发行历史页引入 Compose, 接受体积增长). Compose 的 `androidx.graphics:graphics-path` 带一个原生库 `libandroidx.graphics.path.so`, 所以从 2.1.3 起 APK 含 4 个 ABI 的原生库; §4 与 §6 的 "零原生库" 只适用于 2.1.2 及以前. 不加 abiFilters, 不拆包, 仍是一个 universal 包. 来源 `:app:appendDigestToReleasedFiles` (build 187):
+
+| 条目 (压缩后) | 2.1.2 (build 182) | 2.1.3 (build 187) | 变化 |
+|---|---|---|---|
+| APK 合计 | 3,844,011 | 4,615,332 | +771,321 B (+20.1%) |
+| `classes*.dex` | 2,188,127 | 2,846,296 | +658,169 |
+| `res/` | 472,791 | 484,417 | +11,626 |
+| `resources.arsc` (stored) | 697,872 | 710,324 | +12,452 |
+| `assets/` | 319,523 | 331,601 | +12,078 (2.1.3 的 changelog 与新的使用说明) |
+| `lib/` | 0 | 37,392 | arm64-v8a 10,096, armeabi-v7a 7,252, x86 9,284, x86_64 10,760, 均 STORED |
+| 其余 (`META-INF`, 清单, `kotlin/` 等) | 40,054 | 43,942 | +3,888 |
+| 条目数 | 929 | 960 | +31 |
+
+- 签名包 `autojs6-plugin-three-folio-epub-v2.1.3-d990ab9a.apk`, SHA-256 `0d084230f82856935e7bb6fae84449660d84c84a14c8f7bcedb3d619656385ea`, 签名证书与 2.1.2 同一密钥.
+- 16 KB 对齐: `verifyReleaseNativePageAlignment` 通过, 4 个 so 均 STORED 且按 16 KB 对齐, 清单 `NATIVE_PAGE_ALIGNMENT` = 16384, `SUPPORTED_ABIS` = `arm64-v8a,armeabi-v7a,x86_64,x86`.
+- 预算: §5 的 3,500,000 B 自 2.0.0 (3,819,147 B) 起已经超出, 本次增长来自 Q115 A 的决定, 不调整 §2 的削减项; 增量几乎全部在 dex (Compose runtime / ui / foundation / material3).
+- §7 的静态扫描 (`media3_release_check.py static`): 1 处 CANDIDATE, 是 `ScrollCaptureSession` (API 31) 在合并后协程 `invokeSuspend` 的 case 1, 只在 API 31+ 的滚动截图协程执行, 判定安全.
+- §7 的低版本回归 (2026-11-20, 上述签名包, 预置 AVD 只读启动, 测试引擎 `m3.faketts`): API 24 与 API 29 上打开 `docs/fixtures/minimal-epub3.epub`, 从溢出菜单开始朗读, media3 会话进入播放, 回到桌面后继续, 媒体键暂停 / 继续, logcat 无 `NoClassDefFoundError` / `FATAL EXCEPTION`, 两个版本各 11 / 11 通过; 新的发行历史页 (Compose) 在两个版本上都能打开, 用键盘 Tab / Enter 展开收起版本, 无崩溃.
+- 16 KB 设备: 预置 AVD_API_35_16K 冷启动 (`getconf PAGE_SIZE` = 16384), 上述签名包安装 `Success`, 启动器, 设置页与发行历史页 (Tab / Enter 展开收起) `am start` 后均为前台, logcat 无 `FATAL EXCEPTION` / `UnsatisfiedLinkError` / `dlopen failed`. 这几个界面不会加载 `libandroidx.graphics.path.so` (只在 Compose 遍历 Path 时加载), 它的对齐由上面的构建门禁保证.

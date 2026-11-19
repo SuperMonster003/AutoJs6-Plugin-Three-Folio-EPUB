@@ -308,6 +308,15 @@ ROADMAP.md registra cada hito como una lista marcable con criterios de aceptaci�
 
 ******
 
+#### v2.1.3
+
+_2026/11/19_
+
+- `Mejora` La página Historial de versiones se expande y contrae por versión: una versión contraída muestra su fecha y el número de entradas por categoría, una expandida nombra cada categoría una sola vez; todas las versiones se pueden expandir o contraer a la vez, la más reciente se abre expandida y el subtítulo muestra el nombre del plugin
+- `Mejora` Se reescribieron las instrucciones del Centro de plugins en cinco partes: primeros pasos, funciones principales, uso en scripts, requisitos y preguntas frecuentes
+- `Dependencia` Se añadió Jetpack Compose BOM 2026.09.00 (página Historial de versiones)
+- `Dependencia` Se actualizaron los plugins de compilación compartidos versión 1.9.0 -> 1.9.7
+
 #### v2.1.2
 
 _2026/11/07_
@@ -320,13 +329,6 @@ _2026/11/07_
 _2026/11/07_
 
 - `Mejora` El administrador de archivos de AutoJs6 agrupa las opciones de menú de este plugin en el submenú "3-Folio EPUB", con el mismo nombre que en el Centro de plugins (requiere AutoJs6 6.8.1 o posterior)
-
-#### v2.1.0
-
-_2026/10/21_
-
-- `Función` Acceso a libros y al lector EPUB desde aplicaciones con firma independiente
-- `Corrección` El lector de scripts no abría el libro si un cambio de apariencia recreaba la Activity durante la carga
 
 ##### Para consultar más historial de versiones
 
