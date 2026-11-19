@@ -360,6 +360,7 @@ Release ビルド:
 .readme/common.json
 .readme/lang_*.json
 .readme/template_readme.md
+.readme/template_plugin_instruction.md
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
@@ -368,7 +369,7 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` はプラグイン情報とリーダー UI をローカライズし, `plugin_instruction.md` はホストに表示する使用説明を提供します. README と changelog は必ず `.readme/` と `.changelog/` の JSON ソースを編集し, `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません. `py .python/generate_markdown.py --check` でソースと生成物の同期を検証できます.
+`strings.xml` はプラグイン情報とリーダー UI をローカライズし, `plugin_instruction.md` はホストに表示する使用説明を提供します. README, changelog, `plugin_instruction.md` は必ず `.readme/` と `.changelog/` の JSON ソースを編集し, `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません. `py .python/generate_markdown.py --check` でソースと生成物の同期を検証できます.
 
 ******
 

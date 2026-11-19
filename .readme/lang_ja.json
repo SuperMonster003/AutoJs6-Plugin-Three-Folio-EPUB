@@ -144,7 +144,7 @@
   "text_release_build": "Release ビルド",
   "p_build_params": "ビルド設定は `version.properties` から読み込みます. 現在の最小 SDK は {{ android_min_sdk }}, ターゲット SDK は {{ android_target_sdk }} です",
   "h3_resource_layout": "ローカライズとドキュメント生成",
-  "p_resource_layout": "`strings.xml` はプラグイン情報とリーダー UI をローカライズし, `plugin_instruction.md` はホストに表示する使用説明を提供します. README と changelog は必ず `.readme/` と `.changelog/` の JSON ソースを編集し, `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません. `py .python/generate_markdown.py --check` でソースと生成物の同期を検証できます",
+  "p_resource_layout": "`strings.xml` はプラグイン情報とリーダー UI をローカライズし, `plugin_instruction.md` はホストに表示する使用説明を提供します. README, changelog, `plugin_instruction.md` は必ず `.readme/` と `.changelog/` の JSON ソースを編集し, `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません. `py .python/generate_markdown.py --check` でソースと生成物の同期を検証できます",
   "h3_license": "ライセンスとサードパーティ通知",
   "p_license": "このプラグインは [Mozilla Public License 2.0]({{ license_url }}) の下で提供されます. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 と Jsoup, AutoJs6 のコントラクトライブラリ, その他 APK に同梱されるコンポーネントのバージョン, チェックサム, ライセンスは [サードパーティ通知]({{ third_party_notices_url }}) に一覧しています.",
   "h3_links": "リンク",
@@ -154,5 +154,61 @@
   "text_link_epub_api_docs": "`epub` スクリプト API リファレンス",
   "text_link_third_party_notices": "サードパーティ通知",
   "text_link_16kb": "16 KB ページアライメントとビルド検証",
-  "p_acknowledgements": "[Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), [初期実装の参考プロジェクト]({{ third_party_notices_url }}#initial-project-references)の開発者に感謝します. 権利や表記に関する連絡は[協力方針]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)をご覧ください."
+  "p_acknowledgements": "[Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), [初期実装の参考プロジェクト]({{ third_party_notices_url }}#initial-project-references)の開発者に感謝します. 権利や表記に関する連絡は[協力方針]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)をご覧ください.",
+  "instruction_p_what": "3-Folio EPUB は AutoJs6 向けの EPUB 電子書籍リーダープラグインで, 単体のリーダーとしても使えます. EPUB 2 と EPUB 3 の本を開き, 目次, 全文検索, ブックマーク, ハイライトとノート, 読み上げを備えています. スクリプトから本の内容を読み取ったり, リーダーを開いたりすることもできます.",
+  "instruction_h3_start": "はじめに",
+  "instruction_start_steps": [
+    "AutoJs6 の \"プラグインセンター\" で本プラグインが有効になっていることを確認します.",
+    "AutoJs6 のファイルマネージャーで EPUB ファイルをタップすると, 本がリーダーで開きます. そのファイルのメニューから \"EPUB を読む\" を選ぶこともできます.",
+    "ページの左右をタップするか音量キーを押すとページがめくれ, 中央をタップするとツールバーの表示と非表示が切り替わります. 同じ本を再び開くと前回の位置から続きます.",
+    "AutoJs6 を使わない場合は, ホーム画面のアイコンから本プラグインを開き, \"EPUB を開く\" をタップして本を選びます."
+  ],
+  "instruction_h3_features": "主な機能",
+  "instruction_features": [
+    "**目次と読書位置**: \"目次\" から任意の章に移動できます. 本ごとに前回の位置を記憶し, 移動や名前の変更後も続きから読めます. \"最初から読む\" で位置を消去できます.",
+    "**読書設定**: \"読書設定\" で文字サイズ, フォント, 間隔, 配置, ページ送りを調整し, \"ライト\", \"セピア\", \"ダーク\", \"ホストに従う\" から選べます. \"フォントを取り込む\" で TTF や OTF のフォントを追加できます.",
+    "**縦書きと固定レイアウト**: 中国語と日本語の縦書きの本は縦書きで表示され, \"文字方向\" で横書きか縦書きに固定できます. 固定レイアウトの本は \"見開き表示\" とピンチズームに対応します.",
+    "**検索とブックマーク**: \"検索\" は本の中の一致箇所を前後の文と共にすべて一覧し, タップでその位置に移動します. ツールバーのアイコンで現在のページにブックマークを付け, \"ブックマーク\" で確認と削除ができます.",
+    "**ハイライトとノート**: テキストを選択して \"ハイライト\" または \"ノートを追加\" を選びます. 5 色と下線のスタイルがあり, \"ハイライトとノート\" で移動と編集, \"エクスポート\" で Markdown ファイルへの保存ができます.",
+    "**読み上げ**: \"読み上げ\" はシステムの音声合成エンジンで現在のページから読み上げ, 読んでいる文をハイライトしてページを自動でめくります. 速度, 音声, \"スリープタイマー\" を設定でき, \"バックグラウンドで続ける\" をオンにするとリーダーを閉じても続きます.",
+    "**リンクと画像**: 本の中のリンクは元の位置に戻ることができ, 脚注はポップアップで表示されます. 外部リンクは既定で完全なアドレスを先に表示し, 確認後にのみブラウザーへ渡します. 画像をタップすると全画面で表示されます.",
+    "**最近の本と他のアプリ**: ホーム画面のアイコンから最近の本の一覧を開けます. 他のアプリから共有された EPUB も直接開け, \"最近の本に追加\" で一覧に残せます.",
+    "**外観と設定**: 言語, ナイトモード, \"テーマカラー\" は既定で AutoJs6 に従います. \"設定\" ではページ送りと読み上げの既定値を設定でき, \"更新を確認\" と \"リリース履歴\" もあります."
+  ],
+  "instruction_h3_script": "スクリプトでの使い方",
+  "instruction_p_script": "AutoJs6 の `epub` モジュールは本プラグインが提供します. リーダーを開かずに本のメタデータ, 目次, 本文を読み取れます:",
+  "instruction_p_script_reader": "`epub.read()` は本プラグインのリーダーを開き, 読書の進み具合をスクリプトに通知します:",
+  "instruction_script_notes": [
+    "パスは絶対パスか, スクリプトの作業ディレクトリからの相対パスで指定します. `content://` などの URI は受け付けません.",
+    "エラーは `epub.EpubError` として投げられ, `code` が原因を示します. 例えばプラグインが無効なときは `PLUGIN_DISABLED` です. 先に `epub.isAvailable()` で確認できます.",
+    "多くのメソッドに Promise を返す Async 版があります. 例えば `epub.openAsync()` です.",
+    "リーダーは AutoJs6 が起動するため, バックグラウンドからの画面起動に関するシステムの制限を受けます. `epub.read()` を呼ぶスクリプトは AutoJs6 の画面が表示されている間に実行してください."
+  ],
+  "instruction_h3_requirements": "動作要件",
+  "instruction_requirements": [
+    "Android 7.0 以降と, システムの WebView.",
+    "ファイルマネージャーから本を開く場合と `epub` モジュールには AutoJs6 6.8.0 以降が必要です. ホーム画面のアイコンから単体で使う場合は AutoJs6 は不要です.",
+    "読み上げには, 本の言語の音声データを備えた音声合成エンジンが必要です.",
+    "Android 13 以降では, 読み上げの通知コントロールに通知の権限が必要です. 拒否しても読み上げは通常どおり使えます."
+  ],
+  "instruction_h3_faq": "よくある質問",
+  "instruction_faq": [
+    {
+      "q": "ファイルマネージャーに \"EPUB を読む\" が表示されない理由",
+      "a": "AutoJs6 がバージョン要件を満たし, 本プラグインが \"プラグインセンター\" で有効になっていることを確認します. 両方を満たすと, EPUB ファイルに \"EPUB を読む\" が表示されます."
+    },
+    {
+      "q": "対応する電子書籍の形式",
+      "a": "固定レイアウトの本を含め, EPUB 2 と EPUB 3 に対応しています. PDF, MOBI, AZW, CBZ, オーディオブックには対応していないため, Calibre などのツールで先に EPUB に変換してください. DRM で保護された本は保護されている旨を表示し, 読むことはできません."
+    },
+    {
+      "q": "読み上げの音が出ない場合の対処",
+      "a": "システムの音声合成エンジンに本の言語の音声データがあることを確認し, メディアの音量を上げます. 使えるエンジンが端末にない場合は, 約 20 秒後にメッセージが表示されます."
+    },
+    {
+      "q": "本プラグインがネットワークを使う場合",
+      "a": "本プラグインが本や読書データをアップロードすることはありません. ネットワークを使うのは, 本がリモートのリソースを参照するときと, \"更新を確認\" をタップしたときだけです. 本にはスクリプトが含まれることがあるため, 信頼できる本だけを開いてください."
+    }
+  ],
+  "instruction_p_more": "スクリプト API の全体は [AutoJs6 ドキュメント]({{ docs_epub_api_url }}) を, 詳しくは [プロジェクトページ]({{ repo_url }}) をご覧ください."
 }

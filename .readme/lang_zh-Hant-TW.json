@@ -144,7 +144,7 @@
   "text_release_build": "Release 建置",
   "p_build_params": "建置參數來自 `version.properties`, 目前最低 SDK 為 {{ android_min_sdk }}, 目標 SDK 為 {{ android_target_sdk }}",
   "h3_resource_layout": "本地化與文件產生",
-  "p_resource_layout": "`strings.xml` 提供外掛資訊和閱讀器介面的本地化, `plugin_instruction.md` 提供宿主端顯示的使用說明. README 與更新日誌一律修改 `.readme/` 與 `.changelog/` 下的 JSON 來源檔案, 再執行 `py .python/generate_markdown.py` 重新產生, 產生產物不手動編輯; 執行 `py .python/generate_markdown.py --check` 可校驗來源檔案與產生產物是否同步",
+  "p_resource_layout": "`strings.xml` 提供外掛資訊和閱讀器介面的本地化, `plugin_instruction.md` 提供宿主端顯示的使用說明. README, 更新日誌與 `plugin_instruction.md` 一律修改 `.readme/` 與 `.changelog/` 下的 JSON 來源檔案, 再執行 `py .python/generate_markdown.py` 重新產生, 產生產物不手動編輯; 執行 `py .python/generate_markdown.py --check` 可校驗來源檔案與產生產物是否同步",
   "h3_license": "授權條款與第三方聲明",
   "p_license": "外掛以 [Mozilla Public License 2.0]({{ license_url }}) 授權. Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 與 Jsoup, AutoJs6 契約程式庫以及 APK 中附帶的其它元件的版本, 校驗值與授權條款列於 [第三方聲明]({{ third_party_notices_url }}).",
   "h3_links": "相關連結",
@@ -154,5 +154,61 @@
   "text_link_epub_api_docs": "`epub` 指令碼 API 參考",
   "text_link_third_party_notices": "第三方聲明",
   "text_link_16kb": "16 KB 頁對齊與建構驗證",
-  "p_acknowledgements": "感謝 [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css) 及[初始專案參考項目]({{ third_party_notices_url }}#initial-project-references)的開發者. 署名或權利相關問題可參閱[權利與配合說明]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)."
+  "p_acknowledgements": "感謝 [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css) 及[初始專案參考項目]({{ third_party_notices_url }}#initial-project-references)的開發者. 署名或權利相關問題可參閱[權利與配合說明]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md).",
+  "instruction_p_what": "3-Folio EPUB 是 AutoJs6 的 EPUB 電子書閱讀外掛, 也可以作為獨立的閱讀器使用. 它開啟 EPUB 2 與 EPUB 3 書籍, 提供目錄, 全文搜尋, 書籤, 螢光標示與筆記以及朗讀; 指令碼也可以讀取書籍內容或開啟閱讀器.",
+  "instruction_h3_start": "開始使用",
+  "instruction_start_steps": [
+    "在 AutoJs6 的 \"外掛中心\" 中確認本外掛已啟用.",
+    "在 AutoJs6 檔案管理器中點按一個 EPUB 檔案, 書籍會在閱讀器中開啟; 也可以在該檔案的選單中選擇 \"閱讀 EPUB\".",
+    "點按頁面左右兩側或按音量鍵翻頁, 點按中央顯示或隱藏工具列; 再次開啟同一本書時從上次的位置繼續.",
+    "不經過 AutoJs6 時, 從桌面圖示開啟本外掛, 點按 \"開啟 EPUB\" 選擇書籍."
+  ],
+  "instruction_h3_features": "主要功能",
+  "instruction_features": [
+    "**目錄與閱讀位置**: 從 \"目錄\" 跳到任意章節; 每本書記住上次的位置, 書籍移動或改名後仍能續讀, \"從頭開始\" 可清除該位置.",
+    "**閱讀偏好**: 在 \"閱讀偏好\" 中調整字號, 字型, 間距, 對齊與翻頁, 選擇 \"淺色\", \"護眼\", \"深色\" 或 \"跟隨宿主\"; \"匯入字型\" 加入 TTF 或 OTF 字型.",
+    "**直排與固定版面**: 中文與日文的直排書籍按直排顯示, 可在 \"文字方向\" 中強制橫排或直排; 固定版面書籍可選擇 \"雙頁顯示\", 並支援雙指縮放.",
+    "**搜尋與書籤**: \"搜尋\" 列出全書每一處結果及其前後文, 點按即跳轉; 工具列圖示為目前頁面加入書籤, 在 \"書籤\" 中檢視與刪除.",
+    "**螢光標示與筆記**: 選取文字後選擇 \"螢光標示\" 或 \"新增筆記\", 有五種顏色與底線樣式; 在 \"螢光標示與筆記\" 中可跳轉, 編輯, 或用 \"匯出\" 儲存為 Markdown 檔案.",
+    "**朗讀**: \"朗讀\" 用系統文字轉語音引擎從目前頁面讀起, 標示目前句子並自動翻頁; 可調整語速與語音, 設定 \"睡眠計時器\", 開啟 \"背景繼續朗讀\" 後關閉閱讀器仍會繼續.",
+    "**連結與圖片**: 書內連結支援返回, 註腳在彈出視窗中顯示; 外部連結預設先顯示完整網址, 確認後才交給瀏覽器; 點按圖片可全螢幕檢視.",
+    "**最近書籍與其他應用程式**: 桌面圖示開啟最近書籍列表; 其他應用程式傳來的 EPUB 也能直接開啟, 選擇 \"加入最近書籍\" 可把它留在列表中.",
+    "**外觀與設定**: 語言, 夜間模式與 \"主題色彩\" 預設跟隨 AutoJs6; 在 \"設定\" 中還可設定翻頁與朗讀的預設值, \"檢查更新\" 與檢視 \"發行歷史\"."
+  ],
+  "instruction_h3_script": "在指令碼中使用",
+  "instruction_p_script": "AutoJs6 的 `epub` 模組由本外掛提供. 不開啟閱讀器即可讀取書籍的中繼資料, 目錄與正文:",
+  "instruction_p_script_reader": "`epub.read()` 開啟本外掛的閱讀器, 並在指令碼中接收閱讀進度:",
+  "instruction_script_notes": [
+    "路徑可以是絕對路徑或相對於指令碼工作目錄的路徑, 不接受 `content://` 等 URI.",
+    "出錯時拋出 `epub.EpubError`, 其 `code` 表示原因, 例如外掛未啟用時為 `PLUGIN_DISABLED`; 可先用 `epub.isAvailable()` 檢查.",
+    "多數方法有返回 Promise 的 Async 形式, 例如 `epub.openAsync()`.",
+    "閱讀器由 AutoJs6 啟動, 受系統對背景啟動介面的限制; 請在 AutoJs6 介面可見時執行呼叫 `epub.read()` 的指令碼."
+  ],
+  "instruction_h3_requirements": "執行需求",
+  "instruction_requirements": [
+    "Android 7.0 或更高版本, 以及系統 WebView.",
+    "從檔案管理器開啟書籍與使用 `epub` 模組需要 AutoJs6 6.8.0 或更高版本; 從桌面圖示單獨使用時不需要 AutoJs6.",
+    "朗讀需要已安裝書籍語言語音資料的文字轉語音引擎.",
+    "Android 13 或更高版本上, 朗讀的通知控制需要通知權限; 拒絕後仍可正常朗讀."
+  ],
+  "instruction_h3_faq": "常見問題",
+  "instruction_faq": [
+    {
+      "q": "檔案管理器中沒有 \"閱讀 EPUB\" 選項的原因",
+      "a": "確認 AutoJs6 符合版本需求, 且本外掛已在 \"外掛中心\" 中啟用; 兩者都符合後, EPUB 檔案即會出現 \"閱讀 EPUB\"."
+    },
+    {
+      "q": "支援的電子書格式",
+      "a": "支援 EPUB 2 與 EPUB 3, 包括固定版面書籍. PDF, MOBI, AZW, CBZ 與有聲書不在支援範圍內, 可先用 Calibre 等工具轉換為 EPUB; 受 DRM 保護的書籍會提示受保護而無法閱讀."
+    },
+    {
+      "q": "朗讀沒有聲音時的處理",
+      "a": "確認系統的文字轉語音引擎已安裝書籍語言的語音資料, 並調高媒體音量. 裝置上沒有可用的引擎時, 約 20 秒後會給出提示."
+    },
+    {
+      "q": "本外掛連網的場合",
+      "a": "本外掛不上傳書籍或閱讀資料; 只有書籍引用遠端資源, 或點按 \"檢查更新\" 時才會連網. 書籍中可能包含指令碼, 請只開啟可信任的書籍."
+    }
+  ],
+  "instruction_p_more": "完整的指令碼介面見 [AutoJs6 文件]({{ docs_epub_api_url }}), 更多說明請見 [專案主頁]({{ repo_url }})."
 }

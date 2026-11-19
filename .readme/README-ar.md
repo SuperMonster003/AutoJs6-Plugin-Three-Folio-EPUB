@@ -360,6 +360,7 @@ _2026/10/21_
 .readme/common.json
 .readme/lang_*.json
 .readme/template_readme.md
+.readme/template_plugin_instruction.md
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
@@ -368,7 +369,7 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-يوفر `strings.xml` ترجمة معلومات الملحق وواجهة القارئ بينما يوفر `plugin_instruction.md` تعليمات الاستخدام التي يعرضها المضيف. لتعديل README وسجل التغييرات عدل دائما مصادر JSON في `.readme/` و `.changelog/` ثم شغل `py .python/generate_markdown.py` لإعادة التوليد; الملفات المولدة لا تحرر يدويا أبدا. شغل `py .python/generate_markdown.py --check` للتحقق من تزامن المصادر والملفات المولدة.
+يوفر `strings.xml` ترجمة معلومات الملحق وواجهة القارئ بينما يوفر `plugin_instruction.md` تعليمات الاستخدام التي يعرضها المضيف. لتعديل README وسجل التغييرات و `plugin_instruction.md` عدل دائما مصادر JSON في `.readme/` و `.changelog/` ثم شغل `py .python/generate_markdown.py` لإعادة التوليد; الملفات المولدة لا تحرر يدويا أبدا. شغل `py .python/generate_markdown.py --check` للتحقق من تزامن المصادر والملفات المولدة.
 
 ******
 

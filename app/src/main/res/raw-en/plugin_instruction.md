@@ -1,23 +1,73 @@
-# AutoJs6 3-Folio EPUB
+3-Folio EPUB is the EPUB e-book reading plugin for AutoJs6 and also works as a standalone reader. It opens EPUB 2 and EPUB 3 books with a table of contents, full-text search, bookmarks, highlights and notes, and read-aloud; scripts can also read book content or open the reader.
 
-Use 3-Folio EPUB from the AutoJs6 file manager:
+### Getting started
 
-1. Install and enable the `3-Folio EPUB` plugin.
-2. Tap an `.epub` file, or open its overflow menu and choose `Read EPUB`.
-3. The book opens in a reader powered by the Readium Kotlin Toolkit.
+1. Make sure this plugin is enabled in AutoJs6 "Plugin center".
+2. In the AutoJs6 file manager, tap an EPUB file and the book opens in the reader; you can also choose "Read EPUB" from the menu of that file.
+3. Tap the left or right side of the page or press a volume key to turn pages, and tap the center to show or hide the toolbar; the same book reopens where you left off.
+4. To use it without AutoJs6, open this plugin from its launcher icon and tap "Open EPUB" to pick a book.
 
-Tap the left or right third of the page or press the volume keys to turn pages; tap the middle to hide or show the toolbar. The reading position is saved per book and restored on the next open; choose `Start from the beginning` in the overflow menu to clear it.
+### Main features
 
-The plugin receives temporary read access to the selected file and its parent directory through content URIs. It never receives a raw filesystem path, never copies the book to storage, and reads the EPUB container directly through the granted file descriptor.
+- **Contents and reading position**: Jump to any chapter from "Table of contents"; each book remembers where you stopped, even after it is moved or renamed, and "Start from the beginning" clears that position.
+- **Reading preferences**: In "Reading preferences", adjust font size, font, spacing, alignment and page turning, and choose "Light", "Sepia", "Dark" or "Follow host"; "Import font" adds TTF or OTF fonts.
+- **Vertical text and fixed layouts**: Chinese and Japanese vertical books are shown vertically, and "Text direction" can force horizontal or vertical text; fixed-layout books offer "Page spread" and pinch-to-zoom.
+- **Search and bookmarks**: "Search" lists every match in the book with its context, and tapping one jumps there; the toolbar icon bookmarks the current page, and "Bookmarks" lists and deletes them.
+- **Highlights and notes**: Select text and choose "Highlight" or "Add note", with five colors and an underline style; "Highlights and notes" jumps to and edits them, and "Export" saves them as a Markdown file.
+- **Read aloud**: "Read aloud" reads from the current page with the system text-to-speech engine, highlighting the current sentence and turning pages; adjust speed and voice, set the "Sleep timer", and turn on "Continue in the background" to keep reading after the reader closes.
+- **Links and images**: Links inside the book support going back, and footnotes appear in a popup; by default, external links show the full address first and go to the browser only after you confirm; tap an image to view it full screen.
+- **Recent books and other apps**: The launcher icon opens your recent books; EPUB files shared from other apps open directly, and "Add to recent books" keeps them in the list.
+- **Appearance and settings**: Language, night mode and "Theme color" follow AutoJs6 by default; "Settings" also sets page-turning and read-aloud defaults, and offers "Check for updates" and "Release history".
 
-2.0.0 is the current release; 1.0.0 was the first. The reader opens EPUB 2 and EPUB 3 books with a table of contents, remembers the reading position of every book, offers scroll mode, tap zones, volume keys and immersive mode, a preferences panel (text size, font, spacing, alignment, columns and themes that can follow the host's night mode), imported TTF / OTF fonts, vertical CJK and right-to-left books, fixed-layout books as single pages or spreads, full-text search, bookmarks, in-book links, notes and images, and read-aloud with the system text-to-speech engine. The app icon opens a launcher with the recent books and the system document picker, other apps hand over an EPUB through `ACTION_VIEW`, and the settings page covers the reader defaults, the data kept on the device and a manual update check. The `org.autojs.plugin.EPUB` service behind it answers metadata, contents, text, resources and search to the AutoJs6 host and opens the host-driven reader session (`epub.open(path)`, `epub.read(path)`, samples under `Samples > E-books`).
+### Using it in scripts
 
-Renamed to 3-Folio EPUB with the new installation identity io.github.supermonster003.autojs6.plugin.three.folio.epub. Android treats it as a separate app; Readium EPUB Reader settings, recent books and annotations are not migrated automatically. AutoJs6 5318 or later is required
+The AutoJs6 `epub` module is provided by this plugin. It reads the metadata, table of contents and text of a book without opening the reader:
 
-Books may contain scripts and remote resources; the plugin keeps Readium's default behavior and does not block them, including plain `http://` resources. Only open books you trust.
+```js
+let book = epub.open('./book.epub');
+console.log(book.metadata.title, book.metadata.authors.join(', '));
+book.toc.forEach(entry => console.log(entry.title));
+console.log(book.text(0, { maxChars: 500 }));
+book.close();
+```
 
-Explorer Action v2 supports both the primary button and the overflow menu for a single file. AutoJs6 build 5318 or later is required.
+`epub.read()` opens the reader of this plugin and reports the reading progress to the script:
 
-Thanks to [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css), and the [original AutoJs6 integration references](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references). See [rights and cooperation](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md) for attribution concerns.
+```js
+let session = epub.read('./book.epub');
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('error', e => console.warn(e.toString()));
+session.on('close', e => console.log('closed:', e.reason));
+```
 
-2.1.0 development: Runtime applications: independently signed Node.js/Bun apps use a separate service and reader entry protected by the normal permission `org.autojs.plugin.epub.permission.RUNTIME`. Returned book and reader-control handles check their creating UID. The original host signature entry stays protected; reading preferences and book data remain shared in this plugin.
+- Paths can be absolute or relative to the script working directory; `content://` and other URIs are not accepted.
+- Errors are thrown as `epub.EpubError`, whose `code` gives the reason, such as `PLUGIN_DISABLED` when the plugin is disabled; check with `epub.isAvailable()` first.
+- Most methods have an Async form that returns a Promise, such as `epub.openAsync()`.
+- AutoJs6 starts the reader, so the system limits on starting screens from the background apply; run scripts that call `epub.read()` while AutoJs6 is visible.
+
+### Requirements
+
+- Android 7.0 or later, with the system WebView.
+- Opening books from the file manager and the `epub` module require AutoJs6 6.8.0 or later; using it on its own from the launcher icon does not need AutoJs6.
+- Read-aloud needs a text-to-speech engine with voice data for the book language.
+- On Android 13 and later, the read-aloud notification controls need the notification permission; read-aloud still works if you deny it.
+
+### FAQ
+
+**Why "Read EPUB" is missing in the file manager**
+
+Make sure AutoJs6 meets the version requirement and this plugin is enabled in "Plugin center"; once both are true, EPUB files offer "Read EPUB".
+
+**Supported e-book formats**
+
+EPUB 2 and EPUB 3 are supported, including fixed-layout books. PDF, MOBI, AZW, CBZ and audiobooks are not supported; convert them to EPUB first with a tool such as Calibre. DRM-protected books show a protection notice and cannot be read.
+
+**When read-aloud makes no sound**
+
+Make sure the system text-to-speech engine has voice data for the book language, and turn up the media volume. When the device has no usable engine, a notice appears after about 20 seconds.
+
+**When this plugin uses the network**
+
+This plugin never uploads books or reading data; it goes online only when a book references remote resources or when you tap "Check for updates". Books can contain scripts, so open only books you trust.
+
+See the [AutoJs6 documentation](https://docs.autojs6.com/#/epub) for the full script API, and the [project homepage](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB) for more details.

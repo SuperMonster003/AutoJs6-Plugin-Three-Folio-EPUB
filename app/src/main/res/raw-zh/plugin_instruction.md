@@ -1,23 +1,73 @@
-# AutoJs6 3-Folio EPUB
+3-Folio EPUB 是 AutoJs6 的 EPUB 电子书阅读插件, 也可以作为独立的阅读器使用. 它打开 EPUB 2 与 EPUB 3 书籍, 提供目录, 全文搜索, 书签, 高亮与笔记以及朗读; 脚本也可以读取书籍内容或打开阅读器.
 
-在 AutoJs6 文件管理器中使用 3-Folio EPUB:
+### 开始使用
 
-1. 安装并启用 `3-Folio EPUB` 插件.
-2. 点按 `.epub` 文件, 或打开其溢出菜单并选择 `阅读 EPUB`.
-3. 书籍将在基于 Readium Kotlin Toolkit 的阅读器中打开.
+1. 在 AutoJs6 的 "插件中心" 中确认本插件已启用.
+2. 在 AutoJs6 文件管理器中点按一个 EPUB 文件, 书籍在阅读器中打开; 也可以在该文件的菜单中选择 "阅读 EPUB".
+3. 点按页面左右两侧或按音量键翻页, 点按中央显示或隐藏工具栏; 再次打开同一本书时从上次的位置继续.
+4. 不经过 AutoJs6 时, 从桌面图标打开本插件, 点按 "打开 EPUB" 选择书籍.
 
-点按页面左右三分之一或按音量键翻页; 点按中央隐藏或显示工具栏. 阅读位置按书保存并在下次打开时恢复; 在溢出菜单中选择 `从头开始` 可清除.
+### 主要功能
 
-插件通过 content URI 获得所选文件及其父目录的临时只读授权, 不会拿到原始文件系统路径, 不会把书籍复制到存储, 而是直接通过授权的文件描述符读取 EPUB 容器.
+- **目录与阅读位置**: 从 "目录" 跳到任意章节; 每本书记住上次的位置, 书籍移动或改名后仍能续读, "从头开始" 可清除该位置.
+- **阅读偏好**: 在 "阅读偏好" 中调整字号, 字体, 间距, 对齐与翻页, 选择 "浅色", "护眼", "深色" 或 "跟随宿主"; "导入字体" 添加 TTF 或 OTF 字体.
+- **竖排与固定版式**: 中文与日文的竖排书籍按竖排显示, 可在 "文字方向" 中强制横排或竖排; 固定版式书籍可选择 "双页显示", 并支持双指缩放.
+- **搜索与书签**: "搜索" 列出全书每一处命中及其前后文, 点按即跳转; 工具栏图标为当前页加书签, 在 "书签" 中查看与删除.
+- **高亮与笔记**: 选中文字后选择 "高亮" 或 "添加笔记", 有五种颜色与下划线样式; 在 "高亮与笔记" 中可跳转, 编辑, 或用 "导出" 保存为 Markdown 文件.
+- **朗读**: "朗读" 用系统文字转语音引擎从当前页读起, 高亮当前句并自动翻页; 可调语速与语音, 设置 "睡眠定时器", 开启 "后台继续朗读" 后关闭阅读器仍继续.
+- **链接与图片**: 书内链接支持返回, 脚注在弹窗中显示; 外部链接默认先显示完整地址, 确认后才交给浏览器; 点按图片可全屏查看.
+- **最近书籍与其他应用**: 桌面图标打开最近书籍列表; 其他应用交来的 EPUB 也能直接打开, 选择 "加入最近书籍" 可把它留在列表中.
+- **外观与设置**: 语言, 夜间模式与 "主题色" 默认跟随 AutoJs6; 在 "设置" 中还可设置翻页与朗读的默认值, "检查更新" 与查看 "发行历史".
 
-2.0.0 是当前版本, 1.0.0 是首个正式版本. 阅读器打开 EPUB 2 与 EPUB 3 书籍并提供目录, 记住每本书的阅读位置, 提供滚动模式, 点按区, 音量键翻页与沉浸模式, 偏好面板 (字号, 字体, 间距, 对齐, 列数与可跟随宿主夜间模式的主题), 导入的 TTF / OTF 字体, CJK 竖排与从右到左的书籍, 以单页或双页显示的固定版式书籍, 全文搜索, 书签, 书内链接, 注释与图片, 以及使用系统文字转语音引擎的朗读. 应用图标打开带最近书籍与系统文档选择器的启动器, 其它应用可通过 `ACTION_VIEW` 交来 EPUB, 设置页涵盖阅读器默认值, 设备上保存的数据与手动更新检查. 背后的 `org.autojs.plugin.EPUB` 服务向 AutoJs6 宿主答复元数据, 目录, 文本, 资源与搜索, 并打开由宿主驱动的阅读器会话 (`epub.open(path)`, `epub.read(path)`, 示例见 `示例 > 电子书`).
+### 在脚本中使用
 
-更名为 3-Folio EPUB, 新安装包名为 io.github.supermonster003.autojs6.plugin.three.folio.epub. Android 将其视为独立应用, 原 Readium EPUB Reader 的设置, 最近书籍与批注不会自动迁移. 需要 AutoJs6 5318 或更高版本
+AutoJs6 的 `epub` 模块由本插件提供. 不打开阅读器即可读取书籍的元数据, 目录与正文:
 
-书籍内可能包含脚本与远程资源; 插件保留 Readium 的默认行为, 不做拦截, 包括明文 `http://` 资源. 请只打开可信任的书籍.
+```js
+let book = epub.open('./book.epub');
+console.log(book.metadata.title, book.metadata.authors.join(', '));
+book.toc.forEach(entry => console.log(entry.title));
+console.log(book.text(0, { maxChars: 500 }));
+book.close();
+```
 
-Explorer Action v2 同时支持单文件的主按钮与溢出菜单. 需要 AutoJs6 构建 5318 或更高版本.
+`epub.read()` 打开本插件的阅读器, 并在脚本中接收阅读进度:
 
-感谢 [Readium Kotlin Toolkit](https://github.com/readium/kotlin-toolkit), [Readium CSS](https://github.com/readium/readium-css) 及[起始工程参考项目](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/THIRD_PARTY_NOTICES.md#initial-project-references)的开发者. 署名或权利相关问题可参阅[权利与配合说明](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB/blob/master/RIGHTS_AND_TAKEDOWN.md).
+```js
+let session = epub.read('./book.epub');
+session.on('progress', e => console.log((e.totalProgression * 100).toFixed(1) + '%', e.chapterTitle || e.href));
+session.on('error', e => console.warn(e.toString()));
+session.on('close', e => console.log('closed:', e.reason));
+```
 
-2.1.0 开发版本: 运行时应用: 独立签名的 Node.js/Bun 应用通过单独的服务和阅读器入口访问, 由普通权限 `org.autojs.plugin.epub.permission.RUNTIME` 保护. 返回的书籍与阅读器控制句柄按创建 UID 校验. 原宿主签名入口保持保护, 阅读偏好与书籍数据仍由本插件共享保存.
+- 路径可以是绝对路径或相对于脚本工作目录的路径, 不接受 `content://` 等 URI.
+- 出错时抛出 `epub.EpubError`, 其 `code` 表示原因, 例如插件未启用时为 `PLUGIN_DISABLED`; 可先用 `epub.isAvailable()` 检查.
+- 多数方法有返回 Promise 的 Async 形态, 例如 `epub.openAsync()`.
+- 阅读器由 AutoJs6 启动, 受系统对后台启动界面的限制; 请在 AutoJs6 界面可见时运行调用 `epub.read()` 的脚本.
+
+### 运行要求
+
+- Android 7.0 或更高版本, 以及系统 WebView.
+- 从文件管理器打开书籍与使用 `epub` 模块需要 AutoJs6 6.8.0 或更高版本; 从桌面图标单独使用时不需要 AutoJs6.
+- 朗读需要装有书籍语言语音数据的文字转语音引擎.
+- Android 13 或更高版本上, 朗读的通知控制需要通知权限; 拒绝后仍可正常朗读.
+
+### 常见问题
+
+**文件管理器中没有 "阅读 EPUB" 选项的原因**
+
+确认 AutoJs6 满足版本要求, 且本插件已在 "插件中心" 中启用; 两者都满足后, EPUB 文件即会出现 "阅读 EPUB".
+
+**支持的电子书格式**
+
+支持 EPUB 2 与 EPUB 3, 包括固定版式书籍. PDF, MOBI, AZW, CBZ 与有声书不在支持范围内, 可先用 Calibre 等工具转换为 EPUB; 受 DRM 保护的书籍会提示受保护而无法阅读.
+
+**朗读没有声音时的处理**
+
+确认系统的文字转语音引擎已安装书籍语言的语音数据, 并调高媒体音量. 设备上没有可用的引擎时, 约 20 秒后会给出提示.
+
+**本插件联网的场合**
+
+本插件不上传书籍或阅读数据; 只有书籍引用远程资源, 或点按 "检查更新" 时才会联网. 书籍中可能包含脚本, 请只打开可信任的书籍.
+
+完整的脚本接口见 [AutoJs6 文档](https://docs.autojs6.com/#/epub), 更多说明见 [项目主页](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Folio-EPUB).

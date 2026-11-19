@@ -360,6 +360,7 @@ _2026/10/21_
 .readme/common.json
 .readme/lang_*.json
 .readme/template_readme.md
+.readme/template_plugin_instruction.md
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
@@ -368,7 +369,7 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` локализует сведения о плагине и интерфейс читалки, а `plugin_instruction.md` содержит инструкции, отображаемые хостом. README и changelog всегда правятся через JSON-источники в `.readme/` и `.changelog/` с последующим запуском `py .python/generate_markdown.py`; сгенерированные файлы вручную не редактируются. Команда `py .python/generate_markdown.py --check` проверяет синхронность источников и сгенерированных файлов.
+`strings.xml` локализует сведения о плагине и интерфейс читалки, а `plugin_instruction.md` содержит инструкции, отображаемые хостом. README, changelog и `plugin_instruction.md` всегда правятся через JSON-источники в `.readme/` и `.changelog/` с последующим запуском `py .python/generate_markdown.py`; сгенерированные файлы вручную не редактируются. Команда `py .python/generate_markdown.py --check` проверяет синхронность источников и сгенерированных файлов.
 
 ******
 

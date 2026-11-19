@@ -144,7 +144,7 @@
   "text_release_build": "Compilation Release",
   "p_build_params": "Les paramètres de compilation proviennent de `version.properties`. Le SDK minimum actuel est {{ android_min_sdk }} et le SDK cible est {{ android_target_sdk }}",
   "h3_resource_layout": "Localisation et génération des documents",
-  "p_resource_layout": "`strings.xml` localise les métadonnées du plugin et l'interface de la liseuse, tandis que `plugin_instruction.md` fournit les instructions affichées par l'hôte. Pour le README et le changelog, modifiez toujours les sources JSON sous `.readme/` et `.changelog/`, puis exécutez `py .python/generate_markdown.py` pour tout régénérer; les fichiers générés ne sont jamais modifiés à la main. Exécutez `py .python/generate_markdown.py --check` pour vérifier que sources et fichiers générés sont synchronisés",
+  "p_resource_layout": "`strings.xml` localise les métadonnées du plugin et l'interface de la liseuse, tandis que `plugin_instruction.md` fournit les instructions affichées par l'hôte. Pour le README, le changelog et `plugin_instruction.md`, modifiez toujours les sources JSON sous `.readme/` et `.changelog/`, puis exécutez `py .python/generate_markdown.py` pour tout régénérer; les fichiers générés ne sont jamais modifiés à la main. Exécutez `py .python/generate_markdown.py --check` pour vérifier que sources et fichiers générés sont synchronisés",
   "h3_license": "Licence et mentions tierces",
   "p_license": "Le plugin est publié sous la [Mozilla Public License 2.0]({{ license_url }}). Le Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 et Jsoup, les bibliothèques de contrat AutoJs6 et les autres composants livrés dans l'APK sont listés avec leurs versions, sommes de contrôle et licences dans les [mentions tierces]({{ third_party_notices_url }}).",
   "h3_links": "Liens",
@@ -154,5 +154,61 @@
   "text_link_epub_api_docs": "Référence de l'API de script `epub`",
   "text_link_third_party_notices": "Mentions tierces",
   "text_link_16kb": "Alignement des pages de 16 KB et vérification du build",
-  "p_acknowledgements": "Merci aux développeurs de [Readium Kotlin Toolkit]({{ readium_url }}), de [Readium CSS](https://github.com/readium/readium-css) et des [références initiales]({{ third_party_notices_url }}#initial-project-references). Voir la [coopération sur les droits]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) pour toute question."
+  "p_acknowledgements": "Merci aux développeurs de [Readium Kotlin Toolkit]({{ readium_url }}), de [Readium CSS](https://github.com/readium/readium-css) et des [références initiales]({{ third_party_notices_url }}#initial-project-references). Voir la [coopération sur les droits]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) pour toute question.",
+  "instruction_p_what": "3-Folio EPUB est le plugin de lecture de livres EPUB d'AutoJs6 et sert aussi de liseuse autonome. Il ouvre les livres EPUB 2 et EPUB 3 avec table des matières, recherche plein texte, signets, surlignages et notes, et lecture à voix haute; les scripts peuvent aussi lire le contenu des livres ou ouvrir la liseuse.",
+  "instruction_h3_start": "Prise en main",
+  "instruction_start_steps": [
+    "Vérifiez que ce plugin est activé dans le \"Centre des plugins\" d'AutoJs6.",
+    "Dans le gestionnaire de fichiers d'AutoJs6, touchez un fichier EPUB pour ouvrir le livre dans la liseuse; vous pouvez aussi choisir \"Lire l'EPUB\" dans le menu de ce fichier.",
+    "Touchez le bord gauche ou droit de la page ou appuyez sur une touche de volume pour tourner les pages, et touchez le centre pour afficher ou masquer la barre d'outils; le même livre se rouvre là où vous l'aviez laissé.",
+    "Pour l'utiliser sans AutoJs6, ouvrez ce plugin depuis son icône et touchez \"Ouvrir un EPUB\" pour choisir un livre."
+  ],
+  "instruction_h3_features": "Fonctionnalités principales",
+  "instruction_features": [
+    "**Table des matières et position de lecture**: Accédez à n'importe quel chapitre depuis \"Table des matières\"; chaque livre retient votre position, même déplacé ou renommé, et \"Reprendre au début\" l'efface.",
+    "**Préférences de lecture**: Dans \"Préférences de lecture\", réglez la taille et la police, les espacements, l'alignement et la pagination, et choisissez \"Clair\", \"Sépia\", \"Sombre\" ou \"Suivre l'hôte\"; \"Importer une police\" ajoute des polices TTF ou OTF.",
+    "**Texte vertical et mise en page fixe**: Les livres chinois et japonais verticaux s'affichent à la verticale, et \"Sens du texte\" peut forcer l'horizontal ou le vertical; les livres à mise en page fixe proposent \"Double page\" et le zoom à deux doigts.",
+    "**Recherche et signets**: \"Rechercher\" liste chaque occurrence du livre avec son contexte, et un appui y mène; l'icône de la barre d'outils marque la page actuelle, et \"Signets\" liste et supprime les signets.",
+    "**Surlignages et notes**: Sélectionnez du texte et choisissez \"Surligner\" ou \"Ajouter une note\", avec cinq couleurs et un style souligné; \"Surlignages et notes\" permet d'y accéder et de les modifier, et \"Exporter\" les enregistre dans un fichier Markdown.",
+    "**Lecture à voix haute**: \"Lecture à voix haute\" lit depuis la page actuelle avec le moteur de synthèse vocale du système, surligne la phrase lue et tourne les pages; réglez la vitesse, la voix et le \"Minuteur de sommeil\", et activez \"Continuer en arrière-plan\" pour continuer après la fermeture de la liseuse.",
+    "**Liens et images**: Les liens internes permettent de revenir en arrière et les notes de bas de page s'ouvrent dans une fenêtre; par défaut, les liens externes affichent d'abord l'adresse complète et ne passent au navigateur qu'après confirmation; touchez une image pour l'afficher en plein écran.",
+    "**Livres récents et autres applications**: L'icône du plugin ouvre vos livres récents; les EPUB partagés par d'autres applications s'ouvrent directement, et \"Ajouter aux livres récents\" les garde dans la liste.",
+    "**Apparence et paramètres**: La langue, le mode nuit et \"Couleur du thème\" suivent AutoJs6 par défaut; \"Paramètres\" règle aussi les valeurs par défaut de pagination et de lecture à voix haute, et propose \"Rechercher des mises à jour\" et \"Historique des versions\"."
+  ],
+  "instruction_h3_script": "Utilisation dans les scripts",
+  "instruction_p_script": "Le module `epub` d'AutoJs6 est fourni par ce plugin. Il lit les métadonnées, la table des matières et le texte d'un livre sans ouvrir la liseuse:",
+  "instruction_p_script_reader": "`epub.read()` ouvre la liseuse de ce plugin et transmet la progression de lecture au script:",
+  "instruction_script_notes": [
+    "Les chemins peuvent être absolus ou relatifs au répertoire de travail du script; `content://` et les autres URI ne sont pas acceptés.",
+    "Les erreurs sont levées sous forme de `epub.EpubError`, dont le `code` indique la cause, par exemple `PLUGIN_DISABLED` quand le plugin est désactivé; vérifiez d'abord avec `epub.isAvailable()`.",
+    "La plupart des méthodes ont une forme Async qui renvoie une Promise, par exemple `epub.openAsync()`.",
+    "C'est AutoJs6 qui démarre la liseuse, donc les limites du système sur l'ouverture d'écrans en arrière-plan s'appliquent; lancez les scripts qui appellent `epub.read()` quand AutoJs6 est visible."
+  ],
+  "instruction_h3_requirements": "Prérequis",
+  "instruction_requirements": [
+    "Android 7.0 ou version ultérieure, avec la WebView du système.",
+    "L'ouverture de livres depuis le gestionnaire de fichiers et le module `epub` nécessitent AutoJs6 6.8.0 ou version ultérieure; l'utilisation autonome depuis l'icône ne nécessite pas AutoJs6.",
+    "La lecture à voix haute nécessite un moteur de synthèse vocale disposant des données vocales de la langue du livre.",
+    "Sur Android 13 et versions ultérieures, les commandes de lecture dans la notification nécessitent l'autorisation de notification; la lecture à voix haute fonctionne même si vous la refusez."
+  ],
+  "instruction_h3_faq": "Questions fréquentes",
+  "instruction_faq": [
+    {
+      "q": "Raisons pour lesquelles \"Lire l'EPUB\" n'apparaît pas dans le gestionnaire de fichiers",
+      "a": "Vérifiez qu'AutoJs6 remplit la condition de version et que ce plugin est activé dans le \"Centre des plugins\"; une fois les deux réunies, les fichiers EPUB proposent \"Lire l'EPUB\"."
+    },
+    {
+      "q": "Formats de livres pris en charge",
+      "a": "Les formats EPUB 2 et EPUB 3 sont pris en charge, y compris les livres à mise en page fixe. PDF, MOBI, AZW, CBZ et les livres audio ne le sont pas; convertissez-les d'abord en EPUB avec un outil comme Calibre. Les livres protégés par DRM affichent un avertissement et ne peuvent pas être lus."
+    },
+    {
+      "q": "Cas où la lecture à voix haute reste muette",
+      "a": "Vérifiez que le moteur de synthèse vocale du système dispose des données vocales de la langue du livre, et augmentez le volume multimédia. Si l'appareil n'a aucun moteur utilisable, un avertissement apparaît après environ 20 secondes."
+    },
+    {
+      "q": "Cas où ce plugin utilise le réseau",
+      "a": "Ce plugin n'envoie jamais les livres ni les données de lecture; il ne se connecte que lorsqu'un livre fait référence à des ressources distantes ou que vous touchez \"Rechercher des mises à jour\". Les livres peuvent contenir des scripts, n'ouvrez donc que des livres de confiance."
+    }
+  ],
+  "instruction_p_more": "Consultez la [documentation d'AutoJs6]({{ docs_epub_api_url }}) pour l'API de script complète, et la [page du projet]({{ repo_url }}) pour plus de détails."
 }

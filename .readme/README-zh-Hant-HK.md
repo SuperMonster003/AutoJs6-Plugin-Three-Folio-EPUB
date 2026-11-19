@@ -360,6 +360,7 @@ Release 構建:
 .readme/common.json
 .readme/lang_*.json
 .readme/template_readme.md
+.readme/template_plugin_instruction.md
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
@@ -368,7 +369,7 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` 提供插件資訊和閱讀器介面的本地化, `plugin_instruction.md` 提供宿主側展示的使用說明. README 與更新日誌一律修改 `.readme/` 與 `.changelog/` 下的 JSON 源檔案, 再執行 `py .python/generate_markdown.py` 重新生成, 生成產物不手工編輯; 執行 `py .python/generate_markdown.py --check` 可校驗源檔案與生成產物是否同步.
+`strings.xml` 提供插件資訊和閱讀器介面的本地化, `plugin_instruction.md` 提供宿主側展示的使用說明. README, 更新日誌與 `plugin_instruction.md` 一律修改 `.readme/` 與 `.changelog/` 下的 JSON 源檔案, 再執行 `py .python/generate_markdown.py` 重新生成, 生成產物不手工編輯; 執行 `py .python/generate_markdown.py --check` 可校驗源檔案與生成產物是否同步.
 
 ******
 

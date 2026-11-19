@@ -144,7 +144,7 @@
   "text_release_build": "Release build",
   "p_build_params": "Build parameters come from `version.properties`. The current minimum SDK is {{ android_min_sdk }} and the target SDK is {{ android_target_sdk }}",
   "h3_resource_layout": "Localization and Docs Generation",
-  "p_resource_layout": "`strings.xml` localizes plugin metadata and the reader UI, while `plugin_instruction.md` provides host-visible usage instructions. For README and changelog, always edit the JSON sources under `.readme/` and `.changelog/`, then run `py .python/generate_markdown.py` to regenerate; generated files are never edited by hand. Run `py .python/generate_markdown.py --check` to verify that sources and artifacts are in sync",
+  "p_resource_layout": "`strings.xml` localizes plugin metadata and the reader UI, while `plugin_instruction.md` provides host-visible usage instructions. For README, changelog and `plugin_instruction.md`, always edit the JSON sources under `.readme/` and `.changelog/`, then run `py .python/generate_markdown.py` to regenerate; generated files are never edited by hand. Run `py .python/generate_markdown.py --check` to verify that sources and artifacts are in sync",
   "h3_license": "License and Third-Party Notices",
   "p_license": "The plugin is licensed under the [Mozilla Public License 2.0]({{ license_url }}). The Readium Kotlin Toolkit (BSD 3-Clause), AndroidX Media3 and Jsoup, the AutoJs6 contract libraries and the other components shipped in the APK are listed with their versions, checksums and licenses in [Third-Party Notices]({{ third_party_notices_url }}).",
   "h3_links": "Links",
@@ -154,5 +154,61 @@
   "text_link_epub_api_docs": "`epub` script API reference",
   "text_link_third_party_notices": "Third-party notices",
   "text_link_16kb": "16 KB page alignment and build verification",
-  "p_acknowledgements": "Thanks to [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), and the [original AutoJs6 integration references]({{ third_party_notices_url }}#initial-project-references). See [rights and cooperation]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) for attribution concerns."
+  "p_acknowledgements": "Thanks to [Readium Kotlin Toolkit]({{ readium_url }}), [Readium CSS](https://github.com/readium/readium-css), and the [original AutoJs6 integration references]({{ third_party_notices_url }}#initial-project-references). See [rights and cooperation]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md) for attribution concerns.",
+  "instruction_p_what": "3-Folio EPUB is the EPUB e-book reading plugin for AutoJs6 and also works as a standalone reader. It opens EPUB 2 and EPUB 3 books with a table of contents, full-text search, bookmarks, highlights and notes, and read-aloud; scripts can also read book content or open the reader.",
+  "instruction_h3_start": "Getting started",
+  "instruction_start_steps": [
+    "Make sure this plugin is enabled in AutoJs6 \"Plugin center\".",
+    "In the AutoJs6 file manager, tap an EPUB file and the book opens in the reader; you can also choose \"Read EPUB\" from the menu of that file.",
+    "Tap the left or right side of the page or press a volume key to turn pages, and tap the center to show or hide the toolbar; the same book reopens where you left off.",
+    "To use it without AutoJs6, open this plugin from its launcher icon and tap \"Open EPUB\" to pick a book."
+  ],
+  "instruction_h3_features": "Main features",
+  "instruction_features": [
+    "**Contents and reading position**: Jump to any chapter from \"Table of contents\"; each book remembers where you stopped, even after it is moved or renamed, and \"Start from the beginning\" clears that position.",
+    "**Reading preferences**: In \"Reading preferences\", adjust font size, font, spacing, alignment and page turning, and choose \"Light\", \"Sepia\", \"Dark\" or \"Follow host\"; \"Import font\" adds TTF or OTF fonts.",
+    "**Vertical text and fixed layouts**: Chinese and Japanese vertical books are shown vertically, and \"Text direction\" can force horizontal or vertical text; fixed-layout books offer \"Page spread\" and pinch-to-zoom.",
+    "**Search and bookmarks**: \"Search\" lists every match in the book with its context, and tapping one jumps there; the toolbar icon bookmarks the current page, and \"Bookmarks\" lists and deletes them.",
+    "**Highlights and notes**: Select text and choose \"Highlight\" or \"Add note\", with five colors and an underline style; \"Highlights and notes\" jumps to and edits them, and \"Export\" saves them as a Markdown file.",
+    "**Read aloud**: \"Read aloud\" reads from the current page with the system text-to-speech engine, highlighting the current sentence and turning pages; adjust speed and voice, set the \"Sleep timer\", and turn on \"Continue in the background\" to keep reading after the reader closes.",
+    "**Links and images**: Links inside the book support going back, and footnotes appear in a popup; by default, external links show the full address first and go to the browser only after you confirm; tap an image to view it full screen.",
+    "**Recent books and other apps**: The launcher icon opens your recent books; EPUB files shared from other apps open directly, and \"Add to recent books\" keeps them in the list.",
+    "**Appearance and settings**: Language, night mode and \"Theme color\" follow AutoJs6 by default; \"Settings\" also sets page-turning and read-aloud defaults, and offers \"Check for updates\" and \"Release history\"."
+  ],
+  "instruction_h3_script": "Using it in scripts",
+  "instruction_p_script": "The AutoJs6 `epub` module is provided by this plugin. It reads the metadata, table of contents and text of a book without opening the reader:",
+  "instruction_p_script_reader": "`epub.read()` opens the reader of this plugin and reports the reading progress to the script:",
+  "instruction_script_notes": [
+    "Paths can be absolute or relative to the script working directory; `content://` and other URIs are not accepted.",
+    "Errors are thrown as `epub.EpubError`, whose `code` gives the reason, such as `PLUGIN_DISABLED` when the plugin is disabled; check with `epub.isAvailable()` first.",
+    "Most methods have an Async form that returns a Promise, such as `epub.openAsync()`.",
+    "AutoJs6 starts the reader, so the system limits on starting screens from the background apply; run scripts that call `epub.read()` while AutoJs6 is visible."
+  ],
+  "instruction_h3_requirements": "Requirements",
+  "instruction_requirements": [
+    "Android 7.0 or later, with the system WebView.",
+    "Opening books from the file manager and the `epub` module require AutoJs6 6.8.0 or later; using it on its own from the launcher icon does not need AutoJs6.",
+    "Read-aloud needs a text-to-speech engine with voice data for the book language.",
+    "On Android 13 and later, the read-aloud notification controls need the notification permission; read-aloud still works if you deny it."
+  ],
+  "instruction_h3_faq": "FAQ",
+  "instruction_faq": [
+    {
+      "q": "Why \"Read EPUB\" is missing in the file manager",
+      "a": "Make sure AutoJs6 meets the version requirement and this plugin is enabled in \"Plugin center\"; once both are true, EPUB files offer \"Read EPUB\"."
+    },
+    {
+      "q": "Supported e-book formats",
+      "a": "EPUB 2 and EPUB 3 are supported, including fixed-layout books. PDF, MOBI, AZW, CBZ and audiobooks are not supported; convert them to EPUB first with a tool such as Calibre. DRM-protected books show a protection notice and cannot be read."
+    },
+    {
+      "q": "When read-aloud makes no sound",
+      "a": "Make sure the system text-to-speech engine has voice data for the book language, and turn up the media volume. When the device has no usable engine, a notice appears after about 20 seconds."
+    },
+    {
+      "q": "When this plugin uses the network",
+      "a": "This plugin never uploads books or reading data; it goes online only when a book references remote resources or when you tap \"Check for updates\". Books can contain scripts, so open only books you trust."
+    }
+  ],
+  "instruction_p_more": "See the [AutoJs6 documentation]({{ docs_epub_api_url }}) for the full script API, and the [project homepage]({{ repo_url }}) for more details."
 }
