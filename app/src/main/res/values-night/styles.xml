@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- See values/styles.xml. -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3.Dark">
+        <item name="android:textColorPrimary">@color/popup_menu_text</item>
+        <item name="colorSurface">@color/popup_menu_surface</item>
+        <item name="colorSurfaceContainer">@color/popup_menu_surface</item>
+        <item name="colorPrimary">@color/popup_menu_accent</item>
+        <item name="colorOnPrimary">@color/popup_menu_on_accent</item>
+    </style>
+
+</resources>

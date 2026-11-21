@@ -8,6 +8,12 @@
     <color name="ic_launcher_background">#00695C</color>
     <color name="toolbar_text">#FFFFFFFF</color>
     <color name="image_caption_scrim">#99000000</color>
+    <!-- Overflow menus (AppTheme.PopupOverlay): AppThemePalette's app bar and its text, the light color_primary with a
+         white check mark. -->
+    <color name="popup_menu_accent">#FF00695C</color>
+    <color name="popup_menu_on_accent">#FFFFFFFF</color>
+    <color name="popup_menu_surface">#FFFFFFFF</color>
+    <color name="popup_menu_text">#FF1D1B20</color>
     <color name="window_background">#FFFFFFFF</color>
     <color name="cover_placeholder">#FFE0E0E0</color>
 </resources>

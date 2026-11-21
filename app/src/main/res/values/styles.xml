@@ -15,7 +15,20 @@
 
     <style name="AppTheme.Toolbar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3" />
+    <!-- The overflow menus are themed on top of AppTheme.Toolbar, whose primary text is white, so the overlay sets the
+         text again; with the empty Material 3 overlay the light menus showed white text on their light container.
+         The Material 3 menu paints colorSurfaceContainer: the menus use the neutral surfaces of AppThemePalette (the
+         white app bar here, the gray bottom control surface at night in values-night) instead of the tinted Material 3
+         defaults. The Material 3 overlays also reset colorPrimary to the default purple, so the checked boxes and radio
+         buttons of the reader menu get the plugin's teal back (with its check mark color), one that stays readable on
+         the night surface. -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3.Light">
+        <item name="android:textColorPrimary">@color/popup_menu_text</item>
+        <item name="colorSurface">@color/popup_menu_surface</item>
+        <item name="colorSurfaceContainer">@color/popup_menu_surface</item>
+        <item name="colorPrimary">@color/popup_menu_accent</item>
+        <item name="colorOnPrimary">@color/popup_menu_on_accent</item>
+    </style>
 
     <style name="AppTheme.ReaderDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
 

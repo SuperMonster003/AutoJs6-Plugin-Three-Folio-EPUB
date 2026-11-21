@@ -8,4 +8,11 @@
     <color name="toolbar_text">#FFFFFFFF</color>
     <color name="window_background">#FF0D1117</color>
     <color name="cover_placeholder">#FF2A2F36</color>
+    <!-- Overflow menus: AppThemePalette's bottom control surface (apart from the #1E1E1E app bar) and its text; the
+         night section_header teal with the night color_primary_dark check mark, since the night color_primary
+         (#004D40) is not readable on a dark surface. -->
+    <color name="popup_menu_accent">#FF4DB6AC</color>
+    <color name="popup_menu_on_accent">#FF00251A</color>
+    <color name="popup_menu_surface">#FF303030</color>
+    <color name="popup_menu_text">#FFE6E1E5</color>
 </resources>
